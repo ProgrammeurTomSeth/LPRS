@@ -10,30 +10,9 @@
     <option name="highlightLevel" value="WARNING" />
     <option name="transferred" value="true" />
   </component>
-<<<<<<< HEAD
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
-=======
-  <component name="PhpCodeSniffer">
-    <phpcs_settings>
-      <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="cf5d585b-ed5b-4258-8dff-25cd1e8dbc86" timeout="30000" />
-    </phpcs_settings>
-  </component>
-  <component name="PhpStan">
-    <PhpStan_settings>
-      <phpstan_by_interpreter asDefaultInterpreter="true" interpreter_id="cf5d585b-ed5b-4258-8dff-25cd1e8dbc86" timeout="60000" />
-    </PhpStan_settings>
-  </component>
-  <component name="PhpStanOptionsConfiguration">
-    <option name="transferred" value="true" />
-  </component>
-  <component name="Psalm">
-    <Psalm_settings>
-      <psalm_fixer_by_interpreter asDefaultInterpreter="true" interpreter_id="cf5d585b-ed5b-4258-8dff-25cd1e8dbc86" timeout="60000" />
-    </Psalm_settings>
-  </component>
->>>>>>> 6c030d09126ce715efb07e6a32567ae5eff10eb8
   <component name="PsalmOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
