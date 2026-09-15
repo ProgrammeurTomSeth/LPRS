@@ -1,6 +1,6 @@
 <?php
 
-trait EntrepriseTraitement_Tom
+class EntrepriseTraitement_Tom
 {
 
 }
