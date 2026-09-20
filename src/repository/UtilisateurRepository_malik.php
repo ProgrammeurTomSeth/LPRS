@@ -77,4 +77,38 @@ class UtilisateurRepository_malik
         );
         return $utilisateur;
     }
+
+
+    public function getAllUtilisateurs(){
+        $sql = "SELECT * FROM utilisateur";
+        $req = $this->connexionbdd->prepare($sql);
+        $req->execute();
+        $results = $req->fetchAll();
+        $tabUtilisateurs = array();
+        foreach ($results as $result) {
+            $utilisateur = new Utilisateur(
+                $result['id_utilisateur'],
+                $result['nom_Utilisateur'],
+                $result['prenom_Utilisateur'],
+                $result['mail'],
+                $result['mdp'],
+                $result['telephone'],
+                $result['date_naissance'],
+                $result['role'],
+                $result['statut_validation'],
+                $result['cv'],
+                $result['annee_promo'],
+                $result['id_formation'],
+                $result['specialite'],
+                $result['motif_inscription'],
+                $result['id_entreprise'],
+                $result['poste'],
+                $result['id_gestionnaire_createur'],
+                $result['date_inscription'],
+
+            );
+            $tabUtilisateurs[] = $utilisateur;
+        }
+        return $tabUtilisateurs;
+    }
 }
