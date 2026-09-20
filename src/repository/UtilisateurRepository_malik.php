@@ -43,4 +43,38 @@ class UtilisateurRepository_malik
         );
         return $utilisateur;
     }
+
+    public function getUtilisateurParmail($mail) {
+        $sql = "SELECT * FROM utilisateur WHERE mail = :mail";
+        $req = $this->connexionBdd->prepare($sql);
+        $req->bindValue(':email', $mail);
+        $req->execute();
+        $result = $req->fetch();
+        if (!$result) {
+            return null;
+        }
+
+        $utilisateur = new Utilisateur(
+            $result['id_utilisateur'],
+            $result['nom_Utilisateur'],
+            $result['prenom_Utilisateur'],
+            $result['mail'],
+            $result['mdp'],
+            $result['telephone'],
+            $result['date_naissance'],
+            $result['role'],
+            $result['statut_validation'],
+            $result['cv'],
+            $result['annee_promo'],
+            $result['id_formation'],
+            $result['specialite'],
+            $result['motif_inscription'],
+            $result['id_entreprise'],
+            $result['poste'],
+            $result['id_gestionnaire_createur'],
+            $result['date_inscription'],
+
+        );
+        return $utilisateur;
+    }
 }
