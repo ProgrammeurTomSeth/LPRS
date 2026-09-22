@@ -16,6 +16,7 @@ class createUserAnais {
             $u->getPrenom(),
             $u->getEmail(),
             $u->getMdp(),
+            password_hash($u->getMdp(), PASSWORD_BCRYPT),
             $u->getTelephone(),
             $u->getDateNaissance(),
             $u->getRole(),
