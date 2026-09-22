@@ -11,7 +11,7 @@ class evenement_anais{
 
     public function __construct($id_evenement, $type_evenement, $description, $lieu, $element_requis, $nb_place, $date_evenement ){
         $this->id_evenement = $id_evenement;
-        $this->typeEvenement = $type_evenement;
+        $this->type_evenement = $type_evenement;
         $this->description = $description;
         $this->lieu = $lieu;
         $this->element_requis = $element_requis;
