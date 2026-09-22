@@ -147,3 +147,34 @@ body {
 .nav-toggle:checked ~ .nav-toggle-label span::after {
     transform: rotate(-45deg);
 }
+footer {
+    background-color: #222;
+    border-top: 3px solid #444;
+
+    margin-top: 50px;
+
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+}
+
+footer p {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    line-height: 1.6;
+}
+
+/* Version téléphone */
+
+@media screen and (max-width: 600px) {
+
+    footer {
+        padding: 25px 15px;
+    }
+
+    footer p {
+        font-size: 14px;
+    }
+}

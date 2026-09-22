@@ -46,11 +46,6 @@
 
 </header>
 
-<main>
-    <h1>Mon site</h1>
-    <p>Navbar responsive sans JavaScript.</p>
-</main>
-
 <!-- ================= FOOTER ================= -->
 <footer class="text-white py-4 mt-5">
     <div class="container text-center">
