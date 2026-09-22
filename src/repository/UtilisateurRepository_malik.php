@@ -93,19 +93,27 @@ class UtilisateurRepository_malik
     }
 
     public function ajouterUtilisateur(Utilisateur $utilisateur){
-        $sql = "INSERT INTO utilisateur (id_utilisateur,nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, etatut_validation, cv,annee_promo,)
-                VALUES (:nom, :prenom, :email, :mdp, :telephone, :adresse, :dateNaissance, :role, :etatCompte, :dateCreation)";
+        $sql = "INSERT INTO utilisateur (id_utilisateur,nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, etatut_validation, cv,annee_promo,id_formation,specialite,motif,inscription,poste,id_gestionnaire_createur,date_inscription)
+                VALUES (:id_utilisateur,:nom_utilisateur, :prenom_utilisateur, :mail, :mdp, :telephone, :date_naissance, :role, :etatut_validation, :cv,:annee_promo,:id_formation,:specialite,:motif,:inscription,:poste,:id_gestionnaire_createur,:date_inscription)";
         $req = $this->connexionBdd->prepare($sql);
-        $req->bindValue(':nom',           $utilisateur->getNom());
-        $req->bindValue(':prenom',        $utilisateur->getPrenom());
-        $req->bindValue(':email',         $utilisateur->getEmail());
-        $req->bindValue(':mdp',           $utilisateur->getMdp());
-        $req->bindValue(':telephone',     $utilisateur->getTelephone());
-        $req->bindValue(':adresse',       $utilisateur->getAdresse());
-        $req->bindValue(':dateNaissance', $utilisateur->getDateNaissance());
-        $req->bindValue(':role',          $utilisateur->getRole());
-        $req->bindValue(':etatCompte',    $utilisateur->getEtatCompte());
-        $req->bindValue(':dateCreation',  $utilisateur->getDateCreation());
+        $req->bindValue(':id_utilisateur',           $utilisateur->getid_utilisateur());
+        $req->bindValue(':nom_utilisateur',           $utilisateur->getnom_utilisateur());
+        $req->bindValue(':prenom_utilisateur',        $utilisateur->getprenom_utilisateur());
+        $req->bindValue(':mail',         $utilisateur->getmail());
+        $req->bindValue(':mdp',           $utilisateur->getmdp());
+        $req->bindValue(':telephone',     $utilisateur->gettelephone());
+        $req->bindValue(':date_naissance', $utilisateur->getDate_naissance());
+        $req->bindValue(':role',          $utilisateur->getrole());
+        $req->bindValue(':etatut_validation', $utilisateur->getetatut_validation());
+        $req->bindValue(':cv',         $utilisateur->getcv());
+        $req->bindValue(':annee_promo',   $utilisateur->getannee_promo());
+        $req->bindValue(':id_formation', $utilisateur->getid_formation());
+        $req->bindValue(':specialite', $utilisateur->getspecialite());
+        $req->bindValue(':motif_inscription', $utilisateur->getmotif_inscription());
+        $req->bindValue(':id_entreprise', $utilisateur->getid_entreprise());
+        $req->bindValue(':poste', $utilisateur->getposte());
+        $req->bindValue(':id_gestionnaire', $utilisateur->getid_gestionnaire());
+        $req->bindValue(':date_inscription', $utilisateur->getdate_inscription());
         $req->execute();
     }
 }
