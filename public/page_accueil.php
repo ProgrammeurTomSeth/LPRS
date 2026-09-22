@@ -9,22 +9,47 @@
     <link href="accueil.css" rel="stylesheet">
 </head>
 <body>
-<input type="button" id="menu-toggle">
 
-<!-- Bouton -->
-<label for="menu-toggle" class="toggle-btn">☰ Menu</label>
+<header class="header">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg py-3" id="navbar">
-    <div class="container-fluid">
-        <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="#home">Accueil</a></li>
-            <li class="nav-item"><a class="nav-link" href="#about">À Propos</a></li>
-            <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-            <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+    <a href="#" class="logo">
+        MonSite
+    </a>
+
+    <!-- Checkbox invisible qui sert à ouvrir/fermer le menu -->
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+
+    <!-- Bouton hamburger -->
+    <label for="nav-toggle" class="nav-toggle-label">
+        <span></span>
+    </label>
+
+    <nav class="navbar">
+        <ul>
+            <li>
+                <a href="#">Accueil</a>
+            </li>
+
+            <li>
+                <a href="#">À propos</a>
+            </li>
+
+            <li>
+                <a href="#">Services</a>
+            </li>
+
+            <li>
+                <a href="#">Contact</a>
+            </li>
         </ul>
-    </div>
-</nav>
+    </nav>
+
+</header>
+
+<main>
+    <h1>Mon site</h1>
+    <p>Navbar responsive sans JavaScript.</p>
+</main>
 
 <!-- ================= FOOTER ================= -->
 <footer class="text-white py-4 mt-5">
