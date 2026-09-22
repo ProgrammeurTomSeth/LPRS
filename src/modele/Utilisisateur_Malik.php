@@ -46,22 +46,22 @@ class Utilisateur_Malik {
     public function setIdUtilisateur($id_Utilisateur){
         $this->id_Utilisateur = $id_Utilisateur;
     }
-    public function getNomUtilisateur(){
+    public function getNom(){
         return $this->nom_utilisateur;
     }
-    public function setNomUtilisateur($nom_utilisateur){
-        $this->nom_utilisateur = $nom_utilisateur;
+    public function setNom($nom_utilisateur){
+        $this->nom = $nom_utilisateur;
     }
-    public function getPrenomUtilisateur(){
+    public function getPrenom(){
         return $this->prenom_utilisateur;
     }
-    public function setPrenomUtilisateur($prenom_utilisateur){
+    public function setPrenom($prenom_utilisateur){
         $this->prenom_utilisateur = $prenom_utilisateur;
     }
-    public function getMail(){
+    public function getEmail(){
         return $this->mail;
     }
-    public function setMail($mail){
+    public function setEmail($mail){
         $this->mail = $mail;
     }
     public function getMdp(){
