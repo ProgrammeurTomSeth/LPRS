@@ -1,11 +1,15 @@
 <?php
-class creation_prof_Malik {
+class creation_prof_Malik
+{
     private $pdo;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->pdo = Bdd::getConnection();
     }
-    public function add(Utilisateur_prof $u) {
+
+    public function add(Utilisateur_prof $u)
+    {
         $stmt = $this->pdo->prepare("INSERT INTO utilisateurs_prof 
             (nom, prenom, email, mdp, telephone, adresse, date_naissance)
             VALUES (?, ?, ?, ?, ?, ?, ?)");
