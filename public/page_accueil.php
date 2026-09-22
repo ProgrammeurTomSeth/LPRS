@@ -217,7 +217,7 @@
                 </details>
                 <details class="faq-item">
                     <summary>Comment contacter le support ?</summary>
-                    <p>Envoyez-nous un email à support@ecole-lourdeault.fr.</p>
+                    <p>Envoyez-nous un email à ...</p>
                 </details>
             </div>
         </div>
@@ -237,9 +237,9 @@
                 <p class="eyebrow">Nous Contacter</p>
                 <h2>Contactez-Nous Rapidement</h2>
                 <ul>
-                    <li><strong>Téléphone :</strong> <a href="tel:0123456789">01 23 45 67 89</a></li>
-                    <li><strong>Email :</strong> <a href="mailto:contact@ecole-lourdeault.fr">contact@ecole-lourdeault.fr</a></li>
-                    <li><strong>Adresse :</strong> 123 Rue de l'Éducation, Paris</li>
+                    <li><strong>Téléphone :</strong> <a href="tel:">...</a></li>
+                    <li><strong>Email :</strong> <a href="mai@RobertShuman.fr">...</a></li>
+                    <li><strong>Adresse :</strong>...Dugny</li>
                 </ul>
                 <div class="socials">
                     <a href="#" aria-label="Facebook">FB</a>
@@ -269,14 +269,14 @@
 
 <footer class="site-footer">
     <div class="container footer-inner">
-        <a href="#" class="logo">École<span>Lourdeault</span></a>
+        <a href="#" class="logo">École<span>Robert Shuman</span></a>
         <ul class="footer-links">
             <li><a href="#">Politique</a></li>
             <li><a href="#">Mentions légales</a></li>
             <li><a href="#">FAQ</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
-        <p class="footer-copy">© 2026 École Lourdeault. Tous droits réservés.</p>
+        <p class="footer-copy">© 2026 École Robert Shuman. Tous droits réservés.</p>
     </div>
 </footer>
 
