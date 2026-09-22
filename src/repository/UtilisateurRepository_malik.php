@@ -139,4 +139,10 @@ class UtilisateurRepository_malik
         $req->bindValue(':date_inscription', $utilisateur->getdate_inscription());
         $req->execute();
     }
+    public function supprimerUtilisateur($id_Utilisateur){
+        $sql = "DELETE FROM utilisateur WHERE id_utilisateur = :id_Utilisateur";
+        $req = $this->connexionBdd->prepare($sql);
+        $req->bindValue(':id_Utilisateur', $id_Utilisateur);
+        $req->execute();
+    }
 }
