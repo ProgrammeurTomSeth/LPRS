@@ -258,7 +258,7 @@ DROP TABLE IF EXISTS `utilisateur`;
 CREATE TABLE IF NOT EXISTS `utilisateur` (
   `id_utilisateur` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `nom_utilisateur` varchar(100) NOT NULL,
-  `prenom_utilisateur` varchar(100) NOT NULL,
+  `prenom_utilisation` varchar(100) NOT NULL,
   `mail` varchar(255) NOT NULL,
   `mdp` varchar(255) NOT NULL,
   `telephone` varchar(20) DEFAULT NULL,
@@ -281,14 +281,14 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   KEY `fk_utilisateur_gestionnaire_createur` (`id_gestionnaire_createur`),
   KEY `idx_utilisateur_role` (`role`),
   KEY `idx_utilisateur_annee_promo` (`annee_promo`),
-  KEY `idx_utilisateur_nom` (`nom_utilisateur`,`prenom_utilisateur`)
+  KEY `idx_utilisateur_nom` (`nom_utilisateur`,`prenom_utilisation`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `utilisateur`
 --
 
-INSERT INTO `utilisateur` (`id_utilisateur`, `nom_utilisateur`, `prenom_utilisateur`, `mail`, `mdp`, `telephone`, `date_naissance`, `role`, `statut_validation`, `cv`, `annee_promo`, `id_formation`, `specialite`, `motif_inscription`, `id_entreprise`, `poste`, `id_gestionnaire_createur`, `date_inscription`) VALUES
+INSERT INTO `utilisateur` (`id_utilisateur`, `nom_utilisateur`, `prenom_utilisation`, `mail`, `mdp`, `telephone`, `date_naissance`, `role`, `statut_validation`, `cv`, `annee_promo`, `id_formation`, `specialite`, `motif_inscription`, `id_entreprise`, `poste`, `id_gestionnaire_createur`, `date_inscription`) VALUES
 (1, 'Admin', 'Root', 'admin@ecole.fr', 'hash_admin', NULL, NULL, 'gestionnaire', 'valide', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
 (2, 'Martin', 'Leo', 'leo.martin@mail.fr', 'hash_leo', NULL, NULL, 'etudiant', 'valide', 'cv_leo.pdf', '2026', 1, NULL, NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
 (3, 'Durand', 'Paul', 'paul.durand@ecole.fr', 'hash_paul', NULL, NULL, 'professeur', 'valide', NULL, NULL, NULL, 'Reseaux', NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),

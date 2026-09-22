@@ -1,9 +1,9 @@
 <?php
 class bdd {
     private $connexionBdd;
-    private $identifiant = "root";
-    private $motDePasse ="";
-    private $nomBdd = "LPRS";
+    private $identifiant = "admin";
+    private $motDePasse ="1234";
+    private $nomBdd = "utilisateur";
     private $host = "localhost";
 
     public function __construct()

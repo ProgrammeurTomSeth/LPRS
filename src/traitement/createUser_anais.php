@@ -1,5 +1,7 @@
 <?php
+require_once "../../src/bdd/bdd.php";
 class createUserAnais {
+
     private PDO $bdd;
 
     public function __construct() {
