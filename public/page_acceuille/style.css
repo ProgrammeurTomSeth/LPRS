@@ -1,5 +1,5 @@
 /* =========================================================
-   École Lourdeault — feuille de style
+   École Lourdeault — feuille de style de la page d'accueil
    ========================================================= */
 
 :root {
@@ -11,7 +11,6 @@
   --color-light: #f6f8f6;
   --color-border: #e6e6e6;
   --color-white: #ffffff;
-  --color-danger: #d64545;
 
   --font-base: 'Manrope', system-ui, -apple-system, Segoe UI, sans-serif;
 
@@ -109,16 +108,8 @@ h2.center, p.eyebrow.center { display: block; }
 }
 .btn-outline:hover { background: var(--color-dark); color: #fff; }
 
-.btn-block { width: 100%; }
-
 .btn-lg { padding: 16px 36px; font-size: 1.05rem; }
 .btn-sm { padding: 9px 20px; font-size: 0.85rem; }
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
 
 /* ---------- Header ---------- */
 .site-header {
@@ -205,29 +196,6 @@ h2.center, p.eyebrow.center { display: block; }
 }
 .hero-content h1 { color: #fff; }
 .hero-content p { color: rgba(255, 255, 255, 0.9); font-size: 1.15rem; margin-bottom: 1.8em; }
-
-/* ---------- Page hero (small, for inner pages) ---------- */
-.page-hero {
-  position: relative;
-  min-height: 280px;
-  display: flex;
-  align-items: center;
-  color: #fff;
-  background: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat;
-}
-.page-hero .hero-overlay {
-  background: linear-gradient(180deg, rgba(15, 20, 15, 0.6), rgba(15, 20, 15, 0.75));
-}
-.page-hero .hero-content { max-width: 720px; }
-.page-hero h1 { margin-bottom: 0.3em; }
-.page-hero p { color: rgba(255, 255, 255, 0.9); margin: 0; }
-.breadcrumb {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
-  margin-bottom: 14px;
-}
-.breadcrumb a { color: #fff; font-weight: 600; }
-.breadcrumb a:hover { color: var(--color-primary); }
 
 /* ---------- Mission ---------- */
 .mission-grid {
@@ -447,161 +415,6 @@ h2.center, p.eyebrow.center { display: block; }
   color: var(--color-primary-dark);
 }
 
-/* ---------- Registration form (page dédiée) ---------- */
-.register-section { background: var(--color-light); }
-
-.register-grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.4fr;
-  gap: 48px;
-  align-items: flex-start;
-}
-
-.register-aside {
-  background: var(--color-dark);
-  color: rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius);
-  padding: 36px 32px;
-}
-.register-aside h2 { color: #fff; }
-.register-aside .eyebrow { color: var(--color-primary); }
-.register-aside p { color: rgba(255, 255, 255, 0.75); }
-
-.register-steps {
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.register-step {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
-.register-step-num {
-  flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.register-step-text strong { display: block; color: #fff; font-size: 0.95rem; }
-.register-step-text span { font-size: 0.85rem; color: rgba(255, 255, 255, 0.65); }
-
-.register-form {
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 40px;
-}
-
-.form-fieldset {
-  border: none;
-  padding: 0;
-  margin: 0 0 28px;
-}
-.form-fieldset:last-of-type { margin-bottom: 0; }
-.form-fieldset legend {
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: var(--color-dark);
-  padding: 0 0 16px;
-  width: 100%;
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: 20px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-.form-group:last-child { margin-bottom: 0; }
-
-.form-group label {
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--color-dark);
-}
-.form-group .required { color: var(--color-danger); }
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  font-family: inherit;
-  font-size: 1rem;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
-  background: var(--color-light);
-  resize: vertical;
-  color: var(--color-text);
-}
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  background: #fff;
-}
-.form-hint {
-  font-size: 0.78rem;
-  color: var(--color-muted);
-}
-
-.form-check {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 8px;
-}
-.form-check input {
-  margin-top: 4px;
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-primary);
-  flex-shrink: 0;
-}
-.form-check label {
-  font-size: 0.88rem;
-  color: var(--color-muted);
-  font-weight: 500;
-}
-
-.form-footer {
-  margin-top: 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.form-status--success {
-  color: var(--color-primary-dark);
-  font-weight: 700;
-}
-.form-status--error {
-  color: var(--color-danger);
-  font-weight: 700;
-}
-.register-form .form-status { margin: 0 0 24px; }
-.register-form .form-status ul { margin: 0; padding-left: 20px; }
-
-.register-form [hidden] { display: none !important; }
-
 /* ---------- Footer ---------- */
 .site-footer {
   background: var(--color-dark);
@@ -626,7 +439,6 @@ h2.center, p.eyebrow.center { display: block; }
   .contact-grid { grid-template-columns: 1fr; }
   .features-grid,
   .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
-  .register-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 720px) {
@@ -652,8 +464,4 @@ h2.center, p.eyebrow.center { display: block; }
 
   .section { padding: 60px 0; }
   .hero { min-height: 520px; }
-  .page-hero { min-height: 220px; }
-
-  .register-form { padding: 26px; }
-  .form-row { grid-template-columns: 1fr; }
 }

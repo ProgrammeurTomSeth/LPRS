@@ -1,43 +1,7 @@
 <?php
-session_start();
 
-require_once __DIR__ . '/../../src/repository/Formation_ahmed.php';
-require_once __DIR__ . '/../../src/repository/EntrepriseRepository_Tom.php';
+require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
 
-$erreurs = $_SESSION['inscription_erreurs'] ?? array();
-$valeurs = $_SESSION['inscription_valeurs'] ?? array();
-$succes = $_SESSION['inscription_succes'] ?? null;
-unset($_SESSION['inscription_erreurs'], $_SESSION['inscription_valeurs'], $_SESSION['inscription_succes']);
-
-// Rôles qu'un visiteur peut choisir (voir colonne `role` de la table utilisateur)
-$roles = array(
-    'etudiant' => 'Étudiant',
-    'alumni' => 'Ancien élève (alumni)',
-    'partenaire' => 'Partenaire entreprise',
-);
-$typesFormation = array(
-    'bac_pro' => 'Bac pro',
-    'bac_techno' => 'Bac techno',
-    'bts' => 'BTS',
-);
-
-$formations = array();
-$entreprises = array();
-try {
-    $formations = (new Formation_ahmed())->getAllFormations();
-    $entreprises = (new EntrepriseRepository_Tom())->getAllEntreprises();
-} catch (PDOException $e) {
-    $erreurs[] = "Impossible de charger les formations et les entreprises pour le moment.";
-}
-
-function e($valeur){
-    return htmlspecialchars((string) $valeur, ENT_QUOTES, 'UTF-8');
-}
-
-function ancienneValeur($champ){
-    global $valeurs;
-    return isset($valeurs[$champ]) ? (string) $valeurs[$champ] : '';
-}
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +9,7 @@ function ancienneValeur($champ){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscription — École Lourdeault</title>
+    <title>Inscription — Lycée Robert Shuman</title>
     <meta name="description" content="Créez votre compte sur la plateforme de l'École Lourdeault : étudiants, anciens élèves et partenaires entreprise.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,17 +23,20 @@ function ancienneValeur($champ){
 <!-- ===== HEADER / NAV ===== -->
 <header class="site-header">
     <div class="container header-inner">
-        <a href="../page_accueil/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
+        <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
 
         <nav class="main-nav" id="main-nav">
             <ul>
-                <li><a href="../page_accueil/page_accueil.php">Programme</a></li>
-                <li><a href="../page_accueil/page_accueil.php">Activités</a></li>
-                <li><a href="../page_accueil/page_accueil.php">Contact</a></li>
+                <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
+                <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
+                <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
             </ul>
         </nav>
 
-        <a href="../page_accueil/page_accueil.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+        <div class="header-actions">
+            <a href="../connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>
+            <a href="../page_acceuille/page_accueil.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+        </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
             <span></span><span></span><span></span>
@@ -83,7 +50,7 @@ function ancienneValeur($champ){
     <section class="page-hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <p class="breadcrumb"><a href="../page_accueil/page_accueil.php">Accueil</a> / Inscription</p>
+            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Inscription</p>
             <h1>Inscrivez vous</h1>
             <p>Remplissez le formulaire ci-dessous, votre compte sera activé après validation par un gestionnaire.</p>
         </div>
@@ -123,12 +90,12 @@ function ancienneValeur($champ){
                 </div>
 
                 <p style="margin-top:28px;">
-                    Une question ? <a href="../page_accueil/page_accueil.php" style="color:#fff; text-decoration:underline;">Contactez-nous</a>
+                    Une question ? <a href="../page_acceuille/page_accueil.php" style="color:#fff; text-decoration:underline;">Contactez-nous</a>
                     ou appelez le <a href="tel:0123456789" style="color:#fff; text-decoration:underline;">01 23 45 67 89</a>.
                 </p>
             </aside>
 
-            <form class="register-form" id="register-form" action="../../src/traitement/InscriptionTraitement_ahmed.php" method="POST" enctype="multipart/form-data">
+            <form class="register-form" id="register-form" action="../../src/traitement/InscriptionTraitement_ahmed.php" method="POST">
 
                 <?php if ($succes): ?>
                     <p class="form-status form-status--success"><?= e($succes) ?></p>
@@ -225,10 +192,15 @@ function ancienneValeur($champ){
                         <label for="specialite">Spécialité</label>
                         <input type="text" id="specialite" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>">
                     </div>
+                </fieldset>
+
+                <fieldset class="form-fieldset" data-roles="professeur" hidden>
+                    <legend>Enseignement</legend>
 
                     <div class="form-group">
-                        <label for="cv">CV (PDF, 2 Mo max)</label>
-                        <input type="file" id="cv" name="cv" accept="application/pdf">
+                        <label for="specialite_professeur">Matière enseignée / spécialité <span class="required">*</span></label>
+                        <input type="text" id="specialite_professeur" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>" required>
+                        <span class="form-hint">Votre compte sera activé après vérification par un gestionnaire.</span>
                     </div>
                 </fieldset>
 
@@ -280,12 +252,12 @@ function ancienneValeur($champ){
 <!-- ===== FOOTER ===== -->
 <footer class="site-footer">
     <div class="container footer-inner">
-        <a href="../page_accueil/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
+        <a href="../page_acceuille/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
         <ul class="footer-links">
             <li><a href="#">Politique</a></li>
             <li><a href="#">Mentions légales</a></li>
             <li><a href="#">FAQ</a></li>
-            <li><a href="../page_accueil/page_accueil.php">Contact</a></li>
+            <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
         </ul>
         <p class="footer-copy">© 2026 École Lourdeault. Tous droits réservés.</p>
     </div>
