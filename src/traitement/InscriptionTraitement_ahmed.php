@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Rôles qu'un visiteur peut choisir (professeur et gestionnaire sont créés par un gestionnaire)
-$rolesAutorises = array('etudiant', 'alumni', 'partenaire');
+// Rôles qu'un visiteur peut choisir (le gestionnaire est créé par un autre gestionnaire)
+$rolesAutorises = array('etudiant', 'alumni', 'partenaire', 'professeur');
 
 $nom = trim($_POST['nom_utilisateur'] ?? '');
 $prenom = trim($_POST['prenom_utilisateur'] ?? '');
@@ -87,6 +87,16 @@ if ($role === 'etudiant' || $role === 'alumni') {
     $idFormation = '';
     $anneePromo = '';
     $specialite = '';
+} elseif ($role === 'professeur') {
+    if ($specialite === '') {
+        $erreurs[] = "La spécialité est obligatoire pour un professeur.";
+    } elseif (mb_strlen($specialite) > 150) {
+        $erreurs[] = "La spécialité ne doit pas dépasser 150 caractères.";
+    }
+    $idFormation = '';
+    $anneePromo = '';
+    $idEntreprise = '';
+    $poste = '';
 }
 
 if (mb_strlen($motifInscription) > 255) {
@@ -96,30 +106,6 @@ if (mb_strlen($motifInscription) > 255) {
 $repository = new InscriptionRepository_ahmed();
 if (empty($erreurs) && $repository->mailExiste($mail)) {
     $erreurs[] = "Cette adresse email est déjà utilisée.";
-}
-
-// --- CV (optionnel, PDF uniquement, 2 Mo max) ---
-$cv = null;
-if (empty($erreurs) && $role !== 'partenaire' && isset($_FILES['cv']) && $_FILES['cv']['error'] !== UPLOAD_ERR_NO_FILE) {
-    $fichier = $_FILES['cv'];
-    if ($fichier['error'] !== UPLOAD_ERR_OK) {
-        $erreurs[] = "L'envoi du CV a échoué.";
-    } elseif ($fichier['size'] > 2 * 1024 * 1024) {
-        $erreurs[] = "Le CV ne doit pas dépasser 2 Mo.";
-    } elseif ((new finfo(FILEINFO_MIME_TYPE))->file($fichier['tmp_name']) !== 'application/pdf') {
-        $erreurs[] = "Le CV doit être un fichier PDF.";
-    } else {
-        $dossier = __DIR__ . '/../../public/uploads/cv/';
-        if (!is_dir($dossier)) {
-            mkdir($dossier, 0755, true);
-        }
-        $nomFichier = bin2hex(random_bytes(16)) . '.pdf';
-        if (move_uploaded_file($fichier['tmp_name'], $dossier . $nomFichier)) {
-            $cv = 'uploads/cv/' . $nomFichier;
-        } else {
-            $erreurs[] = "Impossible d'enregistrer le CV.";
-        }
-    }
 }
 
 if (!empty($erreurs)) {
@@ -141,7 +127,7 @@ $utilisateur = new Utilisateur_Malik(
     $dateNaissance !== '' ? $dateNaissance : null,
     $role,
     'en_attente',
-    $cv,
+    null,
     $anneePromo !== '' ? (int) $anneePromo : null,
     $idFormation !== '' ? (int) $idFormation : null,
     $specialite !== '' ? $specialite : null,
@@ -155,9 +141,6 @@ $utilisateur = new Utilisateur_Malik(
 try {
     $repository->ajouterUtilisateur($utilisateur);
 } catch (PDOException $e) {
-    if ($cv !== null) {
-        @unlink(__DIR__ . '/../../public/' . $cv);
-    }
     $_SESSION['inscription_erreurs'] = array("Une erreur est survenue lors de l'inscription, veuillez réessayer.");
     $anciennesValeurs = $_POST;
     unset($anciennesValeurs['mdp'], $anciennesValeurs['mdp_confirm']);

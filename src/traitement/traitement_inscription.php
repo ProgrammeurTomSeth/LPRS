@@ -15,7 +15,7 @@ if (
     empty($_POST['mdp_confirm']) ||
     empty($_POST['profil'])
 ) {
-    die("Tous les champs obligatoires doivent être remplis.");
+    exit("Tous les champs obligatoires doivent être remplis.");
 }
 
 $nom        = htmlspecialchars($_POST['nom']);
@@ -24,11 +24,11 @@ $email      = htmlspecialchars($_POST['email']);
 $mdp        = $_POST['mdp'];
 $mdp_confirm = $_POST['mdp_confirm'];
 $telephone  = !empty($_POST['telephone']) ? htmlspecialchars($_POST['telephone']) : null;
-$profil     = htmlspecialchars($_POST['profil']);
+$role     = htmlspecialchars($_POST['profil']);
 
 // --- Vérification mot de passe ---
 if ($mdp !== $mdp_confirm) {
-    die("Les mots de passe ne correspondent pas.");
+    exit("Les mots de passe ne correspondent pas.");
 }
 
 // --- Vérification email déjà utilisé ---
@@ -36,13 +36,13 @@ $check = $pdo->prepare("SELECT mail FROM utilisateur WHERE mail = ?");
 $check->execute([$email]);
 
 if ($check->rowCount() > 0) {
-    die("Cet email est déjà utilisé.");
+    exit("Cet email est déjà utilisé.");
 }
 
-// --- Hash du mot de passe ---
+// Hash du mot de passe
 $mdp_hash = password_hash($mdp, PASSWORD_DEFAULT);
 
-// --- Insertion dans la base ---
+// Insertion dans la base
 $sql = "INSERT INTO utilisateur 
         (nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, role, statut_validation, date_inscription)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
@@ -54,16 +54,14 @@ $stmt->execute([
     $email,
     $mdp_hash,
     $telephone,
-    $profil,
+    $role,
     "en_attente"
 ]);
-
-echo "Votre compte a été créé et est en attente de validation par un gestionnaire.";
-// --- Redirection selon le profil ---
-if ($profil === "entreprise") {
-    header("Location:../../../page_entreprise.php");
+//Redirection selon le profil
+if ($role === "Partenaire") {
+    header("Location: ../../public/page_accueil/page_entreprise.php");
     exit;
 }
 
+// Message pour les autres profils
 echo "Votre compte a été créé et est en attente de validation par un gestionnaire.";
-
