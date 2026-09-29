@@ -2,7 +2,7 @@
 
 session_start();
 
-require_once __DIR__ . '/../modele/Utilisisateur_Malik.php';
+require_once __DIR__ . '/../modele/Utilisateur_Malik.php';
 require_once __DIR__ . '/../repository/InscriptionRepository_ahmed.php';
 require_once __DIR__ . '/../repository/Formation_ahmed.php';
 require_once __DIR__ . '/../repository/EntrepriseRepository_Tom.php';
