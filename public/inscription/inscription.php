@@ -1,43 +1,7 @@
 <?php
-session_start();
 
-require_once __DIR__ . '/../../src/repository/Formation_ahmed.php';
-require_once __DIR__ . '/../../src/repository/EntrepriseRepository_Tom.php';
+require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
 
-$erreurs = $_SESSION['inscription_erreurs'] ?? array();
-$valeurs = $_SESSION['inscription_valeurs'] ?? array();
-$succes = $_SESSION['inscription_succes'] ?? null;
-unset($_SESSION['inscription_erreurs'], $_SESSION['inscription_valeurs'], $_SESSION['inscription_succes']);
-
-// Rôles qu'un visiteur peut choisir (voir colonne `role` de la table utilisateur)
-$roles = array(
-    'etudiant' => 'Étudiant',
-    'alumni' => 'Ancien élève (alumni)',
-    'partenaire' => 'Partenaire entreprise',
-);
-$typesFormation = array(
-    'bac_pro' => 'Bac pro',
-    'bac_techno' => 'Bac techno',
-    'bts' => 'BTS',
-);
-
-$formations = array();
-$entreprises = array();
-try {
-    $formations = (new Formation_ahmed())->getAllFormations();
-    $entreprises = (new EntrepriseRepository_Tom())->getAllEntreprises();
-} catch (PDOException $e) {
-    $erreurs[] = "Impossible de charger les formations et les entreprises pour le moment.";
-}
-
-function e($valeur){
-    return htmlspecialchars((string) $valeur, ENT_QUOTES, 'UTF-8');
-}
-
-function ancienneValeur($champ){
-    global $valeurs;
-    return isset($valeurs[$champ]) ? (string) $valeurs[$champ] : '';
-}
 ?>
 
 <!DOCTYPE html>
@@ -128,7 +92,7 @@ function ancienneValeur($champ){
                 </p>
             </aside>
 
-            <form class="register-form" id="register-form" action="../../src/traitement/InscriptionTraitement_ahmed.php" method="POST" enctype="multipart/form-data">
+            <form class="register-form" id="register-form" action="../../src/traitement/InscriptionTraitement_ahmed.php" method="POST">
 
                 <?php if ($succes): ?>
                     <p class="form-status form-status--success"><?= e($succes) ?></p>
@@ -225,10 +189,15 @@ function ancienneValeur($champ){
                         <label for="specialite">Spécialité</label>
                         <input type="text" id="specialite" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>">
                     </div>
+                </fieldset>
+
+                <fieldset class="form-fieldset" data-roles="professeur" hidden>
+                    <legend>Enseignement</legend>
 
                     <div class="form-group">
-                        <label for="cv">CV (PDF, 2 Mo max)</label>
-                        <input type="file" id="cv" name="cv" accept="application/pdf">
+                        <label for="specialite_professeur">Matière enseignée / spécialité <span class="required">*</span></label>
+                        <input type="text" id="specialite_professeur" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>" required>
+                        <span class="form-hint">Votre compte sera activé après vérification par un gestionnaire.</span>
                     </div>
                 </fieldset>
 
