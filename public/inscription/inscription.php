@@ -20,17 +20,17 @@
 <!-- ===== HEADER / NAV ===== -->
 <header class="site-header">
     <div class="container header-inner">
-        <a href="../page_acceuille/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
+        <a href="../page_accueil/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
 
         <nav class="main-nav" id="main-nav">
             <ul>
-                <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
-                <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
-                <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
+                <li><a href="../page_accueil/page_accueil.php">Programme</a></li>
+                <li><a href="../page_accueil/page_accueil.php">Activités</a></li>
+                <li><a href="../page_accueil/page_accueil.php">Contact</a></li>
             </ul>
         </nav>
 
-        <a href="../page_acceuille/page_accueil.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+        <a href="../page_accueil/page_accueil.php" class="btn btn-primary header-cta">Inscription Rapide</a>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
             <span></span><span></span><span></span>
@@ -44,7 +44,7 @@
     <section class="page-hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Inscription</p>
+            <p class="breadcrumb"><a href="../page_accueil/page_accueil.php">Accueil</a> / Inscription</p>
             <h1>Inscrivez votre enfant</h1>
             <p>Remplissez le formulaire ci-dessous, notre équipe vous recontacte sous 48h pour finaliser l'inscription.</p>
         </div>
@@ -84,7 +84,7 @@
                 </div>
 
                 <p style="margin-top:28px;">
-                    Une question ? <a href="../page_acceuille/page_accueil.php" style="color:#fff; text-decoration:underline;">Contactez-nous</a>
+                    Une question ? <a href="../page_accueil/page_accueil.php" style="color:#fff; text-decoration:underline;">Contactez-nous</a>
                     ou appelez le <a href="tel:0123456789" style="color:#fff; text-decoration:underline;">01 23 45 67 89</a>.
                 </p>
             </aside>
@@ -195,12 +195,12 @@
 <!-- ===== FOOTER ===== -->
 <footer class="site-footer">
     <div class="container footer-inner">
-        <a href="../page_acceuille/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
+        <a href="../page_accueil/page_accueil.php" class="logo">École<span>Lourdeault</span></a>
         <ul class="footer-links">
             <li><a href="#">Politique</a></li>
             <li><a href="#">Mentions légales</a></li>
             <li><a href="#">FAQ</a></li>
-            <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
+            <li><a href="../page_accueil/page_accueil.php">Contact</a></li>
         </ul>
         <p class="footer-copy">© 2026 École Lourdeault. Tous droits réservés.</p>
     </div>
