@@ -59,4 +59,11 @@ $stmt->execute([
 ]);
 
 echo "Votre compte a été créé et est en attente de validation par un gestionnaire.";
+// --- Redirection selon le profil ---
+if ($profil === "entreprise") {
+    header("Location:../../../page_entreprise.php");
+    exit;
+}
+
+echo "Votre compte a été créé et est en attente de validation par un gestionnaire.";
 

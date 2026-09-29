@@ -1,4 +1,43 @@
 <?php
+session_start();
+
+require_once __DIR__ . '/../../src/repository/Formation_ahmed.php';
+require_once __DIR__ . '/../../src/repository/EntrepriseRepository_Tom.php';
+
+$erreurs = $_SESSION['inscription_erreurs'] ?? array();
+$valeurs = $_SESSION['inscription_valeurs'] ?? array();
+$succes = $_SESSION['inscription_succes'] ?? null;
+unset($_SESSION['inscription_erreurs'], $_SESSION['inscription_valeurs'], $_SESSION['inscription_succes']);
+
+// Rôles qu'un visiteur peut choisir (voir colonne `role` de la table utilisateur)
+$roles = array(
+    'etudiant' => 'Étudiant',
+    'alumni' => 'Ancien élève (alumni)',
+    'partenaire' => 'Partenaire entreprise',
+);
+$typesFormation = array(
+    'bac_pro' => 'Bac pro',
+    'bac_techno' => 'Bac techno',
+    'bts' => 'BTS',
+);
+
+$formations = array();
+$entreprises = array();
+try {
+    $formations = (new Formation_ahmed())->getAllFormations();
+    $entreprises = (new EntrepriseRepository_Tom())->getAllEntreprises();
+} catch (PDOException $e) {
+    $erreurs[] = "Impossible de charger les formations et les entreprises pour le moment.";
+}
+
+function e($valeur){
+    return htmlspecialchars((string) $valeur, ENT_QUOTES, 'UTF-8');
+}
+
+function ancienneValeur($champ){
+    global $valeurs;
+    return isset($valeurs[$champ]) ? (string) $valeurs[$champ] : '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -7,7 +46,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription — École Lourdeault</title>
-    <meta name="description" content="Inscrivez votre enfant à l'École Lourdeault : remplissez le formulaire d'inscription en ligne, notre équipe vous recontacte sous 48h.">
+    <meta name="description" content="Créez votre compte sur la plateforme de l'École Lourdeault : étudiants, anciens élèves et partenaires entreprise.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -45,8 +84,8 @@
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <p class="breadcrumb"><a href="../page_accueil/page_accueil.php">Accueil</a> / Inscription</p>
-            <h1>Inscrivez votre enfant</h1>
-            <p>Remplissez le formulaire ci-dessous, notre équipe vous recontacte sous 48h pour finaliser l'inscription.</p>
+            <h1>Inscrivez vous</h1>
+            <p>Remplissez le formulaire ci-dessous, votre compte sera activé après validation par un gestionnaire.</p>
         </div>
     </section>
 
@@ -57,28 +96,28 @@
             <aside class="register-aside">
                 <p class="eyebrow">Rejoindre l'école</p>
                 <h2>Comment ça marche ?</h2>
-                <p>Trois étapes simples pour inscrire votre enfant à l'École Lourdeault.</p>
+                <p>Trois étapes simples pour vous inscrire</p>
 
                 <div class="register-steps">
                     <div class="register-step">
                         <span class="register-step-num">1</span>
                         <div class="register-step-text">
                             <strong>Formulaire en ligne</strong>
-                            <span>Renseignez les informations de l'élève et du responsable légal.</span>
+                            <span>Choisissez votre profil et renseignez vos informations.</span>
                         </div>
                     </div>
                     <div class="register-step">
                         <span class="register-step-num">2</span>
                         <div class="register-step-text">
-                            <strong>Prise de contact</strong>
-                            <span>Notre équipe vous appelle sous 48h pour confirmer les disponibilités.</span>
+                            <strong>Validation</strong>
+                            <span>Un gestionnaire vérifie et valide votre demande.</span>
                         </div>
                     </div>
                     <div class="register-step">
                         <span class="register-step-num">3</span>
                         <div class="register-step-text">
-                            <strong>Dossier finalisé</strong>
-                            <span>Vous complétez le dossier administratif et la place est réservée.</span>
+                            <strong>Accès à la plateforme</strong>
+                            <span>Vous vous connectez et accédez aux offres, événements et au réseau de l'école.</span>
                         </div>
                     </div>
                 </div>
@@ -89,74 +128,127 @@
                 </p>
             </aside>
 
-            <form class="register-form" id="register-form" novalidate>
+            <form class="register-form" id="register-form" action="../../src/traitement/InscriptionTraitement_ahmed.php" method="POST" enctype="multipart/form-data">
+
+                <?php if ($succes): ?>
+                    <p class="form-status form-status--success"><?= e($succes) ?></p>
+                <?php endif; ?>
+                <?php if (!empty($erreurs)): ?>
+                    <div class="form-status form-status--error" role="alert">
+                        <ul>
+                            <?php foreach ($erreurs as $erreur): ?>
+                                <li><?= e($erreur) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
 
                 <fieldset class="form-fieldset">
-                    <legend>Informations sur l'élève</legend>
+                    <legend>Profil</legend>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="eleve-prenom">Prénom <span class="required">*</span></label>
-                            <input type="text" id="eleve-prenom" name="eleve-prenom" autocomplete="given-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eleve-nom">Nom <span class="required">*</span></label>
-                            <input type="text" id="eleve-nom" name="eleve-nom" autocomplete="family-name" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="eleve-naissance">Date de naissance <span class="required">*</span></label>
-                            <input type="date" id="eleve-naissance" name="eleve-naissance" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="eleve-niveau">Niveau souhaité <span class="required">*</span></label>
-                            <select id="eleve-niveau" name="eleve-niveau" required>
-                                <option value="" disabled selected>Choisir un niveau</option>
-                                <option value="maternelle">Maternelle</option>
-                                <option value="cp">CP</option>
-                                <option value="ce1">CE1</option>
-                                <option value="ce2">CE2</option>
-                                <option value="cm1">CM1</option>
-                                <option value="cm2">CM2</option>
-                                <option value="6e">6ᵉ</option>
-                                <option value="5e">5ᵉ</option>
-                                <option value="4e">4ᵉ</option>
-                                <option value="3e">3ᵉ</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label for="role">Je suis <span class="required">*</span></label>
+                        <select id="role" name="role" required>
+                            <option value="" disabled <?= ancienneValeur('role') === '' ? 'selected' : '' ?>>Choisir un profil</option>
+                            <?php foreach ($roles as $valeur => $libelle): ?>
+                                <option value="<?= e($valeur) ?>" <?= ancienneValeur('role') === $valeur ? 'selected' : '' ?>><?= e($libelle) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </fieldset>
 
                 <fieldset class="form-fieldset">
-                    <legend>Responsable légal</legend>
+                    <legend>Informations personnelles</legend>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="parent-prenom">Prénom <span class="required">*</span></label>
-                            <input type="text" id="parent-prenom" name="parent-prenom" autocomplete="given-name" required>
+                            <label for="prenom_utilisateur">Prénom <span class="required">*</span></label>
+                            <input type="text" id="prenom_utilisateur" name="prenom_utilisateur" maxlength="100" autocomplete="given-name" value="<?= e(ancienneValeur('prenom_utilisateur')) ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="parent-nom">Nom <span class="required">*</span></label>
-                            <input type="text" id="parent-nom" name="parent-nom" autocomplete="family-name" required>
+                            <label for="nom_utilisateur">Nom <span class="required">*</span></label>
+                            <input type="text" id="nom_utilisateur" name="nom_utilisateur" maxlength="100" autocomplete="family-name" value="<?= e(ancienneValeur('nom_utilisateur')) ?>" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="parent-email">Email <span class="required">*</span></label>
-                            <input type="email" id="parent-email" name="parent-email" autocomplete="email" required>
+                            <label for="mail">Email <span class="required">*</span></label>
+                            <input type="email" id="mail" name="mail" maxlength="255" autocomplete="email" value="<?= e(ancienneValeur('mail')) ?>" required>
                         </div>
                         <div class="form-group">
-                            <label for="parent-telephone">Téléphone <span class="required">*</span></label>
-                            <input type="tel" id="parent-telephone" name="parent-telephone" autocomplete="tel" pattern="[0-9 +().-]{6,}" required>
+                            <label for="telephone">Téléphone</label>
+                            <input type="tel" id="telephone" name="telephone" maxlength="20" autocomplete="tel" pattern="[0-9 +().\-]{6,20}" value="<?= e(ancienneValeur('telephone')) ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date_naissance">Date de naissance</label>
+                            <input type="date" id="date_naissance" name="date_naissance" max="<?= date('Y-m-d') ?>" value="<?= e(ancienneValeur('date_naissance')) ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mdp">Mot de passe <span class="required">*</span></label>
+                            <input type="password" id="mdp" name="mdp" minlength="8" autocomplete="new-password" required>
+                            <span class="form-hint">8 caractères minimum.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="mdp_confirm">Confirmer le mot de passe <span class="required">*</span></label>
+                            <input type="password" id="mdp_confirm" name="mdp_confirm" minlength="8" autocomplete="new-password" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-fieldset" data-roles="etudiant alumni" hidden>
+                    <legend>Parcours scolaire</legend>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_formation">Formation <span class="required">*</span></label>
+                            <select id="id_formation" name="id_formation" required>
+                                <option value="" disabled <?= ancienneValeur('id_formation') === '' ? 'selected' : '' ?>>Choisir une formation</option>
+                                <?php foreach ($formations as $formation): ?>
+                                    <option value="<?= e($formation->getIdformation()) ?>" <?= ancienneValeur('id_formation') === (string) $formation->getIdformation() ? 'selected' : '' ?>><?= e($formation->getNom_formation()) ?> (<?= e($typesFormation[$formation->getType_formation()] ?? $formation->getType_formation()) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="annee_promo">Année de promotion <span class="required" data-roles="alumni">*</span></label>
+                            <input type="number" id="annee_promo" name="annee_promo" min="1950" max="<?= date('Y') + 5 ?>" placeholder="<?= date('Y') ?>" value="<?= e(ancienneValeur('annee_promo')) ?>" data-required-roles="alumni">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="parent-adresse">Adresse postale</label>
-                        <input type="text" id="parent-adresse" name="parent-adresse" autocomplete="street-address" placeholder="Numéro, rue, ville, code postal">
+                        <label for="specialite">Spécialité</label>
+                        <input type="text" id="specialite" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cv">CV (PDF, 2 Mo max)</label>
+                        <input type="file" id="cv" name="cv" accept="application/pdf">
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-fieldset" data-roles="alumni partenaire" hidden>
+                    <legend>Situation professionnelle</legend>
+
+                    <div class="form-row">
+                        <div class="form-group" data-roles="partenaire" hidden>
+                            <label for="id_entreprise">Entreprise <span class="required">*</span></label>
+                            <select id="id_entreprise" name="id_entreprise" required>
+                                <option value="" disabled <?= ancienneValeur('id_entreprise') === '' ? 'selected' : '' ?>>Choisir une entreprise</option>
+                                <?php foreach ($entreprises as $entreprise): ?>
+                                    <option value="<?= e($entreprise->getIdEntreprise()) ?>" <?= ancienneValeur('id_entreprise') === (string) $entreprise->getIdEntreprise() ? 'selected' : '' ?>><?= e($entreprise->getNomEntreprise()) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="poste">Poste <span class="required" data-roles="partenaire">*</span></label>
+                            <input type="text" id="poste" name="poste" maxlength="150" value="<?= e(ancienneValeur('poste')) ?>" data-required-roles="partenaire">
+                        </div>
                     </div>
                 </fieldset>
 
@@ -164,25 +256,18 @@
                     <legend>Informations complémentaires</legend>
 
                     <div class="form-group">
-                        <label for="message">Message (optionnel)</label>
-                        <textarea id="message" name="message" rows="4" placeholder="Besoins particuliers, questions, disponibilités..."></textarea>
-                        <span class="form-hint">Ces informations nous aident à mieux préparer l'accueil de votre enfant.</span>
+                        <label for="motif_inscription">Motif de l'inscription (optionnel)</label>
+                        <textarea id="motif_inscription" name="motif_inscription" rows="3" maxlength="255" placeholder="Pourquoi souhaitez-vous rejoindre la plateforme ?"><?= e(ancienneValeur('motif_inscription')) ?></textarea>
                     </div>
 
                     <div class="form-check">
-                        <input type="checkbox" id="consentement" name="consentement" required>
+                        <input type="checkbox" id="consentement" name="consentement" value="1" required <?= ancienneValeur('consentement') !== '' ? 'checked' : '' ?>>
                         <label for="consentement">J'accepte que mes informations soient utilisées par l'École Lourdeault dans le cadre du traitement de cette demande d'inscription. <span class="required">*</span></label>
-                    </div>
-
-                    <div class="form-check">
-                        <input type="checkbox" id="newsletter" name="newsletter">
-                        <label for="newsletter">Je souhaite recevoir les actualités et événements de l'école par email.</label>
                     </div>
                 </fieldset>
 
                 <div class="form-footer">
-                    <button type="submit" class="btn btn-primary btn-lg">Envoyer ma demande d'inscription</button>
-                    <p class="form-status" id="register-status" hidden></p>
+                    <button type="submit" class="btn btn-primary btn-lg">Créer mon compte</button>
                 </div>
 
             </form>

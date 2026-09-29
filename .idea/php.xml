@@ -20,6 +20,9 @@
       <phpstan_by_interpreter asDefaultInterpreter="true" interpreter_id="cf5d585b-ed5b-4258-8dff-25cd1e8dbc86" timeout="60000" />
     </PhpStan_settings>
   </component>
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
