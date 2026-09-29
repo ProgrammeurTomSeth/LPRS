@@ -22,12 +22,20 @@
     <label>Mot de passe :</label>
     <input type="password" name="mdp" required>
 
+    <label>Confirmer le mot de passe :</label>
+    <input type="password" name="mdp_confirm" required>
+
     <label>Téléphone :</label>
     <input type="text" name="telephone">
 
+    <label>Profil :</label>
+    <select name="profil" required>
+        <option value="Etudiant">Étudiant</option>
+        <option value="Alumni">Alumni</option>
+        <option value="Partenaire">Partenaire</option>
+        <option value="Professeur">Professeur</option>
+    </select>
 
     <button type="submit">Créer le compte</button>
 </form>
 
-</body>
-</html>

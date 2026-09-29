@@ -590,6 +590,10 @@ h2.center, p.eyebrow.center { display: block; }
   color: var(--color-danger);
   font-weight: 700;
 }
+.register-form .form-status { margin: 0 0 24px; }
+.register-form .form-status ul { margin: 0; padding-left: 20px; }
+
+.register-form [hidden] { display: none !important; }
 
 /* ---------- Footer ---------- */
 .site-footer {

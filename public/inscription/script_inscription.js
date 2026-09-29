@@ -29,27 +29,38 @@ if (contactForm && formStatus) {
   });
 }
 
-// Formulaire d'inscription (démo : pas d'envoi réel, à brancher sur un back-end)
+// Formulaire d'inscription : affiche les champs correspondant au profil choisi
 const registerForm = document.getElementById('register-form');
-const registerStatus = document.getElementById('register-status');
+const roleSelect = document.getElementById('role');
 
-if (registerForm && registerStatus) {
-  registerForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+if (registerForm && roleSelect) {
+  const majChampsSelonRole = () => {
+    const role = roleSelect.value;
 
-    if (!registerForm.checkValidity()) {
-      registerForm.reportValidity();
-      return;
-    }
+    registerForm.querySelectorAll('[data-roles]').forEach((element) => {
+      element.hidden = !element.dataset.roles.split(' ').includes(role);
+    });
 
-    const submitBtn = registerForm.querySelector('button[type="submit"]');
-    if (submitBtn) submitBtn.disabled = true;
+    registerForm.querySelectorAll('[data-required-roles]').forEach((champ) => {
+      champ.required = champ.dataset.requiredRoles.split(' ').includes(role);
+    });
 
-    registerStatus.hidden = false;
-    registerStatus.className = 'form-status form-status--success';
-    registerStatus.textContent = 'Merci ! Votre demande d\'inscription a bien été envoyée, notre équipe vous recontactera sous 48h.';
+    // Les champs masqués sont désactivés : ni validés ni envoyés
+    registerForm.querySelectorAll('input, select, textarea').forEach((champ) => {
+      champ.disabled = champ.closest('[hidden]') !== null;
+    });
+  };
 
-    registerForm.reset();
-    if (submitBtn) submitBtn.disabled = false;
-  });
+  roleSelect.addEventListener('change', majChampsSelonRole);
+  majChampsSelonRole();
+
+  const mdp = document.getElementById('mdp');
+  const mdpConfirm = document.getElementById('mdp_confirm');
+  if (mdp && mdpConfirm) {
+    const verifierMdp = () => {
+      mdpConfirm.setCustomValidity(mdpConfirm.value !== mdp.value ? 'Les mots de passe ne correspondent pas.' : '');
+    };
+    mdp.addEventListener('input', verifierMdp);
+    mdpConfirm.addEventListener('input', verifierMdp);
+  }
 }
