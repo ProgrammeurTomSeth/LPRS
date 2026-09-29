@@ -159,6 +159,13 @@ h2.center, p.eyebrow.center { display: block; }
 
 .header-cta { flex-shrink: 0; }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -637,6 +644,7 @@ h2.center, p.eyebrow.center { display: block; }
   .main-nav.open { transform: translateY(0); opacity: 1; }
   .main-nav ul { flex-direction: column; padding: 20px 24px; gap: 18px; }
   .header-cta { display: none; }
+  .header-login { padding: 8px 18px; font-size: 0.85rem; margin-left: auto; }
   .nav-toggle { display: flex; }
 
   .features-grid,

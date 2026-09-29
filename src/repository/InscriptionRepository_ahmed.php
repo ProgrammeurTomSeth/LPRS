@@ -18,6 +18,37 @@ class InscriptionRepository_ahmed{
         return $req->fetchColumn() > 0;
     }
 
+    public function getUtilisateurParMail($mail){
+        $sql = "SELECT * FROM utilisateur WHERE mail = :mail";
+        $req = $this->connexionbdd->prepare($sql);
+        $req->bindValue(':mail', $mail);
+        $req->execute();
+        $result = $req->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            return null;
+        }
+        return new Utilisateur_Malik(
+            $result['id_utilisateur'],
+            $result['nom_utilisateur'],
+            $result['prenom_utilisateur'],
+            $result['mail'],
+            $result['mdp'],
+            $result['telephone'],
+            $result['date_naissance'],
+            $result['role'],
+            $result['statut_validation'],
+            $result['cv'],
+            $result['annee_promo'],
+            $result['id_formation'],
+            $result['specialite'],
+            $result['motif_inscription'],
+            $result['id_entreprise'],
+            $result['poste'],
+            $result['id_gestionnaire_createur'],
+            $result['date_inscription']
+        );
+    }
+
     public function ajouterUtilisateur(Utilisateur_Malik $utilisateur){
         $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, statut_validation, cv, annee_promo, id_formation, specialite, motif_inscription, id_entreprise, poste) VALUES (:nom_utilisateur, :prenom_utilisateur, :mail, :mdp, :telephone, :date_naissance, :role, :statut_validation, :cv, :annee_promo, :id_formation, :specialite, :motif_inscription, :id_entreprise, :poste)";
         $req = $this->connexionbdd->prepare($sql);
