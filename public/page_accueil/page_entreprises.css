@@ -1,0 +1,94 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    background: #f5f6fa;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background: #1f2937;
+    color: white;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 12px 0;
+}
+
+.sidebar a {
+    color: #d1d5db;
+    text-decoration: none;
+}
+
+/* Main */
+.main {
+    flex: 1;
+    padding: 25px;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+/* Cards */
+.cards-grid {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.card-actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #111827;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+}
