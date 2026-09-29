@@ -29,7 +29,7 @@
             </ul>
         </nav>
 
-        <a href="#contact" class="btn btn-primary header-cta">Inscription Rapide</a>
+        <a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
             <span></span><span></span><span></span>
@@ -241,12 +241,6 @@
                     <li><strong>Email :</strong> <a href="mai@RobertShuman.fr">...</a></li>
                     <li><strong>Adresse :</strong>...Dugny</li>
                 </ul>
-                <div class="socials">
-                    <a href="#" aria-label="Facebook">FB</a>
-                    <a href="#" aria-label="Instagram">IG</a>
-                    <a href="#" aria-label="YouTube">YT</a>
-                    <a href="#" aria-label="LinkedIn">IN</a>
-                </div>
             </div>
 
             <form class="contact-form" id="contact-form">

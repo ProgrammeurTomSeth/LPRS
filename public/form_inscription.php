@@ -8,7 +8,7 @@
     <link href="form_inscription.css" rel="stylesheet">
 </head>
 <body>
-<form action="traitement_inscription.php" method="POST" enctype="multipart/form-data">
+<form action="../src/traitement/traitement_inscription.php" method="POST" enctype="multipart/form-data">
 
     <label>Nom :</label>
     <input type="text" name="nom" required>

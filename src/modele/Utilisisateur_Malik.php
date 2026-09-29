@@ -19,10 +19,10 @@ class Utilisateur_Malik {
     private $id_gestionnaire_createur;
     private $date_inscription;
 
-    public function __construct($id_Utilisateur, $nom_utilisateur, $prenom_utilisateur, $mail, $mdp, $telephone, $dateNaissance, $role, $statut_validation, $cv, $annee_promo, $id_formation, $specialite, $motif_inscription, $id_entreprise, $poste, $id_gestionnaire_createur, $date_inscription){
+    public function __construct($id_Utilisateur, $nom_utilisateur, $prenom_utilisation, $mail, $mdp, $telephone, $dateNaissance, $role, $statut_validation, $cv, $annee_promo, $id_formation, $specialite, $motif_inscription, $id_entreprise, $poste, $id_gestionnaire_createur, $date_inscription){
         $this->id_Utilisateur = $id_Utilisateur;
         $this->nom_utilisateur = $nom_utilisateur;
-        $this->prenom_utilisateur = $prenom_utilisateur;
+        $this->prenom_utilisateur = $prenom_utilisation;
         $this->mail = $mail;
         $this->mdp = $mdp;
         $this->telephone = $telephone;
