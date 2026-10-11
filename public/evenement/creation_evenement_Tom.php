@@ -189,212 +189,152 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Créer un événement</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f5f5f5;
-        }
-
-        .conteneur {
-            max-width: 800px;
-            margin: auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            margin-bottom: 25px;
-        }
-
-        .champ {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .bouton-principal {
-            background-color: #1d4ed8;
-            color: white;
-        }
-
-        .resultats {
-            margin-top: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: white;
-        }
-
-        .utilisateur {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .utilisateur:last-child {
-            border-bottom: none;
-        }
-
-        .organisateur {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin: 5px;
-            padding: 8px 10px;
-            background-color: #eee;
-            border-radius: 5px;
-        }
-
-        .message {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #d1fae5;
-        }
-
-        .erreur {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #fee2e2;
-        }
-
-        .info {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #e0f2fe;
-        }
-
-        .aucun-resultat {
-            padding: 10px;
-            color: #666;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un événement — Lycée Robert Shuman</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="creation_evenement_Tom.css">
 </head>
-
 <body>
 
-<div class="conteneur">
+<a class="skip-link" href="#main">Aller au contenu principal</a>
 
-    <h1>Créer un événement</h1>
+<!-- ===== HEADER / NAV ===== -->
+<header class="site-header">
+    <div class="container header-inner">
+        <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
 
-    <?php if ($message !== ""): ?>
-        <div class="message">
-            <?= htmlspecialchars($message) ?>
+        <nav class="main-nav" id="main-nav">
+            <ul>
+                <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
+                <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
+                <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
+            </ul>
+        </nav>
+
+        <a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+
+<main id="main">
+
+    <!-- ===== PAGE HERO ===== -->
+    <section class="page-hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Créer un événement</p>
+            <h1>Créer un événement</h1>
+            <p>Organisez une conférence, une rencontre ou un atelier avec la communauté du lycée.</p>
         </div>
-    <?php endif; ?>
+    </section>
 
-    <?php if ($erreur !== ""): ?>
-        <div class="erreur">
-            <?= htmlspecialchars($erreur) ?>
+    <!-- ===== FORMULAIRE ===== -->
+    <section class="section form-section">
+        <div class="container">
+            <div class="form-card">
+
+                <h2>Nouvel événement</h2>
+
+                <?php if ($message !== ""): ?>
+                    <div class="alert alert--success">
+                        <?= htmlspecialchars($message) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($erreur !== ""): ?>
+                    <div class="alert alert--error" role="alert">
+                        <?= htmlspecialchars($erreur) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($erreur === "" && $message === ""): ?>
+
+                    <div class="alert alert--info">
+                        Le créateur est automatiquement ajouté comme organisateur. Si vous êtes étudiant, un professeur doit faire partie des organisateurs pour que l'événement soit publié.
+                    </div>
+                    <form method="POST">
+                        <div class="form-group">
+                            <label for="type_evenement">Type d'événement *</label>
+                            <input type="text" id="type_evenement" name="type_evenement" required placeholder="Exemple : Conférence, rencontre, atelier...">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="titre">Titre *</label>
+                            <input type="text" id="titre" name="titre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description *</label>
+                            <textarea id="description" name="description" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lieu">Lieu / adresse *</label>
+                            <input type="text" id="lieu" name="lieu" required placeholder="Exemple : Lycée Robert Schuman, Dugny">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="elements_requis">Éléments requis</label>
+                            <input type="text" id="elements_requis" name="elements_requis" placeholder="Facultatif">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nb_places">Nombre de places</label>
+                            <input type="number" id="nb_places" name="nb_places" min="1" placeholder="Facultatif">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recherche_utilisateur">Ajouter des co-organisateurs</label>
+                            <input type="text" id="recherche_utilisateur" placeholder="Rechercher par nom, prénom ou email" autocomplete="off">
+                            <div id="resultats_recherche" class="resultats"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Co-organisateurs sélectionnés</label>
+                            <div id="organisateurs_selectionnes"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">Créer l'événement</button>
+                    </form>
+                <?php endif; ?>
+
+            </div>
         </div>
-    <?php endif; ?>
+    </section>
 
-    <?php if ($erreur === "" && $message === ""): ?>
+</main>
 
-        <div class="info">
-            Le créateur est automatiquement ajouté comme organisateur. Si vous êtes étudiant, un professeur doit faire partie des organisateurs pour que l'événement soit publié.
-        </div>
-        <form method="POST">
-            <div class="champ">
-                <label for="type_evenement">
-                    Type d'événement *
-                </label>
-                <input type="text" id="type_evenement" name="type_evenement" required placeholder="Exemple : Conférence, rencontre, atelier...">
-            </div>
-            <div class="champ">
-                <label for="titre">
-                    Titre *
-                </label>
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+    <div class="container footer-inner">
+        <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
+        <ul class="footer-links">
+            <li><a href="#">Politique</a></li>
+            <li><a href="#">Mentions légales</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
+        </ul>
+        <p class="footer-copy">© 2026 Lycée Robert Shuman. Tous droits réservés.</p>
+    </div>
+</footer>
 
-                <input type="text" id="titre" name="titre" required>
-            </div>
+<script>
+    // Menu mobile
+    const navToggle = document.getElementById('nav-toggle');
+    const mainNav = document.getElementById('main-nav');
 
-            <div class="champ">
-                <label for="description">
-                    Description *
-                </label>
-                <textarea id="description" name="description" required></textarea>
-            </div>
-
-            <div class="champ">
-                <label for="lieu">
-                    Lieu / adresse *
-                </label>
-                <input type="text" id="lieu" name="lieu" required placeholder="Exemple : Lycée Robert Schuman, Dugny">
-            </div>
-
-            <div class="champ">
-                <label for="elements_requis">
-                    Éléments requis
-                </label>
-                <input type="text" id="elements_requis" name="elements_requis" placeholder="Facultatif">
-            </div>
-
-            <div class="champ">
-                <label for="nb_places">
-                    Nombre de places
-                </label>
-                <input type="number" id="nb_places" name="nb_places" min="1" placeholder="Facultatif">
-            </div>
-
-            <div class="champ">
-                <label for="recherche_utilisateur">
-                    Ajouter des co-organisateurs
-                </label>
-                <input type="text" id="recherche_utilisateur" placeholder="Rechercher par nom, prénom ou email" autocomplete="off">
-                <div id="resultats_recherche" class="resultats"></div>
-            </div>
-
-            <div class="champ">
-                <label>
-                    Co-organisateurs sélectionnés
-                </label>
-                <div id="organisateurs_selectionnes"></div>
-            </div>
-
-            <div class="champ">
-                <button type="submit" class="bouton-principal">
-                    Créer l'événement
-                </button>
-            </div>
-        </form>
-    <?php endif; ?>
-</div>
+    if (navToggle && mainNav) {
+        navToggle.addEventListener('click', () => {
+            const isOpen = mainNav.classList.toggle('open');
+            navToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+    }
+</script>
 
 <script>
 
@@ -414,7 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
                     return;
                 }
 
-                fetch('creer_evenement.php?recherche=' + encodeURIComponent(recherche))
+                fetch('creation_evenement_Tom.php?recherche=' + encodeURIComponent(recherche))
                     .then(response => response.json())
                     .then(utilisateurs => {
                         resultats.innerHTML = '';
