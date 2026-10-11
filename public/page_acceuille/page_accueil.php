@@ -1,13 +1,15 @@
 <?php
 
+require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>École Lourdeault — Ressources éducatives en ligne</title>
-    <meta name="description" content="École Lourdeault : une éducation moderne et dynamique pour tous les élèves. Programmes, activités, événements et accompagnement personnalisé.">
+    <title>Lycée Robert Shuman</title>
+    <meta name="description" content="Lycée Robert Shuman : une éducation moderne et dynamique pour tous les élèves. Programmes, activités, événements et accompagnement personnalisé.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,7 +21,7 @@
 
 <header class="site-header">
     <div class="container header-inner">
-        <a href="#" class="logo">École<span>Robert Shuman</span></a>
+        <a href="#" class="logo">Lycée<span>Robert Shuman</span></a>
 
         <nav class="main-nav" id="main-nav">
             <ul>
@@ -30,8 +32,7 @@
         </nav>
 
         <div class="header-actions">
-            <a href="../connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>
-            <a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+            <?php afficherActionsHeader('../'); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -54,7 +55,7 @@
     <section class="section mission" id="mission">
         <div class="container mission-grid">
             <div class="mission-media">
-                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=900&q=70" alt="Élèves en classe à l'École Lourdeault">
+                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=900&q=70" alt="Élèves en classe à Lycée Lourdeault">
             </div>
             <div class="mission-text">
                 <p class="eyebrow">Notre Mission</p>

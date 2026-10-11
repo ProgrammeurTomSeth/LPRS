@@ -27,6 +27,22 @@ class InscriptionRepository_ahmed{
         if (!$result) {
             return null;
         }
+        return $this->createUtilisateur($result);
+    }
+
+    public function getUtilisateurParId($id_utilisateur){
+        $sql = "SELECT * FROM utilisateur WHERE id_utilisateur = :id_utilisateur";
+        $req = $this->connexionbdd->prepare($sql);
+        $req->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
+        $req->execute();
+        $result = $req->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            return null;
+        }
+        return $this->createUtilisateur($result);
+    }
+
+    private function createUtilisateur($result){
         return new Utilisateur_Malik(
             $result['id_utilisateur'],
             $result['nom_utilisateur'],

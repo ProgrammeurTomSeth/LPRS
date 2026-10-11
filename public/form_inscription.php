@@ -1,4 +1,6 @@
 <?php
+
+require_once __DIR__ . '/../src/traitement/SessionUtilisateur_ahmed.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -28,7 +30,9 @@
             </ul>
         </nav>
 
-        <a href="connexion/connexion.php" class="btn btn-outline header-cta">Connexion</a>
+        <div class="header-actions">
+            <?php afficherActionsHeader(''); ?>
+        </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
             <span></span><span></span><span></span>

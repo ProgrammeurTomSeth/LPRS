@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 require_once __DIR__ . '/../../src/bdd/bdd.php';
 $bdd = new bdd();
 $pdo = $bdd->getConnexionBdd();
@@ -213,7 +214,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
             </ul>
         </nav>
 
-        <a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+        <div class="header-actions">
+            <?php afficherActionsHeader('../'); ?>
+        </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
             <span></span><span></span><span></span>

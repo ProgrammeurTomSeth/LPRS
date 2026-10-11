@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
+require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
 ?>
 
@@ -34,8 +35,7 @@ require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <a href="../connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>
-            <a href="../page_acceuille/page_accueil.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+            <?php afficherActionsHeader('../'); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
