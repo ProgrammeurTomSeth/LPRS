@@ -5,7 +5,7 @@ session_start();
 require_once __DIR__ . '/../repository/InscriptionRepository_ahmed.php';
 
 $pageConnexion = '../../public/connexion/connexion.php';
-$pageAccueil = '../../public/page_acceuille/page_accueil.php';
+$pageAccueil = '../../public/page_acceuille/page_entreprise.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . $pageConnexion);

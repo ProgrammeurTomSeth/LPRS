@@ -59,7 +59,7 @@ $stmt->execute([
 ]);
 //Redirection selon le profil
 if ($role === "Partenaire") {
-    header("Location: ../../public/page_accueil/page_entreprise.php");
+    header("Location: ../../public/page_entreprise/page_entreprise.php");
     exit;
 }
 
