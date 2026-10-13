@@ -16,6 +16,14 @@ if (!$idEntreprise) {
     die("Aucune entreprise sélectionnée.");
 }
 
+// Vérifier que l'entreprise existe
+$checkEntreprise = $pdo->prepare("SELECT id_entreprise FROM entreprise WHERE id_entreprise = ?");
+$checkEntreprise->execute([$idEntreprise]);
+
+if ($checkEntreprise->rowCount() === 0) {
+    die("Cette entreprise n'existe pas dans la base.");
+}
+
 // Mise à jour de la table utilisateur
 $sql = "UPDATE utilisateur 
         SET id_entreprise = :idEntreprise
@@ -28,6 +36,5 @@ $stmt->execute([
 ]);
 
 // Redirection vers la page entreprise
-header("Location: page_entreprise.php?id=" . $idEntreprise);
+header("Location:page_accueil.php" . $idEntreprise);
 exit;
-
