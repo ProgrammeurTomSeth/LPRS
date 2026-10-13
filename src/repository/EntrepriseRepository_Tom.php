@@ -46,6 +46,19 @@ class EntrepriseRepository_Tom{
         return $entreprises;
     }
 
+    public function getEntreprisesParNom($nom_entreprise){
+        $sql = "SELECT * FROM entreprise WHERE nom_entreprise LIKE :nom_entreprise ORDER BY nom_entreprise ASC";
+        $req = $this->connexionbdd->prepare($sql);
+        $req->bindValue(':nom_entreprise', '%' . trim($nom_entreprise) . '%');
+        $req->execute();
+        $results = $req->fetchAll(PDO::FETCH_ASSOC);
+        $entreprises = array();
+        foreach ($results as $result) {
+            $entreprises[] = $this->createEntreprise($result);
+        }
+        return $entreprises;
+    }
+
     public function ajouterEntreprise(Entreprise_Tom $entreprise){
         $sql = "INSERT INTO entreprise (nom_entreprise, activite, adresse, site_web) VALUES (:nom_entreprise, :activite, :adresse, :site_web)";
         $req = $this->connexionbdd->prepare($sql);

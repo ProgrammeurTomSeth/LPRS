@@ -65,6 +65,16 @@ class InscriptionRepository_ahmed{
         );
     }
 
+    // Rattache l'utilisateur à une entreprise ($id_entreprise = null pour le détacher)
+    public function modifierEntrepriseUtilisateur($id_utilisateur, $id_entreprise, $poste){
+        $sql = "UPDATE utilisateur SET id_entreprise = :id_entreprise, poste = :poste WHERE id_utilisateur = :id_utilisateur";
+        $req = $this->connexionbdd->prepare($sql);
+        $req->bindValue(':id_entreprise', $id_entreprise, $id_entreprise === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $req->bindValue(':poste', $poste, $poste === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $req->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
+        return $req->execute();
+    }
+
     public function ajouterUtilisateur(Utilisateur_Malik $utilisateur){
         $sql = "INSERT INTO utilisateur (nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, statut_validation, cv, annee_promo, id_formation, specialite, motif_inscription, id_entreprise, poste) VALUES (:nom_utilisateur, :prenom_utilisateur, :mail, :mdp, :telephone, :date_naissance, :role, :statut_validation, :cv, :annee_promo, :id_formation, :specialite, :motif_inscription, :id_entreprise, :poste)";
         $req = $this->connexionbdd->prepare($sql);
