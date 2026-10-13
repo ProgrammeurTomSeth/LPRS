@@ -6,6 +6,7 @@ require_once __DIR__ . '/SessionUtilisateur_ahmed.php';
 require_once __DIR__ . '/../repository/InscriptionRepository_ahmed.php';
 require_once __DIR__ . '/../repository/Formation_ahmed.php';
 require_once __DIR__ . '/../repository/EntrepriseRepository_Tom.php';
+require_once __DIR__ . '/../repository/EvenementRepository_ahmed.php';
 
 if (!estConnecte()) {
     header('Location: ../connexion/connexion.php');
@@ -24,6 +25,8 @@ $erreur = null;
 $utilisateur = null;
 $formation = null;
 $entreprise = null;
+$evenementsOrganises = array();
+$evenementsInscrits = array();
 try {
     $utilisateur = (new InscriptionRepository_ahmed())->getUtilisateurParId($_SESSION['id_utilisateur']);
     if ($utilisateur !== null && $utilisateur->getIdFormation() !== null) {
@@ -31,6 +34,11 @@ try {
     }
     if ($utilisateur !== null && $utilisateur->getIdEntreprise() !== null) {
         $entreprise = (new EntrepriseRepository_Tom())->getEntreprise($utilisateur->getIdEntreprise());
+    }
+    if ($utilisateur !== null) {
+        $evenementRepository = new EvenementRepository_ahmed();
+        $evenementsOrganises = $evenementRepository->getEvenementsOrganises($utilisateur->getIdUtilisateur());
+        $evenementsInscrits = $evenementRepository->getEvenementsInscrits($utilisateur->getIdUtilisateur());
     }
 } catch (PDOException $e) {
     $erreur = "Impossible de charger votre profil pour le moment.";
@@ -60,6 +68,16 @@ if ($utilisateur !== null) {
         return $valeur !== null && $valeur !== '';
     });
 }
+
+$statutsEvenement = array(
+    'brouillon' => 'Brouillon',
+    'publie' => 'Publié',
+);
+
+$statutsInscription = array(
+    'acceptee' => 'Acceptée',
+    'refusee' => 'Refusée',
+);
 
 function e($valeur){
     return htmlspecialchars((string) $valeur, ENT_QUOTES, 'UTF-8');
