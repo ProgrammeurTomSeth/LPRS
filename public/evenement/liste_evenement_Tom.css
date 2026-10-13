@@ -1,5 +1,5 @@
 /* =========================================================
-Lycée Robert Schuman
+Lycée Robert Shuman
 Feuille de style de la liste des événements
 ========================================================= */
 
@@ -13,125 +13,396 @@ Feuille de style de la liste des événements
     --color-border: #e6e6e6;
     --color-white: #ffffff;
     --color-danger: #d64545;
-    --color-success: #218838;
-
     --font-base: 'Manrope', system-ui, -apple-system, Segoe UI, sans-serif;
-
     --radius: 14px;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --container-width: 1200px;
     --transition: 0.2s ease;
 }
-
-/* ---------- Base de la page ---------- */
-
-.evenements-page,
-.evenements-page *,
-.evenements-page *::before,
-.evenements-page *::after {
+*, *::before, *::after {
     box-sizing: border-box;
 }
 
-.evenements-page {
+html {
+    scroll-behavior: smooth;
+}
+
+body {
     margin: 0;
-    padding: 0;
-    font-family: var(--font-base);
+    font-family: var(--font-base), serif;
     color: var(--color-text);
     line-height: 1.6;
-}
-
-.evenements-page h1,
-.evenements-page h2,
-.evenements-page h3 {
-    color: var(--color-dark);
-    line-height: 1.25;
-}
-
-.evenements-page p {
-    color: var(--color-text);
-}
-
-/* ---------- En-tête de la page ---------- */
-
-.evenements-hero {
-    padding: 64px 24px;
-    background: var(--color-light);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.evenements-hero__contenu {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.evenements-hero__surtitre {
-    display: inline-block;
-    margin-bottom: 10px;
-    color: var(--color-primary-dark);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.evenements-hero h1 {
-    margin: 0 0 14px;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 800;
-}
-
-.evenements-hero p {
-    max-width: 680px;
-    margin: 0;
-    font-size: 1.05rem;
-    color: var(--color-muted);
-}
-
-/* ---------- Contenu principal ---------- */
-
-.evenements-section {
-    padding: 64px 24px 88px;
     background: var(--color-white);
 }
 
-.evenements-container {
-    max-width: 1200px;
-    margin: 0 auto;
+img {
+    max-width: 100%;
+    display: block;
 }
 
-.evenements-titre-section {
-    margin: 0 0 10px;
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: var(--color-dark);
+    line-height: 1.25;
+    margin: 0 0 0.5em;
+}
+
+h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+}
+
+h2 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
     font-weight: 700;
 }
 
-.evenements-description {
-    margin: 0 0 32px;
-    color: var(--color-muted);
+h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
 }
 
-/* ---------- Messages de statut ---------- */
+p {
+    margin: 0 0 1em;
+    color: var(--color-text);
+}
 
-.evenements-message {
-    margin: 0 0 24px;
-    padding: 16px 20px;
-    border: 1px solid var(--color-border);
-    border-left: 5px solid var(--color-primary);
-    border-radius: 10px;
-    background: var(--color-light);
+.skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    background: var(--color-primary);
+    color: #fff;
+    padding: 10px 16px;
+    z-index: 1000;
+}
+
+.skip-link:focus {
+    left: 10px;
+    top: 10px;
+}
+
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.section {
+    padding: 88px 0;
+}
+
+.eyebrow {
+    display: inline-block;
+    color: var(--color-primary);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.center {
+    text-align: center;
+}
+
+h2.center,
+p.eyebrow.center {
+    display: block;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 26px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-align: center;
+    transition:
+            transform var(--transition),
+            background var(--transition),
+            color var(--transition),
+            border-color var(--transition);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: var(--color-dark);
+    color: var(--color-dark);
+}
+
+.btn-outline:hover {
+    background: var(--color-dark);
+    color: #fff;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-lg {
+    padding: 16px 36px;
+    font-size: 1.05rem;
+}
+
+.btn-sm {
+    padding: 9px 20px;
+    font-size: 0.85rem;
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 78px;
+    gap: 24px;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--color-dark);
+    white-space: nowrap;
+}
+
+.logo span {
+    color: var(--color-primary);
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 32px;
+}
+
+.main-nav a {
+    font-weight: 600;
+    color: var(--color-dark);
+    transition: color var(--transition);
+}
+
+.main-nav a:hover {
+    color: var(--color-primary);
+}
+
+.header-cta {
+    flex-shrink: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.header-actions a,
+.header-actions button {
+    font-family: inherit;
+}
+
+.header-actions .btn {
+    white-space: nowrap;
+}
+
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-toggle span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--color-dark);
+    border-radius: 2px;
+}
+
+.page-hero {
+    position: relative;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background:
+            url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=70')
+            center / cover no-repeat;
+}
+
+.page-hero .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            180deg,
+            rgba(15, 20, 15, 0.6),
+            rgba(15, 20, 15, 0.75)
+    );
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+}
+
+.page-hero .hero-content {
+    max-width: 720px;
+}
+
+.hero-content h1 {
+    color: #fff;
+}
+
+.page-hero h1 {
+    margin-bottom: 0.3em;
+}
+
+.hero-content p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.15rem;
+    margin-bottom: 1.8em;
+}
+
+.page-hero p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+.breadcrumb {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 14px;
+}
+
+.breadcrumb a {
+    color: #fff;
     font-weight: 600;
 }
 
-.evenements-message--succes {
-    color: var(--color-success);
-    border-left-color: var(--color-success);
+.breadcrumb a:hover {
+    color: var(--color-primary);
 }
 
-.evenements-message--erreur {
+.site-footer {
+    background: var(--color-dark);
+    color: rgba(255, 255, 255, 0.75);
+    padding: 40px 0;
+}
+
+.footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.site-footer .logo {
+    color: #fff;
+}
+
+.site-footer .logo span {
+    color: var(--color-primary);
+}
+
+.footer-links {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.75);
+    transition: color var(--transition);
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+.footer-copy {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.evenements-section {
+    background: var(--color-light);
+}
+
+.evenements-titre-section {
+    margin-bottom: 10px;
+}
+
+.evenements-description {
+    margin-bottom: 32px;
+    color: var(--color-muted);
+}
+
+.form-status {
+    margin: 0 0 20px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: #e7f8e4;
+    color: var(--color-primary-dark);
+    font-weight: 700;
+}
+
+.form-status--error {
+    background: #fdecec;
     color: var(--color-danger);
-    border-left-color: var(--color-danger);
 }
-
-/* ---------- Grille des événements ---------- */
 
 .evenements-grille {
     display: grid;
@@ -139,14 +410,12 @@ Feuille de style de la liste des événements
     gap: 26px;
 }
 
-/* ---------- Carte d'un événement ---------- */
-
 .evenement-carte {
     display: flex;
     flex-direction: column;
     min-width: 0;
     padding: 28px;
-    background: var(--color-white);
+    background: #fff;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -217,8 +486,6 @@ Feuille de style de la liste des événements
     overflow-wrap: anywhere;
 }
 
-/* ---------- Places disponibles ---------- */
-
 .evenement-places {
     display: flex;
     align-items: center;
@@ -241,65 +508,6 @@ Feuille de style de la liste des événements
     color: var(--color-danger);
 }
 
-/* ---------- Boutons ---------- */
-
-.evenements-page .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 22px;
-    border: 2px solid transparent;
-    border-radius: 999px;
-    font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    transition:
-            transform var(--transition),
-            background var(--transition),
-            color var(--transition),
-            border-color var(--transition);
-}
-
-.evenements-page .btn:hover {
-    transform: translateY(-2px);
-}
-
-.evenements-page .btn:focus-visible {
-    outline: 3px solid rgba(41, 191, 18, 0.4);
-    outline-offset: 3px;
-}
-
-.evenements-page .btn-primary {
-    background: var(--color-primary);
-    color: var(--color-white);
-}
-
-.evenements-page .btn-primary:hover {
-    background: var(--color-primary-dark);
-}
-
-.evenements-page .btn-outline {
-    background: transparent;
-    border-color: var(--color-dark);
-    color: var(--color-dark);
-}
-
-.evenements-page .btn-outline:hover {
-    background: var(--color-dark);
-    color: var(--color-white);
-}
-
-.evenements-page .btn:disabled,
-.evenements-page .btn[aria-disabled="true"] {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-}
-
 .evenement-actions {
     display: flex;
     flex-direction: column;
@@ -307,22 +515,24 @@ Feuille de style de la liste des événements
     margin-top: auto;
 }
 
-.evenement-actions .btn {
+.evenement-actions form {
     width: 100%;
 }
 
-/* ---------- Liste vide ---------- */
+.evenement-actions .btn {
+    width: 100%;
+}
 
 .evenements-vide {
     padding: 48px 28px;
     border: 1px dashed var(--color-border);
     border-radius: var(--radius);
-    background: var(--color-light);
+    background: #fff;
     text-align: center;
 }
 
 .evenements-vide h3 {
-    margin: 0 0 10px;
+    margin-bottom: 10px;
     font-size: 1.3rem;
 }
 
@@ -331,42 +541,93 @@ Feuille de style de la liste des événements
     color: var(--color-muted);
 }
 
-/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+    .main-nav {
+        position: absolute;
+        top: 78px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        transform: translateY(-130%);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+                transform var(--transition),
+                opacity var(--transition);
+    }
 
-@media (max-width: 1000px) {
+    .main-nav.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .main-nav ul {
+        flex-direction: column;
+        padding: 20px 24px;
+        gap: 18px;
+    }
+
+    .header-cta {
+        display: none;
+    }
+
+    .header-login {
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        margin-left: auto;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .section {
+        padding: 60px 0;
+    }
+
+    .page-hero {
+        min-height: 220px;
+    }
+
     .evenements-grille {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 20px;
-    }
-
-    .evenements-section {
-        padding-top: 48px;
-    }
-}
-
-@media (max-width: 650px) {
-    .evenements-hero {
-        padding: 44px 20px;
-    }
-
-    .evenements-section {
-        padding: 40px 20px 60px;
-    }
-
-    .evenements-grille {
-        grid-template-columns: 1fr;
         gap: 18px;
     }
 
     .evenement-carte {
         padding: 22px;
     }
+}
+
+@media (max-width: 520px) {
+    .header-inner {
+        gap: 12px;
+    }
+
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+
+    .evenements-grille {
+        grid-template-columns: 1fr;
+    }
 
     .evenement-carte:hover {
         transform: none;
     }
 
-    .evenements-message {
-        padding: 14px 16px;
+    .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-links {
+        gap: 14px;
     }
 }
