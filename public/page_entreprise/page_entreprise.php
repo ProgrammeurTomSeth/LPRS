@@ -1,6 +1,15 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once __DIR__ . '/../../src/traitement/EntrepriseFormulaire_ahmed.php';
+
+$recherche = trim($_GET['search'] ?? '');
+$entreprises = array();
+$erreurChargement = null;
+try {
+    $entreprises = (new recherche_entreprise())->rechercher($recherche);
+} catch (PDOException $e) {
+    $erreurChargement = "Impossible de charger les entreprises pour le moment.";
+}
 
 ?>
 <!DOCTYPE html>
@@ -61,32 +70,60 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                 <!-- Barre de recherche SANS JS -->
                 <form method="GET" class="search-container">
                     <input type="text" name="search" placeholder="Rechercher une entreprise..." aria-label="Rechercher une entreprise"
-                           value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
+                           value="<?= e($recherche) ?>">
                     <button type="submit" class="btn btn-primary">Rechercher</button>
                 </form>
 
                 <a href="#" class="btn btn-outline">+ Ajouter une entreprise</a>
             </div>
 
-            <div class="cards-grid">
+            <?php if ($messageSucces): ?>
+                <p class="form-status form-status--success" role="status"><?= e($messageSucces) ?></p>
+            <?php endif; ?>
+            <?php if ($messageErreur): ?>
+                <p class="form-status form-status--error" role="alert"><?= e($messageErreur) ?></p>
+            <?php endif; ?>
 
-                <!-- Exemple d'une carte entreprise (sera remplacé par ta boucle PHP) -->
-                <article class="card">
-                    <h3>Nom de l'entreprise</h3>
-                    <p><strong>Activité :</strong> Informatique</p>
-                    <p><strong>Adresse :</strong> 1 rue du Code, Paris</p>
-                    <p><strong>Site web :</strong>
-                        <a href="https://exemple.com" target="_blank" rel="noopener">https://exemple.com</a>
-                    </p>
+            <?php if ($erreurChargement): ?>
+                <p class="form-status form-status--error" role="alert"><?= e($erreurChargement) ?></p>
+            <?php elseif (count($entreprises) === 0): ?>
+                <p class="liste-vide">
+                    <?php if ($recherche !== ''): ?>
+                        Aucune entreprise ne correspond à « <?= e($recherche) ?> ».
+                        <a href="page_entreprise.php">Voir toutes les entreprises</a>
+                    <?php else: ?>
+                        Aucune entreprise n'est enregistrée pour le moment.
+                    <?php endif; ?>
+                </p>
+            <?php else: ?>
+                <div class="cards-grid">
+                    <?php foreach ($entreprises as $entreprise): ?>
+                        <?php $estMonEntreprise = $idEntrepriseUtilisateur === (int) $entreprise->getIdEntreprise(); ?>
+                        <article class="card<?= $estMonEntreprise ? ' card--mon-entreprise' : '' ?>">
+                            <h3><?= e($entreprise->getNomEntreprise()) ?></h3>
+                            <?php if ($estMonEntreprise): ?>
+                                <span class="badge">Votre entreprise</span>
+                            <?php endif; ?>
+                            <p><strong>Activité :</strong> <?= e($entreprise->getActivite() ?? 'Non renseignée') ?></p>
+                            <p><strong>Adresse :</strong> <?= e($entreprise->getAdresse() ?? 'Non renseignée') ?></p>
+                            <p><strong>Site web :</strong>
+                                <a href="<?= e($entreprise->getSiteWeb()) ?>" target="_blank" rel="noopener"><?= e($entreprise->getSiteWeb()) ?></a>
+                            </p>
 
-                    <div class="card-actions">
-                        <a href="#" class="btn btn-sm btn-outline">Voir</a>
-                        <a href="#" class="btn btn-sm btn-outline">Modifier</a>
-                        <a href="#" class="btn btn-sm btn-danger">Supprimer</a>
-                    </div>
-                </article>
-
-            </div>
+                            <div class="card-actions">
+                                <a href="profil_entreprise.php?id=<?= (int) $entreprise->getIdEntreprise() ?>" class="btn btn-sm btn-outline">Voir</a>
+                                <?php if ($peutSeRattacher && !$estMonEntreprise): ?>
+                                    <form action="../../src/traitement/rattachement_entreprise.php" method="post">
+                                        <input type="hidden" name="id_entreprise" value="<?= (int) $entreprise->getIdEntreprise() ?>">
+                                        <input type="hidden" name="action" value="rattacher">
+                                        <button type="submit" class="btn btn-sm btn-primary">Me rattacher</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 
@@ -106,17 +143,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
     </div>
 </footer>
 
-<script>
-    // Menu mobile
-    const navToggle = document.getElementById('nav-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    if (navToggle && mainNav) {
-        navToggle.addEventListener('click', () => {
-            const isOpen = mainNav.classList.toggle('open');
-            navToggle.setAttribute('aria-expanded', String(isOpen));
-        });
-    }
-</script>
+<script src="script_entreprise.js"></script>
 </body>
 </html>

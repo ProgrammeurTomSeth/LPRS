@@ -169,6 +169,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
             } else {
                 $message = "L'événement a été créé en brouillon. " . "Il sera publié lorsqu'un professeur " . "sera ajouté aux organisateurs.";
             }
+            // Redirection vers le profil, le message y est affiché une seule fois
+            $_SESSION['message_profil'] = $message;
+            header('Location: ../profil/profil_utilisateur.php');
+            exit;
         } catch (PDOException $e) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();

@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../bdd/bdd.php';
-require_once __DIR__ . '/../modele/Utilisisateur_Malik.php';
+require_once __DIR__ . '/../modele/Utilisateur_Malik.php';
 
 class InscriptionRepository_ahmed{
     private $connexionbdd;
@@ -63,6 +63,16 @@ class InscriptionRepository_ahmed{
             $result['id_gestionnaire_createur'],
             $result['date_inscription']
         );
+    }
+
+    // Rattache l'utilisateur à une entreprise ($id_entreprise = null pour le détacher)
+    public function modifierEntrepriseUtilisateur($id_utilisateur, $id_entreprise, $poste){
+        $sql = "UPDATE utilisateur SET id_entreprise = :id_entreprise, poste = :poste WHERE id_utilisateur = :id_utilisateur";
+        $req = $this->connexionbdd->prepare($sql);
+        $req->bindValue(':id_entreprise', $id_entreprise, $id_entreprise === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+        $req->bindValue(':poste', $poste, $poste === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $req->bindValue(':id_utilisateur', $id_utilisateur, PDO::PARAM_INT);
+        return $req->execute();
     }
 
     public function ajouterUtilisateur(Utilisateur_Malik $utilisateur){
