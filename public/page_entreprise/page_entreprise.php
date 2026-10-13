@@ -80,7 +80,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                     </p>
 
                     <div class="card-actions">
-                        <a href="#" class="btn btn-sm btn-outline">Voir</a>
+                        <a href="profil_entreprise.php" class="btn btn-sm btn-outline">Voir</a>
                         <a href="#" class="btn btn-sm btn-outline">Modifier</a>
                         <a href="#" class="btn btn-sm btn-danger">Supprimer</a>
                     </div>
