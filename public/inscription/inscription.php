@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
+require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
 ?>
 
@@ -14,7 +15,7 @@ require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style_inscription.css">
+    <link rel="stylesheet" href="inscription.css">
 </head>
 <body>
 
@@ -34,8 +35,7 @@ require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <a href="../connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>
-            <a href="../page_acceuille/page_accueil.php" class="btn btn-primary header-cta">Inscription Rapide</a>
+            <?php afficherActionsHeader('../'); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
