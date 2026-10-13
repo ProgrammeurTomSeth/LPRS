@@ -1,0 +1,372 @@
+/* =========================================================
+Lycée Robert Schuman
+Feuille de style de la liste des événements
+========================================================= */
+
+:root {
+    --color-primary: #29bf12;
+    --color-primary-dark: #1f9a0d;
+    --color-dark: #232323;
+    --color-text: #3d3d3d;
+    --color-muted: #6b6b6b;
+    --color-light: #f6f8f6;
+    --color-border: #e6e6e6;
+    --color-white: #ffffff;
+    --color-danger: #d64545;
+    --color-success: #218838;
+
+    --font-base: 'Manrope', system-ui, -apple-system, Segoe UI, sans-serif;
+
+    --radius: 14px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --transition: 0.2s ease;
+}
+
+/* ---------- Base de la page ---------- */
+
+.evenements-page,
+.evenements-page *,
+.evenements-page *::before,
+.evenements-page *::after {
+    box-sizing: border-box;
+}
+
+.evenements-page {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-base);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+.evenements-page h1,
+.evenements-page h2,
+.evenements-page h3 {
+    color: var(--color-dark);
+    line-height: 1.25;
+}
+
+.evenements-page p {
+    color: var(--color-text);
+}
+
+/* ---------- En-tête de la page ---------- */
+
+.evenements-hero {
+    padding: 64px 24px;
+    background: var(--color-light);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.evenements-hero__contenu {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.evenements-hero__surtitre {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--color-primary-dark);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.evenements-hero h1 {
+    margin: 0 0 14px;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+}
+
+.evenements-hero p {
+    max-width: 680px;
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--color-muted);
+}
+
+/* ---------- Contenu principal ---------- */
+
+.evenements-section {
+    padding: 64px 24px 88px;
+    background: var(--color-white);
+}
+
+.evenements-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.evenements-titre-section {
+    margin: 0 0 10px;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+}
+
+.evenements-description {
+    margin: 0 0 32px;
+    color: var(--color-muted);
+}
+
+/* ---------- Messages de statut ---------- */
+
+.evenements-message {
+    margin: 0 0 24px;
+    padding: 16px 20px;
+    border: 1px solid var(--color-border);
+    border-left: 5px solid var(--color-primary);
+    border-radius: 10px;
+    background: var(--color-light);
+    font-weight: 600;
+}
+
+.evenements-message--succes {
+    color: var(--color-success);
+    border-left-color: var(--color-success);
+}
+
+.evenements-message--erreur {
+    color: var(--color-danger);
+    border-left-color: var(--color-danger);
+}
+
+/* ---------- Grille des événements ---------- */
+
+.evenements-grille {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+}
+
+/* ---------- Carte d'un événement ---------- */
+
+.evenement-carte {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 28px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition:
+            transform var(--transition),
+            box-shadow var(--transition),
+            border-color var(--transition);
+}
+
+.evenement-carte:hover {
+    transform: translateY(-4px);
+    border-color: rgba(41, 191, 18, 0.45);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.evenement-carte__type {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: 16px;
+    padding: 5px 13px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-light);
+    color: var(--color-primary-dark);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.evenement-carte h3 {
+    margin: 0 0 14px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.evenement-carte__description {
+    margin: 0 0 22px;
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+}
+
+.evenement-infos {
+    display: grid;
+    gap: 14px;
+    margin: 0 0 24px;
+    padding: 18px 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.evenement-info {
+    min-width: 0;
+}
+
+.evenement-info dt {
+    margin-bottom: 3px;
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.evenement-info dd {
+    margin: 0;
+    color: var(--color-dark);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* ---------- Places disponibles ---------- */
+
+.evenement-places {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+    font-size: 0.9rem;
+}
+
+.evenement-places__libelle {
+    color: var(--color-muted);
+}
+
+.evenement-places__nombre {
+    color: var(--color-dark);
+    font-weight: 800;
+}
+
+.evenement-places__nombre--complet {
+    color: var(--color-danger);
+}
+
+/* ---------- Boutons ---------- */
+
+.evenements-page .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+            transform var(--transition),
+            background var(--transition),
+            color var(--transition),
+            border-color var(--transition);
+}
+
+.evenements-page .btn:hover {
+    transform: translateY(-2px);
+}
+
+.evenements-page .btn:focus-visible {
+    outline: 3px solid rgba(41, 191, 18, 0.4);
+    outline-offset: 3px;
+}
+
+.evenements-page .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.evenements-page .btn-primary:hover {
+    background: var(--color-primary-dark);
+}
+
+.evenements-page .btn-outline {
+    background: transparent;
+    border-color: var(--color-dark);
+    color: var(--color-dark);
+}
+
+.evenements-page .btn-outline:hover {
+    background: var(--color-dark);
+    color: var(--color-white);
+}
+
+.evenements-page .btn:disabled,
+.evenements-page .btn[aria-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.evenement-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.evenement-actions .btn {
+    width: 100%;
+}
+
+/* ---------- Liste vide ---------- */
+
+.evenements-vide {
+    padding: 48px 28px;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-light);
+    text-align: center;
+}
+
+.evenements-vide h3 {
+    margin: 0 0 10px;
+    font-size: 1.3rem;
+}
+
+.evenements-vide p {
+    margin: 0;
+    color: var(--color-muted);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1000px) {
+    .evenements-grille {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .evenements-section {
+        padding-top: 48px;
+    }
+}
+
+@media (max-width: 650px) {
+    .evenements-hero {
+        padding: 44px 20px;
+    }
+
+    .evenements-section {
+        padding: 40px 20px 60px;
+    }
+
+    .evenements-grille {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .evenement-carte {
+        padding: 22px;
+    }
+
+    .evenement-carte:hover {
+        transform: none;
+    }
+
+    .evenements-message {
+        padding: 14px 16px;
+    }
+}

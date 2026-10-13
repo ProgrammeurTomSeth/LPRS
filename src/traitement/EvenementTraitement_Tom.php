@@ -25,6 +25,7 @@ if (isset($_GET['recherche']) && $erreur === "") {
         echo json_encode([]);
         exit;
     }
+
     $sql = "SELECT id_utilisateur, nom_utilisateur, prenom_utilisateur, mail, role FROM utilisateur WHERE (nom_utilisateur LIKE :recherche OR prenom_utilisateur LIKE :recherche OR mail LIKE :recherche) AND role <> 'gestionnaire' AND id_utilisateur <> :id_utilisateur AND statut_validation = 'valide' ORDER BY nom_utilisateur, prenom_utilisateur LIMIT 10";
     $req = $pdo->prepare($sql);
     $rechercheSql = '%' . $recherche . '%';
@@ -47,221 +48,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
     if (!is_array($coorganisateurs)) {
         $coorganisateurs = [];
     }
+
     if ($typeEvenement === '' || $titre === '' || $description === '' || $lieu === '') {
         $erreur = "Veuillez remplir tous les champs obligatoires.";
     }
-    if (
-        $erreur === "" &&
-        $nbPlaces !== ''
-    ) {
 
-        if (
-            !ctype_digit($nbPlaces) ||
-            (int) $nbPlaces <= 0
-        ) {
-
-            $erreur =
-                "Le nombre de places doit être un nombre entier positif.";
+    if ($erreur === "" && $nbPlaces !== '') {
+        if (!ctype_digit($nbPlaces) || (int) $nbPlaces <= 0) {
+            $erreur = "Le nombre de places doit être un nombre entier positif.";
         }
     }
 
-
     if ($nbPlaces === '') {
-
         $nbPlaces = null;
-
     } else {
-
         $nbPlaces = (int) $nbPlaces;
     }
 
-
-    /*
-     * Vérification des co-organisateurs.
-     */
     $coorganisateursValides = [];
+    foreach ($coorganisateurs as $idUtilisateur) {
 
-
-    foreach (
-        $coorganisateurs as $idUtilisateur
-    ) {
-
-        if (
-            ctype_digit(
-                (string) $idUtilisateur
-            )
-        ) {
-
-            $idUtilisateur =
-                (int) $idUtilisateur;
-
-
-            if (
-                $idUtilisateur !==
-                $idUtilisateurConnecte
-                &&
-                !in_array(
-                    $idUtilisateur,
-                    $coorganisateursValides,
-                    true
-                )
-            ) {
-
-                $coorganisateursValides[] =
-                    $idUtilisateur;
+        if (ctype_digit((string) $idUtilisateur)) {
+            $idUtilisateur = (int) $idUtilisateur;
+            if ($idUtilisateur !== $idUtilisateurConnecte && !in_array($idUtilisateur, $coorganisateursValides, true)) {
+                $coorganisateursValides[] = $idUtilisateur;
             }
         }
     }
 
-
-    /*
-     * Vérification que les co-organisateurs
-     * sont des utilisateurs valides.
-     */
-    if (
-        $erreur === "" &&
-        count($coorganisateursValides) > 0
-    ) {
-
+    if ($erreur === "" && count($coorganisateursValides) > 0) {
         $placeholders = [];
-
-
-        foreach (
-            $coorganisateursValides as
-            $index => $idUtilisateur
-        ) {
-
-            $placeholders[] =
-                ':id' . $index;
+        foreach ($coorganisateursValides as $index => $idUtilisateur) {
+            $placeholders[] = ':id' . $index;
         }
 
-
-        $sqlVerification = "
-            SELECT
-                id_utilisateur
-            FROM utilisateur
-            WHERE
-                id_utilisateur IN (
-                    " .
-            implode(
-                ',',
-                $placeholders
-            )
-            . "
-                )
-                AND role <> 'gestionnaire'
-                AND statut_validation = 'valide'
-        ";
-
-
-        $reqVerification =
-            $pdo->prepare(
-                $sqlVerification
-            );
-
-
-        foreach (
-            $coorganisateursValides as
-            $index => $idUtilisateur
-        ) {
-
-            $reqVerification->bindValue(
-                ':id' . $index,
-                $idUtilisateur,
-                PDO::PARAM_INT
-            );
+        $sqlVerification = "SELECT id_utilisateur FROM utilisateur WHERE id_utilisateur IN (" . implode(',', $placeholders) . ") AND role <> 'gestionnaire' AND statut_validation = 'valide' ";
+        $reqVerification = $pdo->prepare($sqlVerification);
+        foreach ($coorganisateursValides as $index => $idUtilisateur) {
+            $reqVerification->bindValue(':id' . $index, $idUtilisateur, PDO::PARAM_INT);
         }
-
 
         $reqVerification->execute();
-
-
-        $utilisateursAutorises =
-            $reqVerification->fetchAll(
-                PDO::FETCH_COLUMN
-            );
-
-
-        $coorganisateursValides =
-            array_map(
-                'intval',
-                $utilisateursAutorises
-            );
+        $utilisateursAutorises = $reqVerification->fetchAll(PDO::FETCH_COLUMN);
+        $coorganisateursValides = array_map('intval', $utilisateursAutorises);
     }
 
-
-    /*
-     * Tous les organisateurs :
-     *
-     * - créateur
-     * - co-organisateurs
-     */
-    $tousLesOrganisateurs =
-        $coorganisateursValides;
-
-
-    $tousLesOrganisateurs[] =
-        $idUtilisateurConnecte;
-
-
-    $tousLesOrganisateurs =
-        array_unique(
-            $tousLesOrganisateurs
-        );
-
-
-    /*
-     * Recherche d'un professeur parmi
-     * les organisateurs.
-     */
+    $tousLesOrganisateurs = $coorganisateursValides;
+    $tousLesOrganisateurs[] = $idUtilisateurConnecte;
+    $tousLesOrganisateurs = array_unique($tousLesOrganisateurs);
     $professeurPresent = false;
 
-
-    if (
-        count($tousLesOrganisateurs) > 0
-    ) {
-
+    if (count($tousLesOrganisateurs) > 0) {
         $placeholders = [];
-
-
-        foreach (
-            $tousLesOrganisateurs as
-            $index => $idUtilisateur
-        ) {
-
-            $placeholders[] =
-                ':prof' . $index;
+        foreach ($tousLesOrganisateurs as $index => $idUtilisateur) {
+            $placeholders[] = ':prof' . $index;
         }
 
-
-        $sqlProfesseur = "
-            SELECT COUNT(*)
-            FROM utilisateur
-            WHERE
-                id_utilisateur IN (
-                    " .
-            implode(
-                ',',
-                $placeholders
-            )
-            . "
-                )
-                AND role = 'professeur'
-                AND statut_validation = 'valide'
-        ";
-
-
-        $reqProfesseur =
-            $pdo->prepare(
-                $sqlProfesseur
-            );
-
-
-        foreach (
-            $tousLesOrganisateurs as
-            $index => $idUtilisateur
-        ) {
-
+        $sqlProfesseur = "SELECT COUNT(*) FROM utilisateur WHERE id_utilisateur IN (" . implode(',', $placeholders) . ") AND role = 'professeur' AND statut_validation = 'valide' ";
+        $reqProfesseur = $pdo->prepare($sqlProfesseur);
+        foreach ($tousLesOrganisateurs as $index => $idUtilisateur) {
             $reqProfesseur->bindValue(
                 ':prof' . $index,
                 $idUtilisateur,
@@ -269,107 +114,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
             );
         }
 
-
         $reqProfesseur->execute();
-
-
-        $professeurPresent =
-            (
-                (int)
-                $reqProfesseur->fetchColumn()
-                > 0
-            );
+        $professeurPresent = ((int) $reqProfesseur->fetchColumn() > 0);
     }
 
-
-    /*
-     * Détermination du statut.
-     *
-     * Étudiant sans professeur :
-     * brouillon.
-     *
-     * Étudiant avec professeur :
-     * publié.
-     */
-    if (
-        $roleUtilisateurConnecte ===
-        'etudiant'
-    ) {
-
+    if ($roleUtilisateurConnecte === 'etudiant') {
         if ($professeurPresent) {
-
             $statut = 'publie';
-
         } else {
-
             $statut = 'brouillon';
         }
-
     } else {
-
         $statut = 'publie';
     }
 
-
-    /*
-     * Insertion dans la base de données.
-     */
     if ($erreur === "") {
-
         try {
-
             $pdo->beginTransaction();
-
-
-            /*
-             * Création de l'événement.
-             */
-            $sqlEvenement = "
-                INSERT INTO evenement (
-                    type_evenement,
-                    titre,
-                    description,
-                    lieu,
-                    elements_requis,
-                    nb_places,
-                    date_evenement,
-                    statut
-                )
-                VALUES (
-                    :type_evenement,
-                    :titre,
-                    :description,
-                    :lieu,
-                    :elements_requis,
-                    :nb_places,
-                    NOW(),
-                    :statut
-                )
-            ";
-
-
-            $reqEvenement =
-                $pdo->prepare(
-                    $sqlEvenement
-                );
-
-
-            $reqEvenement->bindValue(
-                ':type_evenement',
-                $typeEvenement
-            );
-
-
-            $reqEvenement->bindValue(
-                ':titre',
-                $titre
-            );
-
-
-            $reqEvenement->bindValue(
-                ':description',
-                $description
-            );
+            $sqlEvenement = "INSERT INTO evenement (type_evenement, titre, description, lieu, elements_requis, nb_places, date_evenement, statut) VALUES (:type_evenement, :titre, :description, :lieu, :elements_requis, :nb_places, NOW(), :statut)";
+            $reqEvenement = $pdo->prepare($sqlEvenement);
+            $reqEvenement->bindValue(':type_evenement', $typeEvenement);
+            $reqEvenement->bindValue(':titre', $titre);
+            $reqEvenement->bindValue(':description', $description);
             $reqEvenement->bindValue(':lieu', $lieu);
             if ($elementsRequis === '') {
                 $reqEvenement->bindValue(':elements_requis', null, PDO::PARAM_NULL);
@@ -381,6 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
             } else {
                 $reqEvenement->bindValue(':nb_places', $nbPlaces, PDO::PARAM_INT);
             }
+
             $reqEvenement->bindValue(':statut', $statut);
             $reqEvenement->execute();
             $idEvenement = $pdo->lastInsertId();
@@ -395,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
                 $reqCoorganisateur->bindValue(':id_evenement', $idEvenement, PDO::PARAM_INT);
                 $reqCoorganisateur->execute();
             }
+
             $pdo->commit();
             if ($statut === 'publie') {
                 $message = "L'événement a été créé et publié.";
@@ -405,10 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $erreur === "") {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            $erreur =
-                "Une erreur est survenue lors de la création " .
-                "de l'événement : " .
-                $e->getMessage();
+            $erreur = "Une erreur est survenue lors de la création " . "de l'événement : " . $e->getMessage();
         }
     }
 }

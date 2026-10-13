@@ -1,5 +1,8 @@
 <?php
 
+$message = "";
+$erreur = "";
+
 require_once __DIR__ . '/../../src/traitement/EvenementTraitement_Tom.php';
 require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
@@ -20,7 +23,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
 <a class="skip-link" href="#main">Aller au contenu principal</a>
 
-<!-- ===== HEADER / NAV ===== -->
 <header class="site-header">
     <div class="container header-inner">
         <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
@@ -45,7 +47,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
 <main id="main">
 
-    <!-- ===== PAGE HERO ===== -->
     <section class="page-hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
@@ -55,7 +56,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
         </div>
     </section>
 
-    <!-- ===== FORMULAIRE ===== -->
     <section class="section form-section">
         <div class="container">
             <div class="form-card">
@@ -131,7 +131,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
 </main>
 
-<!-- ===== FOOTER ===== -->
 <footer class="site-footer">
     <div class="container footer-inner">
         <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
@@ -146,7 +145,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 </footer>
 
 <script>
-    // Menu mobile
     const navToggle = document.getElementById('nav-toggle');
     const mainNav = document.getElementById('main-nav');
 
@@ -159,7 +157,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 </script>
 
 <script>
-
     const rechercheInput = document.getElementById('recherche_utilisateur');
     const resultats = document.getElementById('resultats_recherche');
     const selection = document.getElementById('organisateurs_selectionnes');
