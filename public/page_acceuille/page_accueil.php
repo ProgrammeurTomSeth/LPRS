@@ -28,6 +28,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                 <li><a href="#mission">Programme</a></li>
                 <li><a href="#evenements">Activités</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="../page_entreprise/page_entreprise.php">Entreprise</a></li>
             </ul>
         </nav>
 

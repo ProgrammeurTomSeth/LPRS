@@ -38,6 +38,7 @@ try {
                 <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
                 <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
                 <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
+                <li><a href="page_entreprise.php">Entreprise</a></li>
             </ul>
         </nav>
 
