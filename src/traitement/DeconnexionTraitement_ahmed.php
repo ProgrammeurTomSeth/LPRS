@@ -11,5 +11,5 @@ if (ini_get('session.use_cookies')) {
 
 session_destroy();
 
-header('Location: ../../public/page_acceuille/page_accueil.php');
+header('Location: ../../public/page_acceuille/page_entreprise.php');
 exit;
