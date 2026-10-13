@@ -5,7 +5,7 @@ session_start();
 require_once __DIR__ . '/../repository/InscriptionRepository_ahmed.php';
 
 $pageConnexion = '../../public/connexion/connexion.php';
-$pageAccueil = '../../public/page_acceuille/page_entreprise.php';
+$pageAccueil = '../../public/page_entreprise/page_entreprise.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . $pageConnexion);
@@ -27,7 +27,6 @@ if ($mail === '' || $mdp === '') {
     }
 
     if ($erreur === null) {
-        // Même message si l'email ou le mot de passe est faux, pour ne pas révéler les comptes existants
         if ($utilisateur === null || !password_verify($mdp, $utilisateur->getMdp())) {
             $erreur = "Email ou mot de passe incorrect.";
         } elseif ($utilisateur->getStatutValidation() === 'en_attente') {
@@ -41,7 +40,7 @@ if ($mail === '' || $mdp === '') {
 if ($erreur !== null) {
     $_SESSION['connexion_erreur'] = $erreur;
     $_SESSION['connexion_mail'] = $mail;
-    header('Location: ' . $pageConnexion);
+    header('Location: ' . $pageConnexion); // <-- CORRECT
     exit;
 }
 
@@ -51,5 +50,5 @@ $_SESSION['role'] = $utilisateur->getRole();
 $_SESSION['nom_utilisateur'] = $utilisateur->getNom();
 $_SESSION['prenom_utilisateur'] = $utilisateur->getPrenom();
 
-header('Location: ' . $pageAccueil);
+header('Location: ' . $pageAccueil); // <-- CORRECT
 exit;
