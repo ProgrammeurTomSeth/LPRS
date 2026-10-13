@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../bdd/bdd.php';
-require_once __DIR__ . '/../modele/Utilisisateur_Malik.php';
+require_once __DIR__ . '/../modele/Utilisateur_Malik.php';
 
 class InscriptionRepository_ahmed{
     private $connexionbdd;
