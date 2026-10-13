@@ -320,6 +320,115 @@ h2.center, p.eyebrow.center { display: block; }
     padding-top: 18px;
 }
 
+/* ---------- Messages ---------- */
+.form-status {
+  margin: 0 0 24px;
+  padding: 14px 20px;
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+.form-status--success {
+  background: #eaf8e7;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary-dark);
+}
+.form-status--error {
+  background: #fdeeee;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--color-light);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-border);
+}
+
+/* ---------- Fiche entreprise ---------- */
+.fiche-card {
+  max-width: 820px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 40px;
+}
+.fiche-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+.fiche-entete h2 { font-size: 1.6rem; margin: 0; }
+
+.fiche-infos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 32px;
+  margin: 0;
+}
+.fiche-infos dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  margin-bottom: 4px;
+}
+.fiche-infos dd { margin: 0; font-weight: 600; color: var(--color-dark); overflow-wrap: anywhere; }
+.fiche-infos a { color: var(--color-primary-dark); }
+.fiche-infos a:hover { text-decoration: underline; }
+
+.fiche-rattachement {
+  margin-top: 32px;
+  padding: 24px;
+  border-radius: var(--radius);
+  background: var(--color-light);
+}
+.fiche-rattachement p:last-child { margin-bottom: 0; }
+.fiche-rattachement p a { color: var(--color-primary-dark); font-weight: 700; }
+.fiche-rattachement form { margin: 0; }
+
+.rattachement-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+.rattachement-form label { flex-basis: 100%; font-weight: 700; color: var(--color-dark); }
+.rattachement-form .optionnel { font-weight: 500; color: var(--color-muted); }
+.rattachement-form input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+.rattachement-form input[type="text"]:focus { outline: none; border-color: var(--color-primary); }
+
+.fiche-actions {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 720px) {
+  .fiche-card { padding: 26px; }
+  .fiche-infos { grid-template-columns: 1fr; }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {
     .main-nav {
