@@ -92,6 +92,80 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
                 <?php endif; ?>
 
             </div>
+
+            <?php if (!$erreur): ?>
+
+                <!-- ===== ÉVÉNEMENTS CRÉÉS ===== -->
+                <div class="profil-card evenements-card">
+                    <h2>Mes événements créés</h2>
+                    <?php if (count($evenementsOrganises) === 0): ?>
+                        <p class="evenements-vide">Vous n'avez créé aucun événement pour le moment.</p>
+                    <?php else: ?>
+                        <div class="table-wrapper">
+                            <table class="evenements-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Titre</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Lieu</th>
+                                        <th scope="col">Places</th>
+                                        <th scope="col">Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($evenementsOrganises as $evenement): ?>
+                                        <tr>
+                                            <td><?= e($evenement['titre']) ?></td>
+                                            <td><?= e($evenement['type_evenement']) ?></td>
+                                            <td><?= e(date('d/m/Y H:i', strtotime($evenement['date_evenement']))) ?></td>
+                                            <td><?= e($evenement['lieu']) ?></td>
+                                            <td><?= e($evenement['nb_places'] ?? '—') ?></td>
+                                            <td><span class="badge"><?= e($statutsEvenement[$evenement['statut']] ?? $evenement['statut']) ?></span></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- ===== ÉVÉNEMENTS INSCRITS ===== -->
+                <div class="profil-card evenements-card">
+                    <h2>Mes inscriptions aux événements</h2>
+                    <?php if (count($evenementsInscrits) === 0): ?>
+                        <p class="evenements-vide">Vous n'êtes inscrit à aucun événement pour le moment.</p>
+                    <?php else: ?>
+                        <div class="table-wrapper">
+                            <table class="evenements-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Titre</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Lieu</th>
+                                        <th scope="col">Inscrit le</th>
+                                        <th scope="col">Inscription</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($evenementsInscrits as $evenement): ?>
+                                        <tr>
+                                            <td><?= e($evenement['titre']) ?></td>
+                                            <td><?= e($evenement['type_evenement']) ?></td>
+                                            <td><?= e(date('d/m/Y H:i', strtotime($evenement['date_evenement']))) ?></td>
+                                            <td><?= e($evenement['lieu']) ?></td>
+                                            <td><?= e(date('d/m/Y', strtotime($evenement['date_inscription']))) ?></td>
+                                            <td><span class="badge"><?= e($statutsInscription[$evenement['statut_inscription']] ?? $evenement['statut_inscription']) ?></span></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+            <?php endif; ?>
         </div>
     </section>
 
