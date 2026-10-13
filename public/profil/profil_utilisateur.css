@@ -326,19 +326,57 @@ h2.center, p.eyebrow.center { display: block; }
   border-top: 1px solid var(--color-border);
 }
 
+/* ---------- Mise en page : profil à gauche, événements à droite ---------- */
+.profil-layout {
+  max-width: 1440px;
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.profil-layout > .profil-card {
+  max-width: none;
+  margin: 0;
+  padding: 32px;
+  position: sticky;
+  top: 102px;
+}
+.profil-layout .profil-identite {
+  flex-direction: column;
+  text-align: center;
+}
+.profil-layout .profil-infos { grid-template-columns: 1fr; }
+.profil-layout .profil-actions { flex-direction: column; }
+
+.profil-evenements {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}
+
 /* ---------- Événements du profil ---------- */
 .evenements-card {
-  max-width: 960px;
-  margin-top: 32px;
+  max-width: none;
+  margin: 0;
 }
 .evenements-card h2 { font-size: 1.4rem; margin-bottom: 20px; }
 
 .evenements-vide { margin: 0; color: var(--color-muted); }
 
-.table-wrapper { overflow-x: auto; }
+/* Pas de défilement horizontal : le tableau tient dans la carte.
+   Défilement vertical au-delà de ~6 lignes, avec l'en-tête qui reste visible. */
+.table-wrapper {
+  max-height: 380px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
 
 .evenements-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.92rem;
 }
@@ -348,6 +386,7 @@ h2.center, p.eyebrow.center { display: block; }
   text-align: left;
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 .evenements-table th {
   font-size: 0.78rem;
@@ -356,7 +395,10 @@ h2.center, p.eyebrow.center { display: block; }
   letter-spacing: 0.05em;
   color: var(--color-muted);
   background: var(--color-light);
-  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: inset 0 -1px 0 var(--color-border);
 }
 .evenements-table td { color: var(--color-dark); }
 .evenements-table tbody tr:last-child td { border-bottom: none; }
@@ -367,8 +409,21 @@ h2.center, p.eyebrow.center { display: block; }
   font-weight: 700;
 }
 .form-status--error { color: var(--color-danger); }
+.form-status--success {
+  margin: 0;
+  padding: 14px 20px;
+  border-radius: var(--radius);
+  background: #eaf8e7;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary-dark);
+}
 
 /* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  .profil-layout { grid-template-columns: 1fr; }
+  .profil-layout > .profil-card { position: static; }
+}
+
 @media (max-width: 720px) {
   .main-nav {
     position: absolute;
