@@ -34,7 +34,10 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
     </div>
 </header>
 
-
+<form action="../../src/traitement/rattachement_entreprise.php" method="post">
+    <input type="hidden" name="id_entreprise" value="3">
+    <button type="submit">S'abonner à cette entreprise</button>
+</form>
 
 
 
