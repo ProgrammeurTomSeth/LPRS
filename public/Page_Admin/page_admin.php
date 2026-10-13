@@ -54,7 +54,9 @@ $roles = ['etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire'];
         <input type="hidden" name="id_utilisateur" value="<?= e($aModifier->getIdUtilisateur()) ?>">
     <?php endif; ?>
 
-    <input type="text" name="nom" placeholder="Nom" value="<?= $aModifier ? e($aModifier->getNom()) : '' ?>" required>
+    <label>
+        <input type="text" name="nom" placeholder="Nom" value="<?= $aModifier ? e($aModifier->getNom()) : '' ?>" required>
+
     <input type="text" name="prenom" placeholder="Prénom" value="<?= $aModifier ? e($aModifier->getPrenom()) : '' ?>" required>
     <input type="email" name="mail" placeholder="Email" value="<?= $aModifier ? e($aModifier->getEmail()) : '' ?>" required>
     <input type="text" name="telephone" placeholder="Téléphone" value="<?= $aModifier ? e($aModifier->getTelephone()) : '' ?>">
@@ -117,6 +119,6 @@ $roles = ['etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire'];
         </tr>
     <?php endforeach; ?>
 </table>
-
+</label>
 </body>
 </html>
