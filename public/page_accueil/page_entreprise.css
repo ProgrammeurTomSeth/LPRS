@@ -1,5 +1,5 @@
 /* =========================================================
-   Lycée Robert Shuman — feuille de style du formulaire d'inscription
+   Lycée Robert Shuman — feuille de style de la page entreprises
    ========================================================= */
 
 
@@ -160,13 +160,6 @@ h2.center, p.eyebrow.center { display: block; }
 
 .header-cta { flex-shrink: 0; }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -249,52 +242,83 @@ h2.center, p.eyebrow.center { display: block; }
 .footer-links a:hover { color: #fff; }
 .footer-copy { margin: 0; font-size: 0.85rem; }
 
-/* ---------- Carte formulaire ---------- */
-.form-section { background: var(--color-light); }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
 
-.form-card {
-  max-width: 520px;
-  margin: 0 auto;
+.btn-danger {
+  background: transparent;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+.btn-danger:hover { background: var(--color-danger); color: #fff; }
+
+/* ---------- Entreprises ---------- */
+.entreprises-section { background: var(--color-light); }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.search-container {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  max-width: 560px;
+}
+.search-container input {
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-text);
+}
+.search-container input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+}
+
+.card {
   background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 40px;
-}
-.form-card h2 { font-size: 1.6rem; margin-bottom: 24px; }
-
-.form-group {
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 18px;
+  transition: transform var(--transition);
 }
-.form-group label {
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--color-dark);
-}
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  font-family: inherit;
-  font-size: 1rem;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--color-border);
-  background: var(--color-light);
-  color: var(--color-text);
-}
-.form-group textarea { min-height: 120px; resize: vertical; }
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  background: #fff;
-}
+.card:hover { transform: translateY(-6px); }
+.card h3 { margin-bottom: 14px; }
+.card p { font-size: 0.92rem; color: var(--color-muted); margin-bottom: 8px; }
+.card p strong { color: var(--color-dark); }
+.card p a { color: var(--color-primary-dark); font-weight: 600; overflow-wrap: anywhere; }
+.card p a:hover { text-decoration: underline; }
 
-.form-card .btn-block { margin-top: 8px; }
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 18px;
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {
@@ -318,5 +342,6 @@ h2.center, p.eyebrow.center { display: block; }
   .section { padding: 60px 0; }
   .page-hero { min-height: 220px; }
 
-  .form-card { padding: 26px; }
+  .search-container { max-width: none; flex-basis: 100%; }
+  .cards-grid { grid-template-columns: 1fr; }
 }
