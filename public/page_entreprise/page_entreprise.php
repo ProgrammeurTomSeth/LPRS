@@ -11,6 +11,7 @@ try {
     $erreurChargement = "Impossible de charger les entreprises pour le moment.";
 }
 
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -73,8 +74,6 @@ try {
                            value="<?= e($recherche) ?>">
                     <button type="submit" class="btn btn-primary">Rechercher</button>
                 </form>
-
-                <a href="#" class="btn btn-outline">+ Ajouter une entreprise</a>
             </div>
 
             <?php if ($messageSucces): ?>

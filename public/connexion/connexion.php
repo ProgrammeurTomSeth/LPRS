@@ -1,7 +1,11 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/ConnexionFormulaire_ahmed.php';
 require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once __DIR__ . '/../../src/traitement/ConnexionFormulaire_ahmed.php';
+
+// Variables définies dans ConnexionFormulaire_ahmed.php
+/** @var string|null $erreur */
+/** @var string $mail */
 
 ?>
 

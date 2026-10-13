@@ -2,7 +2,7 @@
 
 // Prépare les données affichées par public/connexion/connexion.php
 
-session_start();
+require_once __DIR__ . '/SessionUtilisateur_ahmed.php';
 
 $erreur = $_SESSION['connexion_erreur'] ?? null;
 $mail = $_SESSION['connexion_mail'] ?? '';
