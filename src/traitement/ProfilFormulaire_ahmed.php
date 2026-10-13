@@ -21,6 +21,10 @@ $roles = array(
     'gestionnaire' => 'Gestionnaire',
 );
 
+// Message laissé par une autre page (ex : création d'un événement)
+$messageSucces = $_SESSION['message_profil'] ?? null;
+unset($_SESSION['message_profil']);
+
 $erreur = null;
 $utilisateur = null;
 $formation = null;

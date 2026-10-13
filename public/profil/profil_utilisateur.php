@@ -56,7 +56,7 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
 
     <!-- ===== PROFIL ===== -->
     <section class="section profil-section">
-        <div class="container">
+        <div class="container profil-layout">
             <div class="profil-card">
 
                 <?php if ($erreur): ?>
@@ -94,6 +94,11 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
             </div>
 
             <?php if (!$erreur): ?>
+            <div class="profil-evenements">
+
+                <?php if ($messageSucces): ?>
+                    <p class="form-status form-status--success" role="status"><?= e($messageSucces) ?></p>
+                <?php endif; ?>
 
                 <!-- ===== ÉVÉNEMENTS CRÉÉS ===== -->
                 <div class="profil-card evenements-card">
@@ -165,6 +170,7 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
                     <?php endif; ?>
                 </div>
 
+            </div>
             <?php endif; ?>
         </div>
     </section>
