@@ -29,6 +29,7 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
                 <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
                 <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
                 <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
+                <li><a href="../page_entreprise/page_entreprise.php">Entreprise</a></li>
             </ul>
         </nav>
 

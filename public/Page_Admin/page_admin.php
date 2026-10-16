@@ -1,79 +1,67 @@
-<?php
-require_once __DIR__ . '/../../src/traitement/ActionAdmin_malik.php';
-
-$admin = new ActionAdmin_malik();
-
-// Traitement des boutons (formulaires en POST), puis retour sur la page
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    $id = (int) ($_POST['id_utilisateur'] ?? 0);
-
-    if ($action === 'ajouter') {
-        $admin->ajouter(trim($_POST['nom']), trim($_POST['prenom']), trim($_POST['mail']), $_POST['mdp'], trim($_POST['telephone']), $_POST['role'], null);
-    } elseif ($action === 'modifier') {
-        $admin->modifier($id, trim($_POST['nom']), trim($_POST['prenom']), trim($_POST['mail']), trim($_POST['telephone']), $_POST['role']);
-    } elseif ($action === 'valider') {
-        $admin->valider($id);
-    } elseif ($action === 'refuser') {
-        $admin->refuser($id);
-    } elseif ($action === 'supprimer') {
-        $admin->supprimer($id);
-    }
-    header('Location: page_admin.php');
-    exit;
-}
-
-function e($valeur){
-    return htmlspecialchars((string) $valeur, ENT_QUOTES, 'UTF-8');
-}
-
-$utilisateurs = $admin->getTous();
-$enAttente = $admin->compterEnAttente();
-// Si ?modifier=ID : le formulaire passe en mode modification
-$aModifier = isset($_GET['modifier']) ? $admin->getUn((int) $_GET['modifier']) : null;
-$roles = ['etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire'];
-?>
+<?php require_once __DIR__ . '/../../src/traitement/ActionAdmin_malik.php'; ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Administration - Utilisateurs</title>
     <link rel="stylesheet" href="page_admin.css">
 </head>
 <body>
 
 <h1>Gestion des utilisateurs</h1>
-<p><?= $enAttente ?> inscription(s) en attente de validation.</p>
 
-<!-- Formulaire : ajout, ou modification si ?modifier=ID -->
-<h2><?= $aModifier ? 'Modifier un utilisateur' : 'Ajouter un utilisateur' ?></h2>
-<form method="post" class="formulaire">
-    <input type="hidden" name="action" value="<?= $aModifier ? 'modifier' : 'ajouter' ?>">
-    <?php if ($aModifier): ?>
-        <input type="hidden" name="id_utilisateur" value="<?= e($aModifier->getIdUtilisateur()) ?>">
-    <?php endif; ?>
+<!-- Formulaire : Ajouter, ou Modifier si on a cliqué sur Modifier -->
+<?php if ($u): ?>
+    <h2>Modifier un utilisateur</h2>
+    <form method="post" class="formulaire">
+        <input type="hidden" name="action" value="modifier">
+        <input type="hidden" name="id_utilisateur" value="<?= $u->getIdUtilisateur() ?>">
 
-    <label>
-        <input type="text" name="nom" placeholder="Nom" value="<?= $aModifier ? e($aModifier->getNom()) : '' ?>" required>
+        <input type="text" name="nom" value="<?= $u->getNom() ?>" required>
+        <input type="text" name="prenom" value="<?= $u->getPrenom() ?>" required>
+        <input type="email" name="mail" value="<?= $u->getEmail() ?>" required>
+        <input type="text" name="telephone" value="<?= $u->getTelephone() ?>">
 
-    <input type="text" name="prenom" placeholder="Prénom" value="<?= $aModifier ? e($aModifier->getPrenom()) : '' ?>" required>
-    <input type="email" name="mail" placeholder="Email" value="<?= $aModifier ? e($aModifier->getEmail()) : '' ?>" required>
-    <input type="text" name="telephone" placeholder="Téléphone" value="<?= $aModifier ? e($aModifier->getTelephone()) : '' ?>">
+        <select name="role">
+            <option value="etudiant" <?= $u->getRole() === 'etudiant' ? 'selected' : '' ?>>etudiant</option>
+            <option value="alumni" <?= $u->getRole() === 'alumni' ? 'selected' : '' ?>>alumni</option>
+            <option value="partenaire" <?= $u->getRole() === 'partenaire' ? 'selected' : '' ?>>partenaire</option>
+            <option value="professeur" <?= $u->getRole() === 'professeur' ? 'selected' : '' ?>>professeur</option>
+            <option value="gestionnaire" <?= $u->getRole() === 'gestionnaire' ? 'selected' : '' ?>>gestionnaire</option>
+        </select>
 
-    <?php if (!$aModifier): ?>
+        <select name="statut">
+            <option value="valide" <?= $u->getStatutValidation() === 'valide' ? 'selected' : '' ?>>Activé</option>
+            <option value="refuse" <?= $u->getStatutValidation() === 'refuse' ? 'selected' : '' ?>>Désactivé</option>
+            <option value="en_attente" <?= $u->getStatutValidation() === 'en_attente' ? 'selected' : '' ?>>En attente</option>
+        </select>
+
+        <button type="submit">Enregistrer</button>
+        <a href="page_admin.php">Annuler</a>
+    </form>
+<?php else: ?>
+    <h2>Ajouter un utilisateur</h2>
+    <form method="post" class="formulaire">
+        <input type="hidden" name="action" value="ajouter">
+        <input type="hidden" name="id_utilisateur" value="0">
+
+        <input type="text" name="nom" placeholder="Nom" required>
+        <input type="text" name="prenom" placeholder="Prénom" required>
+        <input type="email" name="mail" placeholder="Email" required>
+        <input type="text" name="telephone" placeholder="Téléphone">
         <input type="password" name="mdp" placeholder="Mot de passe (8 car. min.)" minlength="8" required>
-    <?php endif; ?>
 
-    <select name="role">
-        <?php foreach ($roles as $r): ?>
-            <option value="<?= $r ?>" <?= ($aModifier && $aModifier->getRole() === $r) ? 'selected' : '' ?>><?= $r ?></option>
-        <?php endforeach; ?>
-    </select>
+        <select name="role">
+            <option value="etudiant">etudiant</option>
+            <option value="alumni">alumni</option>
+            <option value="partenaire">partenaire</option>
+            <option value="professeur">professeur</option>
+            <option value="gestionnaire">gestionnaire</option>
+        </select>
 
-    <button type="submit"><?= $aModifier ? 'Enregistrer' : 'Ajouter' ?></button>
-    <?php if ($aModifier): ?><a href="page_admin.php">Annuler</a><?php endif; ?>
-</form>
+        <button type="submit">Ajouter</button>
+    </form>
+<?php endif; ?>
 
 <!-- Liste des utilisateurs -->
 <h2>Liste des utilisateurs</h2>
@@ -88,37 +76,34 @@ $roles = ['etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire'];
         <th>Statut</th>
         <th>Actions</th>
     </tr>
-    <?php foreach ($utilisateurs as $u): ?>
+    <?php foreach ($utilisateurs as $ligne): ?>
         <tr>
-            <td><?= e($u->getIdUtilisateur()) ?></td>
-            <td><?= e($u->getNom()) ?></td>
-            <td><?= e($u->getPrenom()) ?></td>
-            <td><?= e($u->getEmail()) ?></td>
-            <td><?= e($u->getTelephone()) ?></td>
-            <td><?= e($u->getRole()) ?></td>
-            <td class="<?= e($u->getStatutValidation()) ?>"><?= e($u->getStatutValidation()) ?></td>
+            <td><?= $ligne->getIdUtilisateur() ?></td>
+            <td><?= $ligne->getNom() ?></td>
+            <td><?= $ligne->getPrenom() ?></td>
+            <td><?= $ligne->getEmail() ?></td>
+            <td><?= $ligne->getTelephone() ?></td>
+            <td><?= $ligne->getRole() ?></td>
+            <td class="<?= $ligne->getStatutValidation() ?>">
+                <?php if ($ligne->getStatutValidation() === 'valide'): ?>
+                    Activé
+                <?php elseif ($ligne->getStatutValidation() === 'refuse'): ?>
+                    Désactivé
+                <?php else: ?>
+                    En attente
+                <?php endif; ?>
+            </td>
             <td>
+                <a href="page_admin.php?modifier=<?= $ligne->getIdUtilisateur() ?>">Modifier</a>
+
                 <form method="post" class="inline">
-                    <input type="hidden" name="id_utilisateur" value="<?= e($u->getIdUtilisateur()) ?>">
-
-                    <?php if ($u->getStatutValidation() !== 'valide'): ?>
-                        <button type="submit" name="action" value="valider">Valider</button>
-                    <?php endif; ?>
-                    <?php if ($u->getStatutValidation() === 'en_attente'): ?>
-                        <button type="submit" name="action" value="refuser">Refuser</button>
-                    <?php endif; ?>
-                </form>
-
-                <a href="page_admin.php?modifier=<?= e($u->getIdUtilisateur()) ?>">Modifier</a>
-
-                <form method="post" class="inline" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                    <input type="hidden" name="id_utilisateur" value="<?= e($u->getIdUtilisateur()) ?>">
+                    <input type="hidden" name="id_utilisateur" value="<?= $ligne->getIdUtilisateur() ?>">
                     <button type="submit" name="action" value="supprimer">Supprimer</button>
                 </form>
             </td>
         </tr>
     <?php endforeach; ?>
 </table>
-</label>
+
 </body>
 </html>
