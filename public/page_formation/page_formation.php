@@ -8,7 +8,7 @@ require_once('../../src/traitement/traitement_formation.php');
 <head>
     <meta charset="UTF-8">
     <title>Nos Formations</title>
-    <link rel="stylesheet" href="page_formation.css">
+    <link rel="stylesheet" href="../page_formation/page_formation.css">
 </head>
 
 <body>
