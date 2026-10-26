@@ -1,0 +1,10 @@
+<?php
+// Modèle de configuration serveur.
+// Copier ce fichier en config.local.php et remplir les valeurs.
+// config.local.php est ignoré par Git : le mot de passe n'est jamais publié.
+return [
+    'host'        => 'localhost',
+    'nomBdd'      => 'lprs',
+    'identifiant' => 'lprs_user',
+    'motDePasse'  => 'A_REMPLIR',
+];

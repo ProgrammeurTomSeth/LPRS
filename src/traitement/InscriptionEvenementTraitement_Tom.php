@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 function redirigerVersEvenements($resultat) {
-    header('Location: ../../public/evenement/liste_evenements_Tom.php?resultat=' . urlencode($resultat));
+    header('Location: ../../public/evenement/liste_evenement_Tom.php?resultat=' . urlencode($resultat));
     exit;
 }
 

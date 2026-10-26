@@ -119,4 +119,4 @@ $admin->traiterFormulaire();
 $utilisateurs = $admin->getTous();
 $u = $admin->getUtilisateurAModifier();
 
-header('Location: /SiteEcole/public/connexion/connexion.php');
+header('Location: ../../public/connexion/connexion.php');

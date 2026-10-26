@@ -1,17 +1,17 @@
 <?php
-require_once __DIR__ . '/../bdd/Bdd.php';
-require_once __DIR__ . '/../modele/Utilisateur.php';
+require_once __DIR__ . '/../bdd/bdd.php';
+require_once __DIR__ . '/../modele/Utilisateur_Malik.php';
 class UtilisateurRepository_malik
 {
     private $connexionbdd;
     public function __construct(){
-        $this->connexionbdd = (new Bdd())->getConnexionbdd();
+        $this->connexionbdd = (new bdd())->getConnexionbdd();
     }
 
     public function getUtilisateur($id_Utilisateur)
     {
         $sql = "SELECT * FROM utilisateur WHERE id_utilisateur = :id_Utilisateur";
-        $req = $this->connexionBdd->prepare($sql);
+        $req = $this->connexionbdd->prepare($sql);
         $req->bindValue(':id_Utilisateur', $id_Utilisateur);
         $req->execute();
         $result = $req->fetch();
@@ -20,7 +20,7 @@ class UtilisateurRepository_malik
             return null;
         }
 
-        $utilisateur = new Utilisateur(
+        $utilisateur = new Utilisateur_Malik(
             $result['id_utilisateur'],
             $result['nom_Utilisateur'],
             $result['prenom_Utilisateur'],
@@ -46,7 +46,7 @@ class UtilisateurRepository_malik
 
     public function getUtilisateurParmail($mail) {
         $sql = "SELECT * FROM utilisateur WHERE mail = :mail";
-        $req = $this->connexionBdd->prepare($sql);
+        $req = $this->connexionbdd->prepare($sql);
         $req->bindValue(':email', $mail);
         $req->execute();
         $result = $req->fetch();
@@ -54,7 +54,7 @@ class UtilisateurRepository_malik
             return null;
         }
 
-        $utilisateur = new Utilisateur(
+        $utilisateur = new Utilisateur_Malik(
             $result['id_utilisateur'],
             $result['nom_Utilisateur'],
             $result['prenom_Utilisateur'],
@@ -81,12 +81,12 @@ class UtilisateurRepository_malik
 
     public function getAllUtilisateurs(){
         $sql = "SELECT * FROM utilisateur";
-        $req = $this->connexionBdd->prepare($sql);
+        $req = $this->connexionbdd->prepare($sql);
         $req->execute();
         $results = $req->fetchAll();
         $tabUtilisateurs = array();
         foreach ($results as $result) {
-            $utilisateur = new Utilisateur($result['id_utilisateur'], $result['nom_utilisateur'], $result['prenom_utilisateur'], $result['mail'], $result['mdp'], $result['telephone'], $result['date_naissance'], $result['role'], $result['statut_validation'], $result['cv'], $result['annee_promo'], $result['id_formation'], $result['specialite'], $result['motif_inscription'], $result['id_entreprise'], $result['poste'], $result['id_gestionnaire_createur'], $result['date_inscription']);
+            $utilisateur = new Utilisateur_Malik($result['id_utilisateur'], $result['nom_utilisateur'], $result['prenom_utilisateur'], $result['mail'], $result['mdp'], $result['telephone'], $result['date_naissance'], $result['role'], $result['statut_validation'], $result['cv'], $result['annee_promo'], $result['id_formation'], $result['specialite'], $result['motif_inscription'], $result['id_entreprise'], $result['poste'], $result['id_gestionnaire_createur'], $result['date_inscription']);
             $tabUtilisateurs[] = $utilisateur;
         }
         return $tabUtilisateurs;
@@ -95,7 +95,7 @@ class UtilisateurRepository_malik
     public function ajouterUtilisateur(Utilisateur $utilisateur){
         $sql = "INSERT INTO utilisateur (id_utilisateur,nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, statut_validation, cv,annee_promo,id_formation,specialite,motif,inscription,poste,id_gestionnaire_createur,date_inscription)
                 VALUES (:id_utilisateur,:nom_utilisateur, :prenom_utilisateur, :mail, :mdp, :telephone, :date_naissance, :role, :statut_validation, :cv,:annee_promo,:id_formation,:specialite,:motif,:inscription,:poste,:id_gestionnaire_createur,:date_inscription)";
-        $req = $this->connexionBdd->prepare($sql);
+        $req = $this->connexionbdd->prepare($sql);
         $req->bindValue(':id_utilisateur',           $utilisateur->getid_utilisateur());
         $req->bindValue(':nom_utilisateur',           $utilisateur->getnom_utilisateur());
         $req->bindValue(':prenom_utilisateur',        $utilisateur->getprenom_utilisateur());
@@ -118,7 +118,7 @@ class UtilisateurRepository_malik
     }
     public function modifierUtilisateur(Utilisateur $utilisateur){
         $sql = "UPDATE utilisateur SET id_utilisateur = :id_utilisatuer, nom_utilisateur = :nom_utilisateur, prenom_utilisateur = :prenom_utilisateur, mail = :mail, mdp = :mdp, telephone = :telephone, date_naissance = :date_naissance, role = :role, statut_validation = :statut_validation,cv = :cv,annee_promo = :annee_promo,id_formation = :id_formation,specialite = :specialite,motif = :motif,inscription = :inscription,poste = :poste,id_gestionnaire_createur = :id_gestionnaire_createur,date_inscription = :date_inscription  WHERE id_utilisateur = :idUtilisateur";
-        $req = $this->connexionBdd->prepare($sql);
+        $req = $this->connexionbdd->prepare($sql);
         $req->bindValue(':id_utilisateur',           $utilisateur->getid_utilisateur());
         $req->bindValue(':nom_utilisateur',           $utilisateur->getnom_utilisateur());
         $req->bindValue(':prenom_utilisateur',        $utilisateur->getprenom_utilisateur());
@@ -141,7 +141,7 @@ class UtilisateurRepository_malik
     }
     public function supprimerUtilisateur($id_Utilisateur){
         $sql = "DELETE FROM utilisateur WHERE id_utilisateur = :id_Utilisateur";
-        $req = $this->connexionBdd->prepare($sql);
+        $req = $this->connexionbdd->prepare($sql);
         $req->bindValue(':id_Utilisateur', $id_Utilisateur);
         $req->execute();
     }
