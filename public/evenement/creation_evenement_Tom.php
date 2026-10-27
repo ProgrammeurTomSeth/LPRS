@@ -30,7 +30,8 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
         <nav class="main-nav" id="main-nav">
             <ul>
                 <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
-                <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
+                <li><a href="liste_evenement_Tom.php">Événements</a></li>
+                <li><a href="../offre/liste_offres_Tom.php">Offres</a></li>
                 <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
             </ul>
         </nav>
