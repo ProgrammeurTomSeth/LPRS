@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page annuaire — Lycée Robert Shuman</title>
-    <link rel="stylesheet" href="annuaire.css">
+    <link rel="stylesheet" href="../annuaire/annuaire.css">
 
 </head>
 <body>
@@ -25,6 +25,7 @@ require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
                 <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
                 <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
                 <li><a href="../page_entreprise/page_entreprise.php">Entreprise</a></li>
+                <li><a href="../page_acceuille/page_accueil.php">Annuaire</a></li>
             </ul>
         </nav>
 
@@ -38,7 +39,7 @@ require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
     </div>
 </header>
 
-<h1>Annuaire des Alumni Validés</h1>
+<h1>Annuaire des Anciens Elèves</h1>
 
 <div class="container">
     <?php if (empty($alumni)): ?>
