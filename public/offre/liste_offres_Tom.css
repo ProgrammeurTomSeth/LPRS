@@ -159,32 +159,47 @@ textarea {
 }
 
 .page-hero {
-    padding: 70px 0 76px;
-    color: var(--blanc);
-    background: linear-gradient(125deg, #183b1a, #267d23);
+    position: relative;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat;
+}
+
+.page-hero .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 20, 15, 0.6), rgba(15, 20, 15, 0.75));
+}
+
+.page-hero .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
 }
 
 .breadcrumb {
-    margin: 0 0 18px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
+    margin: 0 0 14px;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.85rem;
 }
 
 .breadcrumb a {
-    color: var(--blanc);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    color: #fff;
+    font-weight: 600;
 }
 
 .page-hero h1 {
     max-width: 850px;
-    margin: 0 0 16px;
-    font-size: clamp(2rem, 5vw, 3.3rem);
+    margin: 0 0 0.3em;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
     font-weight: 800;
     line-height: 1.15;
+    color: #fff;
 }
 
-.page-hero > .container > p:last-child {
+.page-hero .hero-content > p:last-child {
     max-width: 760px;
     margin-bottom: 0;
     color: rgba(255, 255, 255, 0.9);
@@ -192,7 +207,7 @@ textarea {
 }
 
 .section {
-    padding: 64px 0 80px;
+    padding: 88px 0;
 }
 
 .offres-section h2 {
@@ -504,11 +519,12 @@ textarea {
     }
 
     .page-hero {
+        min-height: 220px;
         padding: 48px 0;
     }
 
     .section {
-        padding: 42px 0 54px;
+        padding: 60px 0;
     }
 
     .offre-carte {

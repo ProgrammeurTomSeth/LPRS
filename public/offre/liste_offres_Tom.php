@@ -27,6 +27,7 @@ function h($valeur){
     <link rel="stylesheet" href="liste_offres_Tom.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Aller au contenu principal</a>
 <header class="site-header">
     <div class="container header-inner">
         <a href="../page_acceuille/page_accueil.php" class="logo">
@@ -61,7 +62,8 @@ function h($valeur){
 
 <main id="main">
     <section class="page-hero">
-        <div class="container">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
             <p class="breadcrumb">
                 <a href="../page_acceuille/page_accueil.php">Accueil</a>
                 / Offres
