@@ -1,6 +1,6 @@
 <?php
 
-// Traitement des boutons Ajouter / Enregistrer / Supprimer de public/Page_Admin/page_admin.php
+// Traitement des boutons Ajouter / Enregistrer / Activer / Désactiver / Supprimer de public/Page_Admin/page_admin.php
 
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
@@ -54,6 +54,21 @@ if ($action == 'ajouter') {
         $utilisateur->setRole($role);
         $utilisateur->setStatutValidation($statut);
         $repository->modifierUtilisateur($utilisateur);
+    }
+} elseif ($action == 'activer' || $action == 'desactiver') {
+    // Un gestionnaire ne peut pas désactiver son propre compte (il se bloquerait l'accès)
+    if ($action == 'desactiver' && $id == $_SESSION['id_utilisateur']) {
+        $_SESSION['admin_erreur'] = "Vous ne pouvez pas désactiver votre propre compte.";
+    } else {
+        $utilisateur = $repository->getUtilisateurParId($id);
+        if ($utilisateur != null) {
+            if ($action == 'activer') {
+                $utilisateur->setStatutValidation('valide');
+            } else {
+                $utilisateur->setStatutValidation('refuse');
+            }
+            $repository->modifierUtilisateur($utilisateur);
+        }
     }
 } elseif ($action == 'supprimer') {
     // La suppression échoue si l'utilisateur est l'auteur d'une offre ou d'un message du forum
