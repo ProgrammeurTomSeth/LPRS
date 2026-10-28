@@ -109,20 +109,20 @@ $pageActive = 'entreprises';
             <?php } else { ?>
                 <div class="cards-grid">
                     <?php foreach ($entreprises as $entreprise) { ?>
-                        <?php $estMonEntreprise = ($idEntrepriseUtilisateur == $entreprise['id_entreprise']); ?>
+                        <?php $estMonEntreprise = ($idEntrepriseUtilisateur == $entreprise->getIdEntreprise()); ?>
                         <article class="card<?php if ($estMonEntreprise) { echo ' card--mon-entreprise'; } ?>">
-                            <h3><?php echo htmlspecialchars($entreprise['nom_entreprise']); ?></h3>
+                            <h3><?php $entreprise->getIdEntreprise() ?></h3>
                             <?php if ($estMonEntreprise) { ?>
                                 <span class="badge">Votre entreprise</span>
                             <?php } ?>
-                            <p><strong>Activité :</strong> <?php if ($entreprise['activite'] != null) { echo htmlspecialchars($entreprise['activite']); } else { echo 'Non renseignée'; } ?></p>
-                            <p><strong>Adresse :</strong> <?php if ($entreprise['adresse'] != null) { echo htmlspecialchars($entreprise['adresse']); } else { echo 'Non renseignée'; } ?></p>
+                            <p><strong>Activité :</strong> <?php $entreprise->getNomEntreprise() ?></p>
+                            <p><strong>Adresse :</strong> <?php $entreprise->getActivite() ?></p>
                             <p><strong>Site web :</strong>
-                                <a href="<?php echo htmlspecialchars($entreprise['site_web']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($entreprise['site_web']); ?></a>
+                                <a href="<?php $entreprise->getIdEntreprise() ?>" target="_blank" rel="noopener"><?php $entreprise->getSiteWeb() ?></a>
                             </p>
 
                             <div class="card-actions">
-                                <a href="profil_entreprise.php?id=<?php echo $entreprise['id_entreprise']; ?>" class="btn btn-sm btn-outline">Voir</a>
+                                <a href="profil_entreprise.php?id=<?php echo $entreprise->getIdEntreprise(); ?>">
                                 <?php if ($peutSeRattacher && !$estMonEntreprise) { ?>
                                     <form action="../../src/traitement/rattachement_entreprise.php" method="post">
                                         <input type="hidden" name="id_entreprise" value="<?php echo $entreprise['id_entreprise']; ?>">
