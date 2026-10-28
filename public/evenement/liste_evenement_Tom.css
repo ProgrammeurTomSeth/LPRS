@@ -631,3 +631,7 @@ p.eyebrow.center {
         gap: 14px;
     }
 }
+/* Garde les retours à la ligne saisis dans la description */
+.evenement-carte__description {
+    white-space: pre-line;
+}

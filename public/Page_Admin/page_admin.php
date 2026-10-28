@@ -1,4 +1,43 @@
-<?php require_once __DIR__ . '/../../src/traitement/ActionAdmin_malik.php'; ?>
+<?php
+
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/modele/Utilisateur_Malik.php';
+require_once '../../src/repository/UtilisateurRepository_malik.php';
+
+// Page réservée aux gestionnaires
+if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
+    header('Location: ../connexion/connexion.php');
+    exit;
+}
+
+$repository = new UtilisateurRepository_malik();
+$utilisateurs = $repository->getAllUtilisateurs();
+
+// Si on a cliqué sur "Modifier" (?modifier=ID), on charge l'utilisateur à modifier
+$u = null;
+if (isset($_GET['modifier'])) {
+    $u = $repository->getUtilisateurParId((int) $_GET['modifier']);
+}
+
+// Message laissé par src/traitement/ActionAdmin_malik.php
+$erreur = "";
+if (!empty($_SESSION['admin_erreur'])) {
+    $erreur = $_SESSION['admin_erreur'];
+    $_SESSION['admin_erreur'] = "";
+}
+
+// Rôles proposés dans les listes déroulantes
+$roles = array('etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire');
+
+// Libellés affichés pour chaque statut
+$statuts = array(
+    'valide' => 'Activé',
+    'refuse' => 'Désactivé',
+    'en_attente' => 'En attente'
+);
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,38 +49,40 @@
 
 <h1>Gestion des utilisateurs</h1>
 
-<!-- Formulaire : Ajouter, ou Modifier si on a cliqué sur Modifier -->
-<?php if ($u): ?>
-    <h2>Modifier un utilisateur</h2>
-    <form method="post" class="formulaire">
-        <input type="hidden" name="action" value="modifier">
-        <input type="hidden" name="id_utilisateur" value="<?= $u->getIdUtilisateur() ?>">
+<?php if ($erreur != "") { ?>
+    <p class="message-erreur"><?php echo $erreur; ?></p>
+<?php } ?>
 
-        <input type="text" name="nom" value="<?= $u->getNom() ?>" required>
-        <input type="text" name="prenom" value="<?= $u->getPrenom() ?>" required>
-        <input type="email" name="mail" value="<?= $u->getEmail() ?>" required>
-        <input type="text" name="telephone" value="<?= $u->getTelephone() ?>">
+<!-- Formulaire : Ajouter, ou Modifier si on a cliqué sur Modifier -->
+<?php if ($u != null) { ?>
+    <h2>Modifier un utilisateur</h2>
+    <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="formulaire">
+        <input type="hidden" name="action" value="modifier">
+        <input type="hidden" name="id_utilisateur" value="<?php echo $u->getIdUtilisateur(); ?>">
+
+        <input type="text" name="nom" value="<?php echo htmlspecialchars($u->getNom()); ?>" required>
+        <input type="text" name="prenom" value="<?php echo htmlspecialchars($u->getPrenom()); ?>" required>
+        <input type="email" name="mail" value="<?php echo htmlspecialchars($u->getEmail()); ?>" required>
+        <input type="text" name="telephone" value="<?php if ($u->getTelephone() != null) { echo htmlspecialchars($u->getTelephone()); } ?>">
 
         <select name="role">
-            <option value="etudiant" <?= $u->getRole() === 'etudiant' ? 'selected' : '' ?>>etudiant</option>
-            <option value="alumni" <?= $u->getRole() === 'alumni' ? 'selected' : '' ?>>alumni</option>
-            <option value="partenaire" <?= $u->getRole() === 'partenaire' ? 'selected' : '' ?>>partenaire</option>
-            <option value="professeur" <?= $u->getRole() === 'professeur' ? 'selected' : '' ?>>professeur</option>
-            <option value="gestionnaire" <?= $u->getRole() === 'gestionnaire' ? 'selected' : '' ?>>gestionnaire</option>
+            <?php foreach ($roles as $role) { ?>
+                <option value="<?php echo $role; ?>" <?php if ($u->getRole() == $role) { echo 'selected'; } ?>><?php echo $role; ?></option>
+            <?php } ?>
         </select>
 
         <select name="statut">
-            <option value="valide" <?= $u->getStatutValidation() === 'valide' ? 'selected' : '' ?>>Activé</option>
-            <option value="refuse" <?= $u->getStatutValidation() === 'refuse' ? 'selected' : '' ?>>Désactivé</option>
-            <option value="en_attente" <?= $u->getStatutValidation() === 'en_attente' ? 'selected' : '' ?>>En attente</option>
+            <?php foreach ($statuts as $statut => $libelle) { ?>
+                <option value="<?php echo $statut; ?>" <?php if ($u->getStatutValidation() == $statut) { echo 'selected'; } ?>><?php echo $libelle; ?></option>
+            <?php } ?>
         </select>
 
         <button type="submit">Enregistrer</button>
         <a href="page_admin.php">Annuler</a>
     </form>
-<?php else: ?>
+<?php } else { ?>
     <h2>Ajouter un utilisateur</h2>
-    <form method="post" class="formulaire">
+    <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="formulaire">
         <input type="hidden" name="action" value="ajouter">
         <input type="hidden" name="id_utilisateur" value="0">
 
@@ -52,16 +93,14 @@
         <input type="password" name="mdp" placeholder="Mot de passe (8 car. min.)" minlength="8" required>
 
         <select name="role">
-            <option value="etudiant">etudiant</option>
-            <option value="alumni">alumni</option>
-            <option value="partenaire">partenaire</option>
-            <option value="professeur">professeur</option>
-            <option value="gestionnaire">gestionnaire</option>
+            <?php foreach ($roles as $role) { ?>
+                <option value="<?php echo $role; ?>"><?php echo $role; ?></option>
+            <?php } ?>
         </select>
 
         <button type="submit">Ajouter</button>
     </form>
-<?php endif; ?>
+<?php } ?>
 
 <!-- Liste des utilisateurs -->
 <h2>Liste des utilisateurs</h2>
@@ -76,33 +115,27 @@
         <th>Statut</th>
         <th>Actions</th>
     </tr>
-    <?php foreach ($utilisateurs as $ligne): ?>
+    <?php foreach ($utilisateurs as $ligne) { ?>
         <tr>
-            <td><?= $ligne->getIdUtilisateur() ?></td>
-            <td><?= $ligne->getNom() ?></td>
-            <td><?= $ligne->getPrenom() ?></td>
-            <td><?= $ligne->getEmail() ?></td>
-            <td><?= $ligne->getTelephone() ?></td>
-            <td><?= $ligne->getRole() ?></td>
-            <td class="<?= $ligne->getStatutValidation() ?>">
-                <?php if ($ligne->getStatutValidation() === 'valide'): ?>
-                    Activé
-                <?php elseif ($ligne->getStatutValidation() === 'refuse'): ?>
-                    Désactivé
-                <?php else: ?>
-                    En attente
-                <?php endif; ?>
+            <td><?php echo $ligne['id_utilisateur']; ?></td>
+            <td><?php echo htmlspecialchars($ligne['nom_utilisateur']); ?></td>
+            <td><?php echo htmlspecialchars($ligne['prenom_utilisateur']); ?></td>
+            <td><?php echo htmlspecialchars($ligne['mail']); ?></td>
+            <td><?php if ($ligne['telephone'] != null) { echo htmlspecialchars($ligne['telephone']); } ?></td>
+            <td><?php echo $ligne['role']; ?></td>
+            <td class="<?php echo $ligne['statut_validation']; ?>">
+                <?php echo $statuts[$ligne['statut_validation']]; ?>
             </td>
             <td>
-                <a href="page_admin.php?modifier=<?= $ligne->getIdUtilisateur() ?>">Modifier</a>
+                <a href="page_admin.php?modifier=<?php echo $ligne['id_utilisateur']; ?>">Modifier</a>
 
-                <form method="post" class="inline">
-                    <input type="hidden" name="id_utilisateur" value="<?= $ligne->getIdUtilisateur() ?>">
+                <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline">
+                    <input type="hidden" name="id_utilisateur" value="<?php echo $ligne['id_utilisateur']; ?>">
                     <button type="submit" name="action" value="supprimer">Supprimer</button>
                 </form>
             </td>
         </tr>
-    <?php endforeach; ?>
+    <?php } ?>
 </table>
 
 </body>

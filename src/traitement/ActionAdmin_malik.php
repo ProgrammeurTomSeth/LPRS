@@ -1,122 +1,68 @@
 <?php
-session_start();
 
-// Pas connecté, ou pas gestionnaire : retour à la connexion
-if (!isset($_SESSION['id_utilisateur']) || $_SESSION['role'] !== 'gestionnaire') {
-    header('Location: ../connexion/connexion.php');
+// Traitement des boutons Ajouter / Enregistrer / Supprimer de public/Page_Admin/page_admin.php
+
+require_once 'SessionUtilisateur_ahmed.php';
+require_once '../bdd/bdd.php';
+require_once '../modele/Utilisateur_Malik.php';
+require_once '../repository/UtilisateurRepository_malik.php';
+
+// Réservé aux gestionnaires
+if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
+    header('Location: ../../public/connexion/connexion.php');
     exit;
 }
 
-require_once __DIR__ . '/../../src/traitement/ActionAdmin_malik.php';
+$repository = new UtilisateurRepository_malik();
+$action = lireChamp('action');
+$id = (int) lireChamp('id_utilisateur');
+$nom = lireChamp('nom');
+$prenom = lireChamp('prenom');
+$mail = lireChamp('mail');
+$telephone = lireChamp('telephone');
+$role = lireChamp('role');
 
-class ActionAdmin_malik{
-    private $repo;
-
-    public function __construct()
-    {
-        $this->repo = new AdminRepository_Malik();
+if ($action == 'ajouter') {
+    $mdp = lireChamp('mdp');
+    // Ajout seulement si les champs sont remplis et le mail pas déjà utilisé
+    if (!empty($nom) && !empty($prenom) && !empty($mail) && !empty($mdp) && strlen($mdp) >= 8 && $repository->getUtilisateurParMail($mail) == null) {
+        $utilisateur = new Utilisateur_Malik();
+        $utilisateur->setNom($nom);
+        $utilisateur->setPrenom($prenom);
+        $utilisateur->setEmail($mail);
+        $utilisateur->setMdp(password_hash($mdp, PASSWORD_DEFAULT));
+        $utilisateur->setTelephone($telephone);
+        $utilisateur->setRole($role);
+        $utilisateur->setStatutValidation('valide'); // créé par un gestionnaire : déjà validé
+        $utilisateur->setIdGestionnaireCreateur($_SESSION['id_utilisateur']);
+        $repository->ajouterUtilisateur($utilisateur);
     }
+} elseif ($action == 'modifier') {
+    $statut = lireChamp('statut');
+    $autre = $repository->getUtilisateurParMail($mail);
+    // Le mail ne doit pas appartenir à un autre utilisateur
+    $mailLibre = ($autre == null || $autre->getIdUtilisateur() == $id);
+    $statutValide = ($statut == 'valide' || $statut == 'refuse' || $statut == 'en_attente');
 
-    public function getTous()
-    {
-        return $this->repo->getAllUtilisateurs();
+    if (!empty($nom) && !empty($prenom) && !empty($mail) && $mailLibre && $statutValide) {
+        $utilisateur = new Utilisateur_Malik();
+        $utilisateur->setIdUtilisateur($id);
+        $utilisateur->setNom($nom);
+        $utilisateur->setPrenom($prenom);
+        $utilisateur->setEmail($mail);
+        $utilisateur->setTelephone($telephone);
+        $utilisateur->setRole($role);
+        $utilisateur->setStatutValidation($statut);
+        $repository->modifierUtilisateur($utilisateur);
     }
-
-    public function getUn($id)
-    {
-        return $this->repo->getUtilisateur($id);
-    }
-
-    public function compterEnAttente()
-    {
-        return $this->repo->compterEnAttente();
-    }
-
-    // Ajout par un gestionnaire : compte directement validé, mot de passe haché
-    public function ajouter($nom, $prenom, $mail, $mdp, $telephone, $role, $idGestionnaire)
-    {
-        if ($nom === '' || $prenom === '' || $mail === '' || strlen($mdp) < 8) {
-            return false;
-        }
-        if ($this->repo->getUtilisateurParMail($mail) !== null) {
-            return false; // email déjà utilisé
-        }
-        $u = new Utilisateur_Malik(
-            null, $nom, $prenom, $mail, password_hash($mdp, PASSWORD_DEFAULT),
-            $telephone !== '' ? $telephone : null, null, $role, 'valide',
-            null, null, null, null, null, null, null, $idGestionnaire, null
-        );
-        $this->repo->ajouterUtilisateur($u);
-        return true;
-    }
-
-    // Modifie les champs du formulaire, les autres gardent leur valeur
-    public function modifier($id, $nom, $prenom, $mail, $telephone, $role, $statut)
-    {
-        $e = $this->repo->getUtilisateur($id);
-        if ($e === null || $nom === '' || $prenom === '' || $mail === '') {
-            return false;
-        }
-        // Seuls les 3 statuts connus par la connexion sont acceptés
-        if ($statut !== 'valide' && $statut !== 'refuse' && $statut !== 'en_attente') {
-            return false;
-        }
-        $autre = $this->repo->getUtilisateurParMail($mail);
-        if ($autre !== null && (int) $autre->getIdUtilisateur() !== (int) $id) {
-            return false; // email pris par quelqu'un d'autre
-        }
-        $u = new Utilisateur_Malik(
-            $id, $nom, $prenom, $mail, $e->getMdp(),
-            $telephone !== '' ? $telephone : null, $e->getDateNaissance(), $role, $statut,
-            $e->getCv(), $e->getAnneePromo(), $e->getIdFormation(), $e->getSpecialite(), $e->getMotifInscription(),
-            $e->getIdEntreprise(), $e->getPoste(), $e->getIdGestionnaireCreateur(), $e->getDateInscription()
-        );
-        $this->repo->modifierUtilisateur($u);
-        return true;
-    }
-
-    public function supprimer($id)
-    {
-        return $this->repo->supprimerUtilisateur($id);
-    }
-
-    // Traite les boutons Ajouter / Enregistrer / Supprimer, puis recharge la page
-    public function traiterFormulaire()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return;
-        }
-
-        $action = $_POST['action'] ?? '';
-        $id = (int) ($_POST['id_utilisateur'] ?? 0);
-
-        if ($action === 'ajouter') {
-            $this->ajouter(trim($_POST['nom']), trim($_POST['prenom']), trim($_POST['mail']), $_POST['mdp'], trim($_POST['telephone']), $_POST['role'], null);
-        } elseif ($action === 'modifier') {
-            $this->modifier($id, trim($_POST['nom']), trim($_POST['prenom']), trim($_POST['mail']), trim($_POST['telephone']), $_POST['role'], $_POST['statut']);
-        } elseif ($action === 'supprimer') {
-            $this->supprimer($id);
-        }
-
-        header('Location: page_admin.php');
-        exit;
-    }
-
-    // Renvoie l'utilisateur à modifier si on a cliqué sur Modifier (?modifier=ID), sinon null
-    public function getUtilisateurAModifier()
-    {
-        if (isset($_GET['modifier'])) {
-            return $this->getUn((int) $_GET['modifier']);
-        }
-        return null;
+} elseif ($action == 'supprimer') {
+    // La suppression échoue si l'utilisateur est l'auteur d'une offre ou d'un message du forum
+    try {
+        $repository->supprimerUtilisateur($id);
+    } catch (PDOException $e) {
+        $_SESSION['admin_erreur'] = "Impossible de supprimer cet utilisateur : il est l'auteur d'offres ou de messages.";
     }
 }
 
-// Prépare les données affichées par public/Page_Admin/page_admin.php
-$admin = new ActionAdmin_malik();
-$admin->traiterFormulaire();
-
-$utilisateurs = $admin->getTous();
-$u = $admin->getUtilisateurAModifier();
-
-header('Location: ../../public/connexion/connexion.php');
+header('Location: ../../public/Page_Admin/page_admin.php');
+exit;

@@ -1,7 +1,50 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/InscriptionFormulaire_ahmed.php';
-require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/repository/Formation_ahmed.php';
+require_once '../../src/repository/EntrepriseRepository_Tom.php';
+
+// Messages et valeurs saisies laissés par InscriptionTraitement_ahmed.php
+$erreurs = array();
+$valeurs = array();
+$succes = "";
+if (!empty($_SESSION['inscription_erreurs'])) {
+    $erreurs = $_SESSION['inscription_erreurs'];
+    $valeurs = $_SESSION['inscription_valeurs'];
+    $_SESSION['inscription_erreurs'] = array();
+}
+if (!empty($_SESSION['inscription_succes'])) {
+    $succes = $_SESSION['inscription_succes'];
+    $_SESSION['inscription_succes'] = "";
+}
+
+// Profils qu'un visiteur peut choisir (le gestionnaire est créé par un autre gestionnaire)
+$roles = array(
+    'etudiant' => 'Étudiant',
+    'alumni' => 'Ancien élève (alumni)',
+    'partenaire' => 'Partenaire entreprise',
+    'professeur' => 'Professeur'
+);
+$typesFormation = array(
+    'bac_pro' => 'Bac pro',
+    'bac_techno' => 'Bac techno',
+    'bts' => 'BTS'
+);
+
+$formationRepository = new Formation_ahmed();
+$formations = $formationRepository->getAllFormations();
+$entrepriseRepository = new EntrepriseRepository_Tom();
+$entreprises = $entrepriseRepository->getAllEntreprises();
+
+// Renvoie la valeur saisie avant l'erreur pour un champ, ou "" s'il n'y en a pas
+function ancienneValeur($valeurs, $champ)
+{
+    if (!empty($valeurs[$champ])) {
+        return $valeurs[$champ];
+    }
+    return "";
+}
 
 ?>
 
@@ -35,7 +78,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -89,26 +132,26 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                     </div>
                 </div>
 
-                <p style="margin-top:28px;">
-                    Une question ? <a href="../page_acceuille/page_accueil.php" style="color:#fff; text-decoration:underline;">Contactez-nous</a>
-                    ou appelez le <a href="tel:0123456789" style="color:#fff; text-decoration:underline;">01 23 45 67 89</a>.
+                <p class="register-aside-contact">
+                    Une question ? <a href="../page_acceuille/page_accueil.php">Contactez-nous</a>
+                    ou appelez le <a href="tel:0123456789">01 23 45 67 89</a>.
                 </p>
             </aside>
 
             <form class="register-form" id="register-form" action="../../src/traitement/InscriptionTraitement_ahmed.php" method="POST">
 
-                <?php if ($succes): ?>
-                    <p class="form-status form-status--success"><?= e($succes) ?></p>
-                <?php endif; ?>
-                <?php if (!empty($erreurs)): ?>
+                <?php if ($succes != "") { ?>
+                    <p class="form-status form-status--success"><?php echo htmlspecialchars($succes); ?></p>
+                <?php } ?>
+                <?php if (count($erreurs) > 0) { ?>
                     <div class="form-status form-status--error" role="alert">
                         <ul>
-                            <?php foreach ($erreurs as $erreur): ?>
-                                <li><?= e($erreur) ?></li>
-                            <?php endforeach; ?>
+                            <?php foreach ($erreurs as $erreur) { ?>
+                                <li><?php echo htmlspecialchars($erreur); ?></li>
+                            <?php } ?>
                         </ul>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
 
                 <fieldset class="form-fieldset">
                     <legend>Profil</legend>
@@ -116,10 +159,10 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                     <div class="form-group">
                         <label for="role">Je suis <span class="required">*</span></label>
                         <select id="role" name="role" required>
-                            <option value="" disabled <?= ancienneValeur('role') === '' ? 'selected' : '' ?>>Choisir un profil</option>
-                            <?php foreach ($roles as $valeur => $libelle): ?>
-                                <option value="<?= e($valeur) ?>" <?= ancienneValeur('role') === $valeur ? 'selected' : '' ?>><?= e($libelle) ?></option>
-                            <?php endforeach; ?>
+                            <option value="" disabled <?php if (ancienneValeur($valeurs, 'role') == "") { echo 'selected'; } ?>>Choisir un profil</option>
+                            <?php foreach ($roles as $valeur => $libelle) { ?>
+                                <option value="<?php echo $valeur; ?>" <?php if (ancienneValeur($valeurs, 'role') == $valeur) { echo 'selected'; } ?>><?php echo $libelle; ?></option>
+                            <?php } ?>
                         </select>
                     </div>
                 </fieldset>
@@ -130,29 +173,29 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                     <div class="form-row">
                         <div class="form-group">
                             <label for="prenom_utilisateur">Prénom <span class="required">*</span></label>
-                            <input type="text" id="prenom_utilisateur" name="prenom_utilisateur" maxlength="100" autocomplete="given-name" value="<?= e(ancienneValeur('prenom_utilisateur')) ?>" required>
+                            <input type="text" id="prenom_utilisateur" name="prenom_utilisateur" maxlength="100" autocomplete="given-name" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'prenom_utilisateur')); ?>" required>
                         </div>
                         <div class="form-group">
                             <label for="nom_utilisateur">Nom <span class="required">*</span></label>
-                            <input type="text" id="nom_utilisateur" name="nom_utilisateur" maxlength="100" autocomplete="family-name" value="<?= e(ancienneValeur('nom_utilisateur')) ?>" required>
+                            <input type="text" id="nom_utilisateur" name="nom_utilisateur" maxlength="100" autocomplete="family-name" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'nom_utilisateur')); ?>" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="mail">Email <span class="required">*</span></label>
-                            <input type="email" id="mail" name="mail" maxlength="255" autocomplete="email" value="<?= e(ancienneValeur('mail')) ?>" required>
+                            <input type="email" id="mail" name="mail" maxlength="255" autocomplete="email" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'mail')); ?>" required>
                         </div>
                         <div class="form-group">
                             <label for="telephone">Téléphone</label>
-                            <input type="tel" id="telephone" name="telephone" maxlength="20" autocomplete="tel" pattern="[0-9 +().\-]{6,20}" value="<?= e(ancienneValeur('telephone')) ?>">
+                            <input type="tel" id="telephone" name="telephone" maxlength="20" autocomplete="tel" pattern="[0-9 +().\-]{6,20}" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'telephone')); ?>">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="date_naissance">Date de naissance</label>
-                            <input type="date" id="date_naissance" name="date_naissance" max="<?= date('Y-m-d') ?>" value="<?= e(ancienneValeur('date_naissance')) ?>">
+                            <input type="date" id="date_naissance" name="date_naissance" max="<?php echo date('Y-m-d'); ?>" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'date_naissance')); ?>">
                         </div>
                     </div>
 
@@ -176,21 +219,21 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                         <div class="form-group">
                             <label for="id_formation">Formation <span class="required">*</span></label>
                             <select id="id_formation" name="id_formation" required>
-                                <option value="" disabled <?= ancienneValeur('id_formation') === '' ? 'selected' : '' ?>>Choisir une formation</option>
-                                <?php foreach ($formations as $formation): ?>
-                                    <option value="<?= e($formation->getIdformation()) ?>" <?= ancienneValeur('id_formation') === (string) $formation->getIdformation() ? 'selected' : '' ?>><?= e($formation->getNom_formation()) ?> (<?= e($typesFormation[$formation->getType_formation()] ?? $formation->getType_formation()) ?>)</option>
-                                <?php endforeach; ?>
+                                <option value="" disabled <?php if (ancienneValeur($valeurs, 'id_formation') == "") { echo 'selected'; } ?>>Choisir une formation</option>
+                                <?php foreach ($formations as $formation) { ?>
+                                    <option value="<?php echo $formation['id_formation']; ?>" <?php if (ancienneValeur($valeurs, 'id_formation') == $formation['id_formation']) { echo 'selected'; } ?>><?php echo htmlspecialchars($formation['nom_formation']); ?> (<?php echo $typesFormation[$formation['type_formation']]; ?>)</option>
+                                <?php } ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="annee_promo">Année de promotion <span class="required" data-roles="alumni">*</span></label>
-                            <input type="number" id="annee_promo" name="annee_promo" min="1950" max="<?= date('Y') + 5 ?>" placeholder="<?= date('Y') ?>" value="<?= e(ancienneValeur('annee_promo')) ?>" data-required-roles="alumni">
+                            <input type="number" id="annee_promo" name="annee_promo" min="1950" max="<?php echo date('Y') + 5; ?>" placeholder="<?php echo date('Y'); ?>" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'annee_promo')); ?>" data-required-roles="alumni">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="specialite">Spécialité</label>
-                        <input type="text" id="specialite" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>">
+                        <input type="text" id="specialite" name="specialite" maxlength="150" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'specialite')); ?>">
                     </div>
                 </fieldset>
 
@@ -199,7 +242,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
                     <div class="form-group">
                         <label for="specialite_professeur">Matière enseignée / spécialité <span class="required">*</span></label>
-                        <input type="text" id="specialite_professeur" name="specialite" maxlength="150" value="<?= e(ancienneValeur('specialite')) ?>" required>
+                        <input type="text" id="specialite_professeur" name="specialite" maxlength="150" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'specialite')); ?>" required>
                         <span class="form-hint">Votre compte sera activé après vérification par un gestionnaire.</span>
                     </div>
                 </fieldset>
@@ -211,15 +254,15 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
                         <div class="form-group" data-roles="partenaire" hidden>
                             <label for="id_entreprise">Entreprise <span class="required">*</span></label>
                             <select id="id_entreprise" name="id_entreprise" required>
-                                <option value="" disabled <?= ancienneValeur('id_entreprise') === '' ? 'selected' : '' ?>>Choisir une entreprise</option>
-                                <?php foreach ($entreprises as $entreprise): ?>
-                                    <option value="<?= e($entreprise->getIdEntreprise()) ?>" <?= ancienneValeur('id_entreprise') === (string) $entreprise->getIdEntreprise() ? 'selected' : '' ?>><?= e($entreprise->getNomEntreprise()) ?></option>
-                                <?php endforeach; ?>
+                                <option value="" disabled <?php if (ancienneValeur($valeurs, 'id_entreprise') == "") { echo 'selected'; } ?>>Choisir une entreprise</option>
+                                <?php foreach ($entreprises as $entreprise) { ?>
+                                    <option value="<?php echo $entreprise['id_entreprise']; ?>" <?php if (ancienneValeur($valeurs, 'id_entreprise') == $entreprise['id_entreprise']) { echo 'selected'; } ?>><?php echo htmlspecialchars($entreprise['nom_entreprise']); ?></option>
+                                <?php } ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="poste">Poste <span class="required" data-roles="partenaire">*</span></label>
-                            <input type="text" id="poste" name="poste" maxlength="150" value="<?= e(ancienneValeur('poste')) ?>" data-required-roles="partenaire">
+                            <input type="text" id="poste" name="poste" maxlength="150" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'poste')); ?>" data-required-roles="partenaire">
                         </div>
                     </div>
                 </fieldset>
@@ -229,11 +272,11 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
                     <div class="form-group">
                         <label for="motif_inscription">Motif de l'inscription (optionnel)</label>
-                        <textarea id="motif_inscription" name="motif_inscription" rows="3" maxlength="255" placeholder="Pourquoi souhaitez-vous rejoindre la plateforme ?"><?= e(ancienneValeur('motif_inscription')) ?></textarea>
+                        <textarea id="motif_inscription" name="motif_inscription" rows="3" maxlength="255" placeholder="Pourquoi souhaitez-vous rejoindre la plateforme ?"><?php echo htmlspecialchars(ancienneValeur($valeurs, 'motif_inscription')); ?></textarea>
                     </div>
 
                     <div class="form-check">
-                        <input type="checkbox" id="consentement" name="consentement" value="1" required <?= ancienneValeur('consentement') !== '' ? 'checked' : '' ?>>
+                        <input type="checkbox" id="consentement" name="consentement" value="1" required <?php if (ancienneValeur($valeurs, 'consentement') != "") { echo 'checked'; } ?>>
                         <label for="consentement">J'accepte que mes informations soient utilisées par l'École Lourdeault dans le cadre du traitement de cette demande d'inscription. <span class="required">*</span></label>
                     </div>
                 </fieldset>

@@ -1,6 +1,90 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/modele/Utilisateur_Malik.php';
+require_once '../../src/modele/formation_anais.php';
+require_once '../../src/modele/Entreprise_Tom.php';
+require_once '../../src/repository/UtilisateurRepository_malik.php';
+require_once '../../src/repository/Formation_ahmed.php';
+require_once '../../src/repository/EntrepriseRepository_Tom.php';
+require_once '../../src/repository/EvenementRepository_ahmed.php';
+
+// Page réservée aux utilisateurs connectés
+if (!estConnecte()) {
+    header('Location: ../connexion/connexion.php');
+    exit;
+}
+
+$utilisateurRepository = new UtilisateurRepository_malik();
+$utilisateur = $utilisateurRepository->getUtilisateurParId($_SESSION['id_utilisateur']);
+
+// Compte supprimé entre-temps : on ferme la session
+if ($utilisateur == null) {
+    header('Location: ../../src/traitement/DeconnexionTraitement_ahmed.php');
+    exit;
+}
+
+$roles = array(
+    'etudiant' => 'Étudiant',
+    'alumni' => 'Ancien élève (alumni)',
+    'partenaire' => 'Partenaire entreprise',
+    'professeur' => 'Professeur',
+    'gestionnaire' => 'Gestionnaire'
+);
+$statutsEvenement = array(
+    'brouillon' => 'Brouillon',
+    'publie' => 'Publié'
+);
+$statutsInscription = array(
+    'acceptee' => 'Acceptée',
+    'refusee' => 'Refusée'
+);
+
+// Lignes affichées sur le profil : tableau associatif libellé => valeur
+// (on n'ajoute une ligne que si l'information est renseignée)
+$infos = array();
+$infos['Email'] = $utilisateur->getEmail();
+if ($utilisateur->getTelephone() != null) {
+    $infos['Téléphone'] = $utilisateur->getTelephone();
+}
+if ($utilisateur->getDateNaissance() != null) {
+    $infos['Date de naissance'] = $utilisateur->getDateNaissance();
+}
+if ($utilisateur->getIdFormation() != null) {
+    $formationRepository = new Formation_ahmed();
+    $formation = $formationRepository->getFormation($utilisateur->getIdFormation());
+    $infos['Formation'] = $formation->getNomFormation();
+}
+if ($utilisateur->getAnneePromo() != null) {
+    $infos['Année de promotion'] = $utilisateur->getAnneePromo();
+}
+if ($utilisateur->getSpecialite() != null) {
+    $infos['Spécialité'] = $utilisateur->getSpecialite();
+}
+if ($utilisateur->getIdEntreprise() != null) {
+    $entrepriseRepository = new EntrepriseRepository_Tom();
+    $entreprise = $entrepriseRepository->getEntreprise($utilisateur->getIdEntreprise());
+    $infos['Entreprise'] = $entreprise->getNomEntreprise();
+}
+if ($utilisateur->getPoste() != null) {
+    $infos['Poste'] = $utilisateur->getPoste();
+}
+$infos['Membre depuis'] = $utilisateur->getDateInscription();
+
+// Initiales affichées dans le rond (mb_ : versions de substr/strtoupper qui gèrent les accents)
+$initiales = mb_strtoupper(mb_substr($utilisateur->getPrenom(), 0, 1) . mb_substr($utilisateur->getNom(), 0, 1));
+
+$evenementRepository = new EvenementRepository_ahmed();
+$evenementsOrganises = $evenementRepository->getEvenementsOrganises($utilisateur->getIdUtilisateur());
+$evenementsInscrits = $evenementRepository->getEvenementsInscrits($utilisateur->getIdUtilisateur());
+
+// Message laissé par une autre page (ex : création d'un événement)
+$messageSucces = "";
+if (!empty($_SESSION['message_profil'])) {
+    $messageSucces = $_SESSION['message_profil'];
+    $_SESSION['message_profil'] = "";
+}
 
 ?>
 
@@ -34,7 +118,7 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -60,53 +144,46 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
         <div class="container profil-layout">
             <div class="profil-card">
 
-                <?php if ($erreur): ?>
-                    <p class="form-status form-status--error" role="alert"><?= e($erreur) ?></p>
-                <?php else: ?>
+                <div class="profil-identite">
+                    <div class="profil-avatar" aria-hidden="true">
+                        <?php echo htmlspecialchars($initiales); ?>
+                    </div>
+                    <div>
+                        <h2><?php echo htmlspecialchars($utilisateur->getPrenom() . ' ' . $utilisateur->getNom()); ?></h2>
+                        <span class="badge"><?php echo $roles[$utilisateur->getRole()]; ?></span>
+                    </div>
+                </div>
 
-                    <div class="profil-identite">
-                        <div class="profil-avatar" aria-hidden="true">
-                            <?= e(mb_strtoupper(mb_substr($utilisateur->getPrenom(), 0, 1) . mb_substr($utilisateur->getNom(), 0, 1))) ?>
-                        </div>
+                <dl class="profil-infos">
+                    <?php foreach ($infos as $libelle => $valeur) { ?>
                         <div>
-                            <h2><?= e($utilisateur->getPrenom() . ' ' . $utilisateur->getNom()) ?></h2>
-                            <span class="badge"><?= e($roles[$utilisateur->getRole()] ?? $utilisateur->getRole()) ?></span>
+                            <dt><?php echo $libelle; ?></dt>
+                            <dd><?php echo htmlspecialchars($valeur); ?></dd>
                         </div>
-                    </div>
+                    <?php } ?>
+                </dl>
 
-                    <dl class="profil-infos">
-                        <?php foreach ($infos as $libelle => $valeur): ?>
-                            <div>
-                                <dt><?= e($libelle) ?></dt>
-                                <dd><?= e($valeur) ?></dd>
-                            </div>
-                        <?php endforeach; ?>
-                    </dl>
-
-                    <div class="profil-actions">
-                        <?php if ($utilisateur->getRole() !== 'gestionnaire'): ?>
-                            <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">Créer un événement</a>
-                        <?php endif; ?>
-                        <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">Se déconnecter</a>
-                    </div>
-
-                <?php endif; ?>
+                <div class="profil-actions">
+                    <?php if ($utilisateur->getRole() != 'gestionnaire') { ?>
+                        <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">Créer un événement</a>
+                    <?php } ?>
+                    <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">Se déconnecter</a>
+                </div>
 
             </div>
 
-            <?php if (!$erreur): ?>
             <div class="profil-evenements">
 
-                <?php if ($messageSucces): ?>
-                    <p class="form-status form-status--success" role="status"><?= e($messageSucces) ?></p>
-                <?php endif; ?>
+                <?php if ($messageSucces != "") { ?>
+                    <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($messageSucces); ?></p>
+                <?php } ?>
 
                 <!-- ===== ÉVÉNEMENTS CRÉÉS ===== -->
                 <div class="profil-card evenements-card">
                     <h2>Mes événements créés</h2>
-                    <?php if (count($evenementsOrganises) === 0): ?>
+                    <?php if (count($evenementsOrganises) == 0) { ?>
                         <p class="evenements-vide">Vous n'avez créé aucun événement pour le moment.</p>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="table-wrapper">
                             <table class="evenements-table">
                                 <thead>
@@ -120,28 +197,28 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($evenementsOrganises as $evenement): ?>
+                                    <?php foreach ($evenementsOrganises as $evenement) { ?>
                                         <tr>
-                                            <td><?= e($evenement['titre']) ?></td>
-                                            <td><?= e($evenement['type_evenement']) ?></td>
-                                            <td><?= e(date('d/m/Y H:i', strtotime($evenement['date_evenement']))) ?></td>
-                                            <td><?= e($evenement['lieu']) ?></td>
-                                            <td><?= e($evenement['nb_places'] ?? '—') ?></td>
-                                            <td><span class="badge"><?= e($statutsEvenement[$evenement['statut']] ?? $evenement['statut']) ?></span></td>
+                                            <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
+                                            <td><?php echo $evenement['date_fr']; ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                            <td><?php if ($evenement['nb_places'] != null) { echo $evenement['nb_places']; } else { echo '—'; } ?></td>
+                                            <td><span class="badge"><?php echo $statutsEvenement[$evenement['statut']]; ?></span></td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
 
                 <!-- ===== ÉVÉNEMENTS INSCRITS ===== -->
                 <div class="profil-card evenements-card">
                     <h2>Mes inscriptions aux événements</h2>
-                    <?php if (count($evenementsInscrits) === 0): ?>
+                    <?php if (count($evenementsInscrits) == 0) { ?>
                         <p class="evenements-vide">Vous n'êtes inscrit à aucun événement pour le moment.</p>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="table-wrapper">
                             <table class="evenements-table">
                                 <thead>
@@ -155,24 +232,23 @@ require_once __DIR__ . '/../../src/traitement/ProfilFormulaire_ahmed.php';
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($evenementsInscrits as $evenement): ?>
+                                    <?php foreach ($evenementsInscrits as $evenement) { ?>
                                         <tr>
-                                            <td><?= e($evenement['titre']) ?></td>
-                                            <td><?= e($evenement['type_evenement']) ?></td>
-                                            <td><?= e(date('d/m/Y H:i', strtotime($evenement['date_evenement']))) ?></td>
-                                            <td><?= e($evenement['lieu']) ?></td>
-                                            <td><?= e(date('d/m/Y', strtotime($evenement['date_inscription']))) ?></td>
-                                            <td><span class="badge"><?= e($statutsInscription[$evenement['statut_inscription']] ?? $evenement['statut_inscription']) ?></span></td>
+                                            <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
+                                            <td><?php echo $evenement['date_fr']; ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                            <td><?php echo $evenement['date_inscription_fr']; ?></td>
+                                            <td><span class="badge"><?php echo $statutsInscription[$evenement['statut_inscription']]; ?></span></td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
 
             </div>
-            <?php endif; ?>
         </div>
     </section>
 

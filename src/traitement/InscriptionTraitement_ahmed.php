@@ -1,154 +1,141 @@
 <?php
 
-session_start();
+// Traitement du formulaire d'inscription (public/inscription/inscription.php)
 
-require_once __DIR__ . '/../modele/Utilisateur_Malik.php';
-require_once __DIR__ . '/../repository/InscriptionRepository_ahmed.php';
-require_once __DIR__ . '/../repository/Formation_ahmed.php';
-require_once __DIR__ . '/../repository/EntrepriseRepository_Tom.php';
+require_once 'SessionUtilisateur_ahmed.php';
+require_once '../bdd/bdd.php';
+require_once '../modele/Utilisateur_Malik.php';
+require_once '../modele/formation_anais.php';
+require_once '../modele/Entreprise_Tom.php';
+require_once '../repository/UtilisateurRepository_malik.php';
+require_once '../repository/Formation_ahmed.php';
+require_once '../repository/EntrepriseRepository_Tom.php';
 
-$pageInscription = '../../public/inscription/inscription.php';
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ' . $pageInscription);
+if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    header('Location: ../../public/inscription/inscription.php');
     exit;
 }
 
-// Rôles qu'un visiteur peut choisir (le gestionnaire est créé par un autre gestionnaire)
-$rolesAutorises = array('etudiant', 'alumni', 'partenaire', 'professeur');
-
-$nom = trim($_POST['nom_utilisateur'] ?? '');
-$prenom = trim($_POST['prenom_utilisateur'] ?? '');
-$mail = trim($_POST['mail'] ?? '');
-$mdp = $_POST['mdp'] ?? '';
-$mdpConfirm = $_POST['mdp_confirm'] ?? '';
-$telephone = trim($_POST['telephone'] ?? '');
-$dateNaissance = trim($_POST['date_naissance'] ?? '');
-$role = $_POST['role'] ?? '';
-$idFormation = $_POST['id_formation'] ?? '';
-$anneePromo = trim($_POST['annee_promo'] ?? '');
-$specialite = trim($_POST['specialite'] ?? '');
-$idEntreprise = $_POST['id_entreprise'] ?? '';
-$poste = trim($_POST['poste'] ?? '');
-$motifInscription = trim($_POST['motif_inscription'] ?? '');
+// Récupération des champs (null si le champ est vide)
+$role = lireChamp('role');
+$nom = lireChamp('nom_utilisateur');
+$prenom = lireChamp('prenom_utilisateur');
+$mail = lireChamp('mail');
+$mdp = lireChamp('mdp');
+$mdpConfirm = lireChamp('mdp_confirm');
+$telephone = lireChamp('telephone');
+$dateNaissance = lireChamp('date_naissance');
+$idFormation = lireChamp('id_formation');
+$anneePromo = lireChamp('annee_promo');
+$specialite = lireChamp('specialite');
+$idEntreprise = lireChamp('id_entreprise');
+$poste = lireChamp('poste');
+$motifInscription = lireChamp('motif_inscription');
+$consentement = lireChamp('consentement');
 
 $erreurs = array();
 
 // --- Champs communs ---
-if ($nom === '' || $prenom === '') {
+if (empty($nom) || empty($prenom)) {
     $erreurs[] = "Le nom et le prénom sont obligatoires.";
 }
-if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+if (empty($mail)) {
     $erreurs[] = "L'adresse email n'est pas valide.";
 }
-if (strlen($mdp) < 8) {
+if (empty($mdp) || strlen($mdp) < 8) {
     $erreurs[] = "Le mot de passe doit contenir au moins 8 caractères.";
-} elseif ($mdp !== $mdpConfirm) {
+} elseif ($mdp != $mdpConfirm) {
     $erreurs[] = "Les mots de passe ne correspondent pas.";
 }
-if ($telephone !== '' && !preg_match('/^[0-9 +().-]{6,20}$/', $telephone)) {
-    $erreurs[] = "Le numéro de téléphone n'est pas valide.";
-}
-if ($dateNaissance !== '') {
-    $date = DateTime::createFromFormat('Y-m-d', $dateNaissance);
-    if (!$date || $date->format('Y-m-d') !== $dateNaissance || $date > new DateTime()) {
-        $erreurs[] = "La date de naissance n'est pas valide.";
-    }
-}
-if (!in_array($role, $rolesAutorises, true)) {
+if ($role != 'etudiant' && $role != 'alumni' && $role != 'partenaire' && $role != 'professeur') {
     $erreurs[] = "Veuillez choisir un profil.";
 }
-if (empty($_POST['consentement'])) {
+if (empty($consentement)) {
     $erreurs[] = "Vous devez accepter l'utilisation de vos informations.";
 }
 
 // --- Champs selon le profil ---
-if ($role === 'etudiant' || $role === 'alumni') {
-    if ($idFormation === '' || (new Formation_ahmed())->getFormation((int) $idFormation) === null) {
+if ($role == 'etudiant' || $role == 'alumni') {
+    $formationRepository = new Formation_ahmed();
+    if (empty($idFormation) || $formationRepository->getFormation($idFormation) == null) {
         $erreurs[] = "Veuillez choisir une formation.";
     }
-    $anneeMax = (int) date('Y') + 5;
-    if ($role === 'alumni' && $anneePromo === '') {
+    if ($role == 'alumni' && empty($anneePromo)) {
         $erreurs[] = "L'année de promotion est obligatoire pour un alumni.";
-    } elseif ($anneePromo !== '' && (!ctype_digit($anneePromo) || (int) $anneePromo < 1950 || (int) $anneePromo > $anneeMax)) {
+    } elseif (!empty($anneePromo) && ((int) $anneePromo < 1950 || (int) $anneePromo > date('Y') + 5)) {
         $erreurs[] = "L'année de promotion n'est pas valide.";
     }
-    $idEntreprise = '';
-    if ($role === 'etudiant') {
-        $poste = '';
+    $idEntreprise = null;
+    if ($role == 'etudiant') {
+        $poste = null;
     }
-} elseif ($role === 'partenaire') {
-    if ($idEntreprise === '' || (new EntrepriseRepository_Tom())->getEntreprise((int) $idEntreprise) === null) {
+} elseif ($role == 'partenaire') {
+    $entrepriseRepository = new EntrepriseRepository_Tom();
+    if (empty($idEntreprise) || $entrepriseRepository->getEntreprise($idEntreprise) == null) {
         $erreurs[] = "Veuillez choisir votre entreprise.";
     }
-    if ($poste === '') {
+    if (empty($poste)) {
         $erreurs[] = "Le poste est obligatoire pour un partenaire.";
     }
-    $idFormation = '';
-    $anneePromo = '';
-    $specialite = '';
-} elseif ($role === 'professeur') {
-    if ($specialite === '') {
+    $idFormation = null;
+    $anneePromo = null;
+    $specialite = null;
+} elseif ($role == 'professeur') {
+    if (empty($specialite)) {
         $erreurs[] = "La spécialité est obligatoire pour un professeur.";
-    } elseif (mb_strlen($specialite) > 150) {
-        $erreurs[] = "La spécialité ne doit pas dépasser 150 caractères.";
     }
-    $idFormation = '';
-    $anneePromo = '';
-    $idEntreprise = '';
-    $poste = '';
+    $idFormation = null;
+    $anneePromo = null;
+    $idEntreprise = null;
+    $poste = null;
 }
 
-if (mb_strlen($motifInscription) > 255) {
-    $erreurs[] = "Le motif d'inscription ne doit pas dépasser 255 caractères.";
-}
-
-$repository = new InscriptionRepository_ahmed();
-if (empty($erreurs) && $repository->mailExiste($mail)) {
+$repository = new UtilisateurRepository_malik();
+if (count($erreurs) == 0 && $repository->getUtilisateurParMail($mail) != null) {
     $erreurs[] = "Cette adresse email est déjà utilisée.";
 }
 
-if (!empty($erreurs)) {
-    $anciennesValeurs = $_POST;
-    unset($anciennesValeurs['mdp'], $anciennesValeurs['mdp_confirm']);
+// En cas d'erreur : on garde les messages et les valeurs saisies (sauf les mots de passe)
+if (count($erreurs) > 0) {
     $_SESSION['inscription_erreurs'] = $erreurs;
-    $_SESSION['inscription_valeurs'] = $anciennesValeurs;
-    header('Location: ' . $pageInscription);
+    $_SESSION['inscription_valeurs'] = array(
+        'role' => $role,
+        'nom_utilisateur' => $nom,
+        'prenom_utilisateur' => $prenom,
+        'mail' => $mail,
+        'telephone' => $telephone,
+        'date_naissance' => $dateNaissance,
+        'id_formation' => $idFormation,
+        'annee_promo' => $anneePromo,
+        'specialite' => $specialite,
+        'id_entreprise' => $idEntreprise,
+        'poste' => $poste,
+        'motif_inscription' => $motifInscription,
+        'consentement' => $consentement
+    );
+    header('Location: ../../public/inscription/inscription.php');
     exit;
 }
 
-$utilisateur = new Utilisateur_Malik(
-    null,
-    $nom,
-    $prenom,
-    $mail,
-    password_hash($mdp, PASSWORD_DEFAULT),
-    $telephone !== '' ? $telephone : null,
-    $dateNaissance !== '' ? $dateNaissance : null,
-    $role,
-    'en_attente',
-    null,
-    $anneePromo !== '' ? (int) $anneePromo : null,
-    $idFormation !== '' ? (int) $idFormation : null,
-    $specialite !== '' ? $specialite : null,
-    $motifInscription !== '' ? $motifInscription : null,
-    $idEntreprise !== '' ? (int) $idEntreprise : null,
-    $poste !== '' ? $poste : null,
-    null,
-    null
-);
+// Création de l'objet utilisateur puis enregistrement en base
+$utilisateur = new Utilisateur_Malik();
+$utilisateur->setNom($nom);
+$utilisateur->setPrenom($prenom);
+$utilisateur->setEmail($mail);
+$utilisateur->setMdp(password_hash($mdp, PASSWORD_DEFAULT)); // le mot de passe est haché, jamais stocké en clair
+$utilisateur->setTelephone($telephone);
+$utilisateur->setDateNaissance($dateNaissance);
+$utilisateur->setRole($role);
+$utilisateur->setStatutValidation('en_attente');
+$utilisateur->setAnneePromo($anneePromo);
+$utilisateur->setIdFormation($idFormation);
+$utilisateur->setSpecialite($specialite);
+$utilisateur->setMotifInscription($motifInscription);
+$utilisateur->setIdEntreprise($idEntreprise);
+$utilisateur->setPoste($poste);
 
-try {
-    $repository->ajouterUtilisateur($utilisateur);
-} catch (PDOException $e) {
-    $_SESSION['inscription_erreurs'] = array("Une erreur est survenue lors de l'inscription, veuillez réessayer.");
-    $anciennesValeurs = $_POST;
-    unset($anciennesValeurs['mdp'], $anciennesValeurs['mdp_confirm']);
-    $_SESSION['inscription_valeurs'] = $anciennesValeurs;
-    header('Location: ' . $pageInscription);
-    exit;
-}
+$repository->ajouterUtilisateur($utilisateur);
 
 $_SESSION['inscription_succes'] = "Votre compte a été créé. Il est en attente de validation par un gestionnaire.";
-header('Location: ' . $pageInscription);
+header('Location: ../../public/inscription/inscription.php');
 exit;

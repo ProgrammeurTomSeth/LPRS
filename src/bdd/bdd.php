@@ -1,34 +1,38 @@
 <?php
-class bdd {
+
+// Classe de connexion à la base de données (cours PDO)
+class Bdd
+{
     private $connexionBdd;
-    // Valeurs par défaut : poste de développement (WAMP)
-    private $identifiant = "root";
-    private $motDePasse = "";
-    private $nomBdd = "lprs";
-    private $host = "localhost";
 
     public function __construct()
     {
-        // Sur un serveur, les paramètres sont lus dans config.local.php
-        // (fichier propre à chaque machine, jamais envoyé sur Git).
-        $fichierConfig = __DIR__ . '/config.local.php';
-        if (file_exists($fichierConfig)) {
-            $config = require $fichierConfig;
-            $this->host        = $config['host']        ?? $this->host;
-            $this->nomBdd      = $config['nomBdd']      ?? $this->nomBdd;
-            $this->identifiant = $config['identifiant'] ?? $this->identifiant;
-            $this->motDePasse  = $config['motDePasse']  ?? $this->motDePasse;
+        // Paramètres du poste de développement (WAMP)
+        $host = "localhost";
+        $nomBdd = "lprs";
+        $identifiant = "root";
+        $motDePasse = "";
+
+        // Sur le serveur, le fichier config.local.php (jamais envoyé sur Git)
+        // contient un tableau associatif qui remplace ces valeurs
+        if (file_exists(__DIR__ . "/config.local.php")) {
+            $config = require __DIR__ . "/config.local.php";
+            $host = $config['host'];
+            $nomBdd = $config['nomBdd'];
+            $identifiant = $config['identifiant'];
+            $motDePasse = $config['motDePasse'];
         }
 
-        $this->connexionBdd = new PDO(
-            "mysql:host=" . $this->host . ";dbname=" . $this->nomBdd . ";charset=utf8mb4",
-            $this->identifiant,
-            $this->motDePasse,
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-        );
+        try {
+            $this->connexionBdd = new PDO("mysql:host=" . $host . ";dbname=" . $nomBdd . ";charset=utf8mb4", $identifiant, $motDePasse);
+        } catch (PDOException $e) {
+            echo "Erreur : " . $e->getMessage();
+            exit;
+        }
     }
 
-    public function getConnexionBdd(){
+    public function getConnexionBdd()
+    {
         return $this->connexionBdd;
     }
 }

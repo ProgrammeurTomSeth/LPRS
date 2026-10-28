@@ -1,10 +1,26 @@
 <?php
 
-$message = "";
-$erreur = "";
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 
-require_once __DIR__ . '/../../src/traitement/EvenementTraitement_Tom.php';
-require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+// Page réservée aux utilisateurs connectés
+if (!estConnecte()) {
+    header('Location: ../connexion/connexion.php');
+    exit;
+}
+
+// Message d'erreur laissé par src/traitement/EvenementTraitement_Tom.php
+$erreur = "";
+if (!empty($_SESSION['evenement_erreur'])) {
+    $erreur = $_SESSION['evenement_erreur'];
+    $_SESSION['evenement_erreur'] = "";
+}
+
+// Les gestionnaires ne peuvent pas créer d'événement : on n'affiche pas le formulaire
+$afficherFormulaire = true;
+if ($_SESSION['role'] == 'gestionnaire') {
+    $erreur = "Les gestionnaires ne peuvent pas créer d'événement.";
+    $afficherFormulaire = false;
+}
 
 ?>
 
@@ -37,7 +53,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -63,24 +79,18 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
                 <h2>Nouvel événement</h2>
 
-                <?php if ($message !== ""): ?>
-                    <div class="alert alert--success">
-                        <?= htmlspecialchars($message) ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($erreur !== ""): ?>
+                <?php if ($erreur != "") { ?>
                     <div class="alert alert--error" role="alert">
-                        <?= htmlspecialchars($erreur) ?>
+                        <?php echo htmlspecialchars($erreur); ?>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
 
-                <?php if ($erreur === "" && $message === ""): ?>
+                <?php if ($afficherFormulaire) { ?>
 
                     <div class="alert alert--info">
                         Le créateur est automatiquement ajouté comme organisateur. Si le créateur est étudiant, un professeur doit faire partie des organisateurs pour que l'événement soit publié.
                     </div>
-                    <form method="POST">
+                    <form method="POST" action="../../src/traitement/EvenementTraitement_Tom.php">
                         <div class="form-group">
                             <label for="type_evenement">Type d'événement *</label>
                             <input type="text" id="type_evenement" name="type_evenement" required placeholder="Exemple : Conférence, rencontre, atelier...">
@@ -124,7 +134,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
 
                         <button type="submit" class="btn btn-primary btn-lg btn-block">Créer l'événement</button>
                     </form>
-                <?php endif; ?>
+                <?php } ?>
 
             </div>
         </div>
@@ -145,167 +155,6 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
     </div>
 </footer>
 
-<script>
-    const navToggle = document.getElementById('nav-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    if (navToggle && mainNav) {
-        navToggle.addEventListener('click', () => {
-            const isOpen = mainNav.classList.toggle('open');
-            navToggle.setAttribute('aria-expanded', String(isOpen));
-        });
-    }
-</script>
-
-<script>
-    const rechercheInput = document.getElementById('recherche_utilisateur');
-    const resultats = document.getElementById('resultats_recherche');
-    const selection = document.getElementById('organisateurs_selectionnes');
-    const utilisateursSelectionnes = new Map();
-
-    if (rechercheInput) {
-        rechercheInput.addEventListener('input',
-            function () {
-
-                const recherche = this.value.trim();
-
-                if (recherche.length < 2) {
-                    resultats.innerHTML = '';
-                    return;
-                }
-
-                fetch('../../src/traitement/EvenementTraitement_Tom.php?recherche=' + encodeURIComponent(recherche))
-                    .then(response => response.json())
-                    .then(utilisateurs => {
-                        resultats.innerHTML = '';
-                        if (utilisateurs.length === 0) {
-                            resultats.innerHTML =
-                                '<div class="aucun-resultat">' +
-                                'Aucun utilisateur trouvé.' +
-                                '</div>';
-                            return;
-                        }
-                        utilisateurs.forEach(
-                            utilisateur => {
-                                if (
-                                    utilisateursSelectionnes.has(
-                                        String(utilisateur.id_utilisateur)
-                                    )
-                                ) {
-                                    return;
-                                }
-                                const div = document.createElement('div')
-                                div.className = 'utilisateur';
-                                div.innerHTML =
-                                    '<strong>' +
-                                    escapeHtml(
-                                        utilisateur.prenom_utilisateur +
-                                        ' ' +
-                                        utilisateur.nom_utilisateur
-                                    ) +
-                                    '</strong>' +
-                                    '<br>' +
-                                    escapeHtml(
-                                        utilisateur.mail
-                                    ) +
-                                    ' - ' +
-                                    escapeHtml(
-                                        utilisateur.role
-                                    ) +
-                                    ' ' +
-                                    '<button type="button">' +
-                                    'Ajouter' +
-                                    '</button>';
-
-                                div.querySelector('button')
-                                    .addEventListener(
-                                        'click',
-                                        function () {
-
-                                            ajouterOrganisateur(
-                                                utilisateur
-                                            );
-
-                                            resultats.innerHTML =
-                                                '';
-                                            rechercheInput.value =
-                                                '';
-                                        }
-                                    );
-
-                                resultats.appendChild(div);
-                            }
-                        );
-                    })
-                    .catch(() => {
-
-                        resultats.innerHTML =
-                            '<div class="aucun-resultat">' +
-                            'Erreur lors de la recherche.' +
-                            '</div>';
-                    });
-            }
-        );
-    }
-
-    function ajouterOrganisateur(utilisateur) {
-        const id = String(utilisateur.id_utilisateur);
-        if (utilisateursSelectionnes.has(id)) {
-            return;
-        }
-        utilisateursSelectionnes.set(id, utilisateur);
-        afficherOrganisateurs();
-    }
-
-    function supprimerOrganisateur(id) {
-        utilisateursSelectionnes.delete(String(id));
-        afficherOrganisateurs();
-    }
-
-    function afficherOrganisateurs() {
-        selection.innerHTML = '';
-        utilisateursSelectionnes.forEach(
-            utilisateur => {
-                const div = document.createElement('div');
-                div.className = 'organisateur';
-                div.innerHTML = escapeHtml(
-                        utilisateur.prenom_utilisateur +
-                        ' ' +
-                        utilisateur.nom_utilisateur
-                    ) +
-                    ' (' +
-                    escapeHtml(
-                        utilisateur.role
-                    ) +
-                    ')' +
-                    ' ' +
-                    '<button type="button">X</button>' +
-
-                    '<input type="hidden" ' +
-                    'name="coorganisateurs[]" ' +
-                    'value="' +
-                    escapeHtml(
-                        utilisateur.id_utilisateur
-                    ) +
-                    '">';
-                div.querySelector('button').addEventListener(
-                        'click',
-                        function () {
-                            supprimerOrganisateur(
-                                utilisateur.id_utilisateur
-                            );
-                        }
-                    );
-                selection.appendChild(div);
-            }
-        );
-    }
-
-    function escapeHtml(texte) {
-        const div = document.createElement('div');
-        div.textContent = texte;
-        return div.innerHTML;
-    }
-</script>
+<script src="creation_evenement_Tom.js"></script>
 </body>
 </html>
