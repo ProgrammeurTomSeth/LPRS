@@ -1,15 +1,10 @@
 <?php
 
-session_start();
+// Déconnexion : on supprime la session puis on revient à l'accueil
 
-$_SESSION = array();
-
-if (ini_get('session.use_cookies')) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-}
+require_once 'SessionUtilisateur_ahmed.php';
 
 session_destroy();
 
-header('Location: ../../public/page_acceuille/page_entreprise.php');
+header('Location: ../../public/page_acceuille/page_accueil.php');
 exit;

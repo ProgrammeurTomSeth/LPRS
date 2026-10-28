@@ -1,11 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
-require_once __DIR__ . '/../../src/traitement/ConnexionFormulaire_ahmed.php';
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 
-// Variables définies dans ConnexionFormulaire_ahmed.php
-/** @var string|null $erreur */
-/** @var string $mail */
+// Message d'erreur et mail laissés par ConnexionTraitement_ahmed.php
+$erreur = "";
+$mail = "";
+if (!empty($_SESSION['connexion_erreur'])) {
+    $erreur = $_SESSION['connexion_erreur'];
+    if (!empty($_SESSION['connexion_mail'])) {
+        $mail = $_SESSION['connexion_mail'];
+    }
+    // On vide le message pour qu'il ne s'affiche qu'une seule fois
+    $_SESSION['connexion_erreur'] = "";
+    $_SESSION['connexion_mail'] = "";
+}
 
 ?>
 
@@ -40,7 +48,7 @@ require_once __DIR__ . '/../../src/traitement/ConnexionFormulaire_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -68,19 +76,19 @@ require_once __DIR__ . '/../../src/traitement/ConnexionFormulaire_ahmed.php';
 
                 <h2>Se connecter</h2>
 
-                <?php if ($erreur): ?>
-                    <p class="form-status form-status--error" role="alert"><?= e($erreur) ?></p>
-                <?php endif; ?>
+                <?php if ($erreur != "") { ?>
+                    <p class="form-status form-status--error" role="alert"><?php echo htmlspecialchars($erreur); ?></p>
+                <?php } ?>
 
                 <div class="form-group">
                     <label for="mail">Email</label>
-                    <input type="email" id="mail" name="mail" maxlength="255" autocomplete="email" value="<?= e($mail) ?>" required <?= $mail === '' ? 'autofocus' : '' ?>>
+                    <input type="email" id="mail" name="mail" maxlength="255" autocomplete="email" value="<?php echo htmlspecialchars($mail); ?>" required <?php if ($mail == "") { echo 'autofocus'; } ?>>
                 </div>
 
                 <div class="form-group">
                     <label for="mdp">Mot de passe</label>
                     <div class="password-field">
-                        <input type="password" id="mdp" name="mdp" autocomplete="current-password" required <?= $mail !== '' ? 'autofocus' : '' ?>>
+                        <input type="password" id="mdp" name="mdp" autocomplete="current-password" required <?php if ($mail != "") { echo 'autofocus'; } ?>>
                         <button type="button" class="password-toggle" id="password-toggle" aria-controls="mdp" aria-pressed="false">Afficher</button>
                     </div>
                 </div>
@@ -88,7 +96,7 @@ require_once __DIR__ . '/../../src/traitement/ConnexionFormulaire_ahmed.php';
                 <button type="submit" class="btn btn-primary btn-lg btn-block">Se connecter</button>
 
                 <p class="login-footer">Pas encore de compte ? <a href="../inscription/inscription.php">Inscrivez-vous</a></p>
-                <p class="login-footer">Connexion <a href="connexion.php">Admin</a></p>
+                <p class="login-footer">Connexion <a href="../Page_Admin/page_admin.php">Admin</a></p>
 
             </form>
         </div>

@@ -41,3 +41,8 @@ form.inline {
 .refuse {
     color: red;
 }
+/* Message affiché si une suppression est impossible */
+.message-erreur {
+    color: red;
+    font-weight: bold;
+}

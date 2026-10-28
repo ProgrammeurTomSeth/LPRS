@@ -657,3 +657,7 @@ h2.center, p.eyebrow.center { display: block; }
   .register-form { padding: 26px; }
   .form-row { grid-template-columns: 1fr; }
 }
+
+/* Paragraphe "Une question ?" du bloc de gauche (anciennement en style dans la page) */
+.register-aside-contact { margin-top: 28px; }
+.register-aside-contact a { color: #fff; text-decoration: underline; }
