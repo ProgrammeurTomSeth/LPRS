@@ -1,16 +1,30 @@
 <?php
 
-$message = '';
-$typeMessage = '';
-$evenements = [];
-$idUtilisateur = 0;
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/repository/EvenementRepository_ahmed.php';
 
-require_once __DIR__ . '/../../src/traitement/ListeEvenementsTraitement_Tom.php';
-require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+// Messages possibles après une inscription (résultat envoyé dans l'URL par
+// src/traitement/InscriptionEvenementTraitement_Tom.php)
+$messages = array(
+    'succes' => 'Votre inscription a bien été enregistrée.',
+    'connexion' => 'Vous devez être connecté pour vous inscrire.',
+    'deja_inscrit' => 'Vous êtes déjà inscrit à cet événement.',
+    'complet' => 'Cet événement est complet.',
+    'indisponible' => 'Cet événement est indisponible.',
+    'erreur' => 'Une erreur est survenue. Veuillez réessayer.'
+);
 
-function h($valeur){
-    return htmlspecialchars((string) ($valeur ?? ''), ENT_QUOTES, 'UTF-8');
+$message = "";
+$resultat = "";
+if (isset($_GET['resultat']) && isset($messages[$_GET['resultat']])) {
+    $resultat = $_GET['resultat'];
+    $message = $messages[$resultat];
 }
+
+$evenementRepository = new EvenementRepository_ahmed();
+$evenements = $evenementRepository->getEvenementsPublies();
+
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +65,7 @@ function h($valeur){
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -84,13 +98,19 @@ function h($valeur){
 
             <p class="evenements-description">Retrouvez les événements publiés et consultez leurs informations pratiques.</p>
 
-            <?php if (!empty($message)): ?>
-                <div class="form-status <?= $typeMessage === 'erreur' ? 'form-status--error' : '' ?>" role="<?= $typeMessage === 'erreur' ? 'alert' : 'status' ?>">
-                    <?= h($message) ?>
-                </div>
-            <?php endif; ?>
+            <?php if ($message != "") { ?>
+                <?php if ($resultat == 'succes') { ?>
+                    <div class="form-status" role="status">
+                        <?php echo $message; ?>
+                    </div>
+                <?php } else { ?>
+                    <div class="form-status form-status--error" role="alert">
+                        <?php echo $message; ?>
+                    </div>
+                <?php } ?>
+            <?php } ?>
 
-            <?php if (empty($evenements)): ?>
+            <?php if (count($evenements) == 0) { ?>
                 <div class="evenements-vide">
                     <h3>Aucun événement disponible</h3>
                     <p>
@@ -98,56 +118,61 @@ function h($valeur){
                         Revenez consulter cette page ultérieurement.
                     </p>
                 </div>
-            <?php else: ?>
+            <?php } else { ?>
                 <div class="evenements-grille">
-                    <?php foreach ($evenements as $evenement): ?>
-                        <?php $idEvenement = (int) $evenement['id_evenement'];$nombreInscrits = (int) ($evenement['nombre_inscrits'] ?? 0);
-                        $nombrePlaces = (isset($evenement['nb_places']) && $evenement['nb_places'] !== '') ? (int) $evenement['nb_places'] : null;
-                        $placesRestantes = $nombrePlaces !== null ? max(0, $nombrePlaces - $nombreInscrits) : null;
-                        $dejaInscrit = (int) ($evenement['deja_inscrit'] ?? 0) === 1;
-                        $complet = $placesRestantes !== null && $placesRestantes <= 0;
-                        $timestamp = !empty($evenement['date_evenement']) ? strtotime($evenement['date_evenement']) : false; ?>
+                    <?php foreach ($evenements as $evenement) { ?>
+                        <?php
+                        // Places restantes (null si le nombre de places n'est pas limité)
+                        $placesRestantes = null;
+                        $complet = false;
+                        if ($evenement['nb_places'] != null) {
+                            $placesRestantes = $evenement['nb_places'] - $evenement['nombre_inscrits'];
+                            if ($placesRestantes <= 0) {
+                                $placesRestantes = 0;
+                                $complet = true;
+                            }
+                        }
+
+                        $dejaInscrit = false;
+                        if (estConnecte()) {
+                            $dejaInscrit = $evenementRepository->estInscrit($evenement['id_evenement'], $_SESSION['id_utilisateur']);
+                        }
+                        ?>
 
                         <article class="evenement-carte">
                             <span class="evenement-carte__type">
-                                <?= h($evenement['type_evenement']) ?>
+                                <?php echo htmlspecialchars($evenement['type_evenement']); ?>
                             </span>
 
                             <h3>
-                                <?= h($evenement['titre']) ?>
+                                <?php echo htmlspecialchars($evenement['titre']); ?>
                             </h3>
 
-                            <p class="evenement-carte__description">
-                                <?= nl2br(h($evenement['description'])) ?>
-                            </p>
+                            <p class="evenement-carte__description"><?php echo htmlspecialchars($evenement['description']); ?></p>
 
                             <dl class="evenement-infos">
                                 <div class="evenement-info">
                                     <dt>Lieu</dt>
                                     <dd>
-                                        <?= h(!empty($evenement['lieu']) ? $evenement['lieu'] : 'Non renseigné') ?>
+                                        <?php echo htmlspecialchars($evenement['lieu']); ?>
                                     </dd>
                                 </div>
 
                                 <div class="evenement-info">
                                     <dt>Date</dt>
                                     <dd>
-                                        <?php if ($timestamp !== false): ?>
-                                            <?= h(date('d/m/Y à H\hi', $timestamp)) ?>
-                                        <?php else: ?>
-                                            Non renseignée
-                                        <?php endif; ?>
+                                        <?php echo $evenement['date_fr']; ?>
                                     </dd>
                                 </div>
 
-                                <?php if (!empty($evenement['elements_requis'])): ?>
+                                <?php if ($evenement['elements_requis'] != null) { ?>
                                     <div class="evenement-info">
                                         <dt>Éléments requis</dt>
                                         <dd>
-                                            <?= nl2br(h($evenement['elements_requis'])) ?>
+                                            <?php echo htmlspecialchars($evenement['elements_requis']); ?>
                                         </dd>
                                     </div>
-                                <?php endif; ?>
+                                <?php } ?>
                             </dl>
 
                             <div class="evenement-places">
@@ -155,39 +180,39 @@ function h($valeur){
                                     Places disponibles
                                 </span>
                                 <span class="evenement-places__nombre
-                                    <?= $complet ? 'evenement-places__nombre--complet' : '' ?>">
-                                    <?php if ($nombrePlaces === null): ?>
+                                    <?php if ($complet) { echo 'evenement-places__nombre--complet'; } ?>">
+                                    <?php if ($evenement['nb_places'] == null) { ?>
                                         Non limitées
-                                    <?php else: ?>
-                                        <?= h($placesRestantes) ?>
-                                        / <?= h($nombrePlaces) ?>
-                                    <?php endif; ?>
+                                    <?php } else { ?>
+                                        <?php echo $placesRestantes; ?>
+                                        / <?php echo $evenement['nb_places']; ?>
+                                    <?php } ?>
                                 </span>
                             </div>
 
                             <div class="evenement-actions">
-                                <?php if ($dejaInscrit): ?>
+                                <?php if ($dejaInscrit) { ?>
                                     <span class="btn btn-outline" aria-disabled="true">
                                         Déjà inscrit
                                     </span>
-                                <?php elseif ($complet): ?>
+                                <?php } elseif ($complet) { ?>
                                     <span class="btn btn-outline" aria-disabled="true">
                                         Événement complet
                                     </span>
-                                <?php else: ?>
+                                <?php } else { ?>
                                     <form method="POST" action="../../src/traitement/InscriptionEvenementTraitement_Tom.php">
-                                        <input type="hidden" name="id_evenement" value="<?= h($idEvenement) ?>">
+                                        <input type="hidden" name="id_evenement" value="<?php echo $evenement['id_evenement']; ?>">
 
                                         <button type="submit" class="btn btn-primary">
                                             S'inscrire
                                         </button>
                                     </form>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </article>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
     </section>
 
@@ -215,18 +240,7 @@ function h($valeur){
     </div>
 </footer>
 
-<script>
-    const navToggle = document.getElementById('nav-toggle');
-    const mainNav = document.getElementById('main-nav');
-
-    if (navToggle && mainNav) {
-        navToggle.addEventListener('click', () => {
-            const isOpen = mainNav.classList.toggle('open');
-            navToggle.setAttribute('aria-expanded', String(isOpen));
-            navToggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
-        });
-    }
-</script>
+<script src="liste_evenement_Tom.js"></script>
 
 </body>
 </html>

@@ -1,36 +1,39 @@
 <?php
 
-class formation_anais{
+// Modèle : représente une ligne de la table formation
+class formation_anais
+{
     private $id_formation;
     private $nom_formation;
     private $type_formation;
 
-    public function __construct($id_formation, $nom_formation, $type_formation){
-        $this->id_formation = $id_formation;
-        $this->nom_formation = $nom_formation;
-        $this->type_formation = $type_formation;
-    }
-    public function getIdformation(){
+    public function getIdFormation()
+    {
         return $this->id_formation;
     }
-    public function getNom_formation(){
+
+    public function setIdFormation($id_formation)
+    {
+        $this->id_formation = $id_formation;
+    }
+
+    public function getNomFormation()
+    {
         return $this->nom_formation;
     }
-    public function getType_formation(){
+
+    public function setNomFormation($nom_formation)
+    {
+        $this->nom_formation = $nom_formation;
+    }
+
+    public function getTypeFormation()
+    {
         return $this->type_formation;
     }
-    public function setId_formation($id_formation){
-        $this->id_formation = $id_formation;
-        return $this;
-    }
-    public function setNom_formation($nom_formation){
-        $this->nom_formation = $nom_formation;
-        return $this;
-    }
-    public function setType_formation($type_formation){
+
+    public function setTypeFormation($type_formation)
+    {
         $this->type_formation = $type_formation;
-        return $this;
     }
-
-
 }

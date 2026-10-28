@@ -1,24 +1,34 @@
 <?php
 
-// Gestion de la session utilisateur commune à toutes les pages publiques
+// Fichier inclus en premier par toutes les pages et tous les traitements :
+// il démarre la session et contient les fonctions communes.
+session_start();
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-function estConnecte(){
+// Renvoie true si un utilisateur est connecté
+function estConnecte()
+{
     return isset($_SESSION['id_utilisateur']);
 }
 
-// Affiche les boutons de droite de la barre de navigation.
-// $racine : chemin relatif de la page vers le dossier public/ (ex : '../' ou '')
-function afficherActionsHeader($racine){
-    $racine = htmlspecialchars($racine, ENT_QUOTES, 'UTF-8');
+// Renvoie la valeur d'un champ envoyé en POST, ou null s'il est absent ou vide
+// ($_POST est superglobal : il est visible à l'intérieur de la fonction)
+function lireChamp($nom)
+{
+    if (isset($_POST[$nom]) && $_POST[$nom] != "") {
+        return $_POST[$nom];
+    }
+    return null;
+}
+
+// Affiche les boutons à droite de la barre de navigation
+// (toutes les pages sont dans public/<dossier>/, d'où les chemins en ../)
+function afficherActionsHeader()
+{
     if (estConnecte()) {
-        echo '<a href="' . $racine . '../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline header-login">Déconnexion</a>' . "\n";
-        echo '            <a href="' . $racine . 'profil/profil_utilisateur.php" class="btn btn-primary header-cta">Profil</a>' . "\n";
+        echo '<a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline header-login">Déconnexion</a>';
+        echo '<a href="../profil/profil_utilisateur.php" class="btn btn-primary header-cta">Profil</a>';
     } else {
-        echo '<a href="' . $racine . 'connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>' . "\n";
-        echo '            <a href="' . $racine . 'inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>' . "\n";
+        echo '<a href="../connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>';
+        echo '<a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>';
     }
 }

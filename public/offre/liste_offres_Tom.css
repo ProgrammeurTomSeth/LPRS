@@ -502,3 +502,8 @@ textarea {
         width: 100%;
     }
 }
+/* Garde les retours à la ligne saisis dans la description et les missions */
+.offre-description,
+.offre-missions p {
+    white-space: pre-line;
+}

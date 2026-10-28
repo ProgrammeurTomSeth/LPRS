@@ -1,16 +1,49 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/EntrepriseFormulaire_ahmed.php';
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/modele/Utilisateur_Malik.php';
+require_once '../../src/repository/UtilisateurRepository_malik.php';
+require_once '../../src/repository/EntrepriseRepository_Tom.php';
 
-$recherche = trim($_GET['search'] ?? '');
-$entreprises = array();
-$erreurChargement = null;
-try {
-    $entreprises = (new recherche_entreprise())->rechercher($recherche);
-} catch (PDOException $e) {
-    $erreurChargement = "Impossible de charger les entreprises pour le moment.";
+// Recherche par nom (formulaire en GET) : sans recherche, on affiche toutes les entreprises
+$recherche = "";
+if (isset($_GET['search'])) {
+    $recherche = $_GET['search'];
 }
 
+$entrepriseRepository = new EntrepriseRepository_Tom();
+if ($recherche == "") {
+    $entreprises = $entrepriseRepository->getAllEntreprises();
+} else {
+    $entreprises = $entrepriseRepository->getEntreprisesParNom($recherche);
+}
+
+// Seuls les alumni et les partenaires connectés peuvent se rattacher à une entreprise
+$peutSeRattacher = false;
+$idEntrepriseUtilisateur = null;
+if (estConnecte()) {
+    $utilisateurRepository = new UtilisateurRepository_malik();
+    $utilisateurConnecte = $utilisateurRepository->getUtilisateurParId($_SESSION['id_utilisateur']);
+    if ($utilisateurConnecte != null) {
+        $idEntrepriseUtilisateur = $utilisateurConnecte->getIdEntreprise();
+        if ($utilisateurConnecte->getRole() == 'alumni' || $utilisateurConnecte->getRole() == 'partenaire') {
+            $peutSeRattacher = true;
+        }
+    }
+}
+
+// Messages laissés par src/traitement/rattachement_entreprise.php
+$messageSucces = "";
+$messageErreur = "";
+if (!empty($_SESSION['entreprise_message'])) {
+    $messageSucces = $_SESSION['entreprise_message'];
+    $_SESSION['entreprise_message'] = "";
+}
+if (!empty($_SESSION['entreprise_erreur'])) {
+    $messageErreur = $_SESSION['entreprise_erreur'];
+    $_SESSION['entreprise_erreur'] = "";
+}
 
 ?>
 <!DOCTYPE html>
@@ -43,7 +76,7 @@ try {
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -72,58 +105,56 @@ try {
                 <!-- Barre de recherche SANS JS -->
                 <form method="GET" class="search-container">
                     <input type="text" name="search" placeholder="Rechercher une entreprise..." aria-label="Rechercher une entreprise"
-                           value="<?= e($recherche) ?>">
+                           value="<?php echo htmlspecialchars($recherche); ?>">
                     <button type="submit" class="btn btn-primary">Rechercher</button>
                 </form>
             </div>
 
-            <?php if ($messageSucces): ?>
-                <p class="form-status form-status--success" role="status"><?= e($messageSucces) ?></p>
-            <?php endif; ?>
-            <?php if ($messageErreur): ?>
-                <p class="form-status form-status--error" role="alert"><?= e($messageErreur) ?></p>
-            <?php endif; ?>
+            <?php if ($messageSucces != "") { ?>
+                <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($messageSucces); ?></p>
+            <?php } ?>
+            <?php if ($messageErreur != "") { ?>
+                <p class="form-status form-status--error" role="alert"><?php echo htmlspecialchars($messageErreur); ?></p>
+            <?php } ?>
 
-            <?php if ($erreurChargement): ?>
-                <p class="form-status form-status--error" role="alert"><?= e($erreurChargement) ?></p>
-            <?php elseif (count($entreprises) === 0): ?>
+            <?php if (count($entreprises) == 0) { ?>
                 <p class="liste-vide">
-                    <?php if ($recherche !== ''): ?>
-                        Aucune entreprise ne correspond à « <?= e($recherche) ?> ».
+                    <?php if ($recherche != "") { ?>
+                        Aucune entreprise ne correspond à « <?php echo htmlspecialchars($recherche); ?> ».
                         <a href="page_entreprise.php">Voir toutes les entreprises</a>
-                    <?php else: ?>
+                    <?php } else { ?>
                         Aucune entreprise n'est enregistrée pour le moment.
-                    <?php endif; ?>
+                    <?php } ?>
                 </p>
-            <?php else: ?>
+            <?php } else { ?>
                 <div class="cards-grid">
-                    <?php foreach ($entreprises as $entreprise): ?>
-                        <?php $estMonEntreprise = $idEntrepriseUtilisateur === (int) $entreprise->getIdEntreprise(); ?>
-                        <article class="card<?= $estMonEntreprise ? ' card--mon-entreprise' : '' ?>">
-                            <h3><?= e($entreprise->getNomEntreprise()) ?></h3>
-                            <?php if ($estMonEntreprise): ?>
+                    <?php foreach ($entreprises as $entreprise) { ?>
+                        <?php $estMonEntreprise = ($idEntrepriseUtilisateur == $entreprise['id_entreprise']); ?>
+                        <article class="card<?php if ($estMonEntreprise) { echo ' card--mon-entreprise'; } ?>">
+                            <h3><?php echo htmlspecialchars($entreprise['nom_entreprise']); ?></h3>
+                            <?php if ($estMonEntreprise) { ?>
                                 <span class="badge">Votre entreprise</span>
-                            <?php endif; ?>
-                            <p><strong>Activité :</strong> <?= e($entreprise->getActivite() ?? 'Non renseignée') ?></p>
-                            <p><strong>Adresse :</strong> <?= e($entreprise->getAdresse() ?? 'Non renseignée') ?></p>
+                            <?php } ?>
+                            <p><strong>Activité :</strong> <?php if ($entreprise['activite'] != null) { echo htmlspecialchars($entreprise['activite']); } else { echo 'Non renseignée'; } ?></p>
+                            <p><strong>Adresse :</strong> <?php if ($entreprise['adresse'] != null) { echo htmlspecialchars($entreprise['adresse']); } else { echo 'Non renseignée'; } ?></p>
                             <p><strong>Site web :</strong>
-                                <a href="<?= e($entreprise->getSiteWeb()) ?>" target="_blank" rel="noopener"><?= e($entreprise->getSiteWeb()) ?></a>
+                                <a href="<?php echo htmlspecialchars($entreprise['site_web']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($entreprise['site_web']); ?></a>
                             </p>
 
                             <div class="card-actions">
-                                <a href="profil_entreprise.php?id=<?= (int) $entreprise->getIdEntreprise() ?>" class="btn btn-sm btn-outline">Voir</a>
-                                <?php if ($peutSeRattacher && !$estMonEntreprise): ?>
+                                <a href="profil_entreprise.php?id=<?php echo $entreprise['id_entreprise']; ?>" class="btn btn-sm btn-outline">Voir</a>
+                                <?php if ($peutSeRattacher && !$estMonEntreprise) { ?>
                                     <form action="../../src/traitement/rattachement_entreprise.php" method="post">
-                                        <input type="hidden" name="id_entreprise" value="<?= (int) $entreprise->getIdEntreprise() ?>">
+                                        <input type="hidden" name="id_entreprise" value="<?php echo $entreprise['id_entreprise']; ?>">
                                         <input type="hidden" name="action" value="rattacher">
                                         <button type="submit" class="btn btn-sm btn-primary">Me rattacher</button>
                                     </form>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </article>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
     </section>
 

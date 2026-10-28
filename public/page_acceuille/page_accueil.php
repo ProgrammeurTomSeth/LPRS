@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 
 ?>
 <!DOCTYPE html>
@@ -33,7 +33,7 @@ require_once __DIR__ . '/../../src/traitement/SessionUtilisateur_ahmed.php';
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">

@@ -1,8 +1,3 @@
-<?php
-
-require_once('../../src/traitement/traitement_formation.php');
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>

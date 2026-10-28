@@ -1,17 +1,50 @@
 <?php
 
-$message = '';
-$typeMessage = '';
-$offres = [];
-$candidaturesUtilisateur = [];
-$roleUtilisateur = '';
-$idUtilisateur = 0;
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/repository/OffreRepository_Tom.php';
 
-require_once __DIR__ . '/../../src/traitement/ListeOffreTraitement_Tom.php';
+// Messages possibles après une candidature (résultat envoyé dans l'URL par
+// src/traitement/ListeOffreTraitement_Tom.php)
+$messages = array(
+    'succes' => 'Votre candidature a bien été enregistrée.',
+    'connexion' => 'Vous devez être connecté pour postuler.',
+    'profil' => 'Seuls les étudiants et les alumni peuvent postuler.',
+    'profil_offre' => 'Cette offre ne correspond pas à votre profil.',
+    'deja_postule' => 'Vous avez déjà postulé à cette offre.',
+    'indisponible' => 'Cette offre n’est plus disponible.',
+    'motivation' => 'Veuillez saisir votre motivation.',
+    'erreur' => 'Une erreur est survenue. Veuillez réessayer.'
+);
 
-function h($valeur){
-    return htmlspecialchars((string) ($valeur ?? ''), ENT_QUOTES, 'UTF-8');
+$message = "";
+$resultat = "";
+if (isset($_GET['resultat']) && isset($messages[$_GET['resultat']])) {
+    $resultat = $_GET['resultat'];
+    $message = $messages[$resultat];
 }
+
+// Libellés affichés pour les valeurs stockées en base
+$types = array(
+    'stage' => 'Stage',
+    'alternance' => 'Alternance',
+    'cdd' => 'CDD',
+    'cdi' => 'CDI'
+);
+$profils = array(
+    'tous' => 'Étudiants et alumni',
+    'etudiant' => 'Étudiants',
+    'alumni' => 'Alumni'
+);
+
+// Rôle de l'utilisateur connecté ("" si personne n'est connecté)
+$roleUtilisateur = "";
+if (estConnecte()) {
+    $roleUtilisateur = $_SESSION['role'];
+}
+
+$offreRepository = new OffreRepository_Tom();
+$offres = $offreRepository->getOffresOuvertes();
 
 ?>
 
@@ -49,7 +82,7 @@ function h($valeur){
             </ul>
         </nav>
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
         <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
             <span></span>
@@ -83,13 +116,19 @@ function h($valeur){
                 Retrouvez ici les offres actuellement ouvertes aux candidatures.
             </p>
 
-            <?php if ($message !== ''): ?>
-                <div class="message <?= $typeMessage === 'erreur' ? 'message-erreur' : 'message-succes' ?>" role="<?= $typeMessage === 'erreur' ? 'alert' : 'status' ?>">
-                    <?= h($message) ?>
-                </div>
-            <?php endif; ?>
+            <?php if ($message != "") { ?>
+                <?php if ($resultat == 'succes') { ?>
+                    <div class="message message-succes" role="status">
+                        <?php echo $message; ?>
+                    </div>
+                <?php } else { ?>
+                    <div class="message message-erreur" role="alert">
+                        <?php echo $message; ?>
+                    </div>
+                <?php } ?>
+            <?php } ?>
 
-            <?php if (empty($offres)): ?>
+            <?php if (count($offres) == 0) { ?>
                 <div class="offres-vides">
                     <h3>Aucune offre disponible</h3>
                     <p>
@@ -97,110 +136,98 @@ function h($valeur){
                         Revenez consulter cette page ultérieurement.
                     </p>
                 </div>
-            <?php else: ?>
+            <?php } else { ?>
                 <div class="offres-grille">
-                    <?php foreach ($offres as $offre): ?>
+                    <?php foreach ($offres as $offre) { ?>
                         <?php
-                        $idOffre = (int) $offre['id_offre'];
-                        $dejaPostule = in_array($idOffre, $candidaturesUtilisateur, true);
-                        $profilCompatible = $offre['profil_cible'] === 'tous' || $offre['profil_cible'] === $roleUtilisateur;
-                        $peutPostuler = estConnecte() && in_array($roleUtilisateur, ['etudiant', 'alumni'], true) && $profilCompatible;
+                        // L'utilisateur peut postuler s'il est étudiant ou alumni
+                        // et si l'offre est ouverte à son profil
+                        $bonRole = ($roleUtilisateur == 'etudiant' || $roleUtilisateur == 'alumni');
+                        $profilCompatible = ($offre['profil_cible'] == 'tous' || $offre['profil_cible'] == $roleUtilisateur);
+                        $peutPostuler = ($bonRole && $profilCompatible);
+
+                        $dejaPostule = false;
+                        if (estConnecte()) {
+                            $dejaPostule = $offreRepository->aDejaPostule($offre['id_offre'], $_SESSION['id_utilisateur']);
+                        }
                         ?>
                         <article class="offre-carte">
                             <div class="offre-entete">
                                 <span class="offre-type">
-                                    <?= h(ucfirst($offre['type'])) ?>
+                                    <?php echo $types[$offre['type']]; ?>
                                 </span>
                                 <span class="offre-statut">
                                     Ouverte
                                 </span>
                             </div>
-                            <h3><?= h($offre['titre']) ?></h3>
+                            <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
                             <p class="offre-entreprise">
-                                <?= h($offre['nom_entreprise'] ?? 'Entreprise non renseignée') ?>
+                                <?php if ($offre['nom_entreprise'] != null) { echo htmlspecialchars($offre['nom_entreprise']); } else { echo 'Entreprise non renseignée'; } ?>
                             </p>
-                            <div class="offre-description">
-                                <?= nl2br(h($offre['description'])) ?>
-                            </div>
-                            <?php if (!empty($offre['missions'])): ?>
+                            <div class="offre-description"><?php echo htmlspecialchars($offre['description']); ?></div>
+                            <?php if ($offre['missions'] != null) { ?>
                                 <div class="offre-missions">
                                     <h4>Missions</h4>
-                                    <p>
-                                        <?= nl2br(h($offre['missions'])) ?>
-                                    </p>
+                                    <p><?php echo htmlspecialchars($offre['missions']); ?></p>
                                 </div>
-                            <?php endif; ?>
+                            <?php } ?>
                             <div class="offre-informations">
                                 <p>
                                     <strong>Profil recherché :</strong>
-                                    <?php
-                                    $profils = [
-                                            'tous' => 'Étudiants et alumni',
-                                            'etudiant' => 'Étudiants',
-                                            'alumni' => 'Alumni'
-                                    ];
-                                    echo h($profils[$offre['profil_cible']] ?? $offre['profil_cible']);
-                                    ?>
+                                    <?php echo $profils[$offre['profil_cible']]; ?>
                                 </p>
                                 <p>
                                     <strong>Salaire :</strong>
-                                    <?php if ($offre['salaire'] !== null): ?>
-                                        <?= h(number_format((float) $offre['salaire'], 2, ',', ' ')) ?> €
-                                    <?php else: ?>
+                                    <?php if ($offre['salaire_fr'] != null) { ?>
+                                        <?php echo $offre['salaire_fr']; ?> €
+                                    <?php } else { ?>
                                         Non renseigné
-                                    <?php endif; ?>
+                                    <?php } ?>
                                 </p>
                                 <p>
                                     <strong>Publication :</strong>
-                                    <?php
-                                    $timestamp = strtotime($offre['date_publication']);
-                                    echo $timestamp !== false
-                                            ? h(date('d/m/Y', $timestamp))
-                                            : 'Non renseignée';
-                                    ?>
+                                    <?php echo $offre['date_fr']; ?>
                                 </p>
                             </div>
                             <div class="offre-candidature">
-                                <?php if ($dejaPostule): ?>
+                                <?php if ($dejaPostule) { ?>
                                     <p class="deja-postule">
                                         Vous avez déjà postulé à cette offre.
                                     </p>
-                                <?php elseif (!$peutPostuler): ?>
-                                    <?php if (!estConnecte()): ?>
-                                        <p>
-                                            Connectez-vous avec un compte étudiant
-                                            ou alumni pour postuler.
-                                        </p>
-                                        <a class="bouton" href="../connexion/connexion.php">
-                                            Se connecter
-                                        </a>
-                                    <?php elseif (!in_array($roleUtilisateur, ['etudiant', 'alumni'], true)): ?>
-                                        <p>
-                                            La candidature est réservée aux étudiants
-                                            et aux alumni.
-                                        </p>
-                                    <?php else: ?>
-                                        <p>
-                                            Cette offre ne correspond pas à votre profil.
-                                        </p>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <form method="POST" action="liste_offres_Tom.php" class="form-candidature">
-                                        <input type="hidden" name="id_offre" value="<?= $idOffre ?>">
-                                        <label for="motivation-<?= $idOffre ?>">
+                                <?php } elseif (!estConnecte()) { ?>
+                                    <p>
+                                        Connectez-vous avec un compte étudiant
+                                        ou alumni pour postuler.
+                                    </p>
+                                    <a class="bouton" href="../connexion/connexion.php">
+                                        Se connecter
+                                    </a>
+                                <?php } elseif (!$bonRole) { ?>
+                                    <p>
+                                        La candidature est réservée aux étudiants
+                                        et aux alumni.
+                                    </p>
+                                <?php } elseif (!$peutPostuler) { ?>
+                                    <p>
+                                        Cette offre ne correspond pas à votre profil.
+                                    </p>
+                                <?php } else { ?>
+                                    <form method="POST" action="../../src/traitement/ListeOffreTraitement_Tom.php" class="form-candidature">
+                                        <input type="hidden" name="id_offre" value="<?php echo $offre['id_offre']; ?>">
+                                        <label for="motivation-<?php echo $offre['id_offre']; ?>">
                                             Votre motivation
                                         </label>
-                                        <textarea id="motivation-<?= $idOffre ?>" name="motivation" rows="4" maxlength="5000" required placeholder="Expliquez pourquoi cette offre vous intéresse..."></textarea>
+                                        <textarea id="motivation-<?php echo $offre['id_offre']; ?>" name="motivation" rows="4" maxlength="5000" required placeholder="Expliquez pourquoi cette offre vous intéresse..."></textarea>
                                         <button type="submit" class="bouton">
                                             Postuler
                                         </button>
                                     </form>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </article>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
     </section>
 </main>
@@ -211,18 +238,6 @@ function h($valeur){
     </div>
 </footer>
 
-<script>
-    const boutonMenu = document.getElementById('nav-toggle');
-    const menu = document.getElementById('main-nav');
-
-    if (boutonMenu && menu) {
-        boutonMenu.addEventListener('click', function () {
-            const ouvert = boutonMenu.getAttribute('aria-expanded') === 'true';
-
-            boutonMenu.setAttribute('aria-expanded', String(!ouvert));
-            menu.classList.toggle('is-open', !ouvert);
-        });
-    }
-</script>
+<script src="liste_offres_Tom.js"></script>
 </body>
 </html>
