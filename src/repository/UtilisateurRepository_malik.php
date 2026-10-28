@@ -45,6 +45,14 @@ class UtilisateurRepository_malik
         return $req->fetchAll();
     }
 
+    // Annuaire : alumni dont le compte est validé, triés par nom
+    public function getAnnuaireAlumni()
+    {
+        $req = $this->connexionBdd->prepare("SELECT nom_utilisateur, prenom_utilisateur, mail, telephone FROM utilisateur WHERE role = 'alumni' AND statut_validation = 'valide' ORDER BY nom_utilisateur, prenom_utilisateur");
+        $req->execute();
+        return $req->fetchAll();
+    }
+
     // Recherche des co-organisateurs possibles pour un événement
     public function rechercherOrganisateurs($recherche, $id_utilisateur_connecte)
     {
