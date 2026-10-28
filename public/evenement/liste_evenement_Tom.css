@@ -29,7 +29,7 @@ html {
 
 body {
     margin: 0;
-    font-family: var(--font-base), serif;
+    font-family: var(--font-base);
     color: var(--color-text);
     line-height: 1.6;
     background: var(--color-white);
