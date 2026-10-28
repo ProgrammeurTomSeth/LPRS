@@ -1,637 +1,226 @@
-:root {
-    --vert-principal: #29bf12;
-    --vert-fonce: #1e9410;
-    --vert-clair: #eaf9e7;
-    --texte: #202820;
-    --texte-secondaire: #657065;
-    --fond: #f7faf6;
-    --blanc: #ffffff;
-    --bordure: #e1e9df;
-    --erreur: #b42318;
-    --erreur-fond: #fff0ee;
-    --succes: #18743a;
-    --succes-fond: #eaf8ef;
-    --ombre: 0 8px 28px rgba(26, 53, 24, 0.08);
+/* =========================================================
+   Lycée Robert Schuman — styles propres à la page offres d'emploi et de stage
+   (la base commune : couleurs, boutons, en-tête, menu, bannière,
+   pied de page et messages est dans ../style.css)
+   ========================================================= */
+.offres-section {
+  background: var(--color-light);
 }
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    margin: 0;
-    font-family: 'Manrope', sans-serif;
-    color: var(--texte);
-    background: var(--fond);
-    line-height: 1.6;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
 button,
 textarea {
-    font: inherit;
+  font: inherit;
 }
-
-ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.container {
-    width: min(1200px, calc(100% - 40px));
-    margin: 0 auto;
-}
-
-.site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--bordure);
-}
-
-.header-inner {
-    min-height: 115px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 30px;
-}
-
-.logo {
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    flex-shrink: 0;
-    font-size: 1.9rem;
-    font-weight: 800;
-    line-height: 1.2;
-    color: var(--texte);
-    white-space: nowrap;
-}
-
-.logo span {
-    color: var(--vert-principal);
-}
-
-.main-nav {
-    margin-left: auto;
-}
-
-.main-nav ul {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.main-nav a {
-    color: var(--texte);
-    font-size: 1.1rem;
-    font-weight: 600;
-    white-space: nowrap;
-    transition: color 0.2s ease;
-}
-
-.main-nav a:hover,
-.main-nav a[aria-current="page"] {
-    color: var(--vert-fonce);
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 18px;
-    flex-shrink: 0;
-    margin-left: 28px;
-}
-
-.header-actions a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 78px;
-    padding: 16px 38px;
-    border: 3px solid transparent;
-    border-radius: 999px;
-    font-size: 1.1rem;
-    font-weight: 800;
-    line-height: 1.2;
-    white-space: nowrap;
-    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-.header-actions .btn-outline,
-.header-actions .header-login {
-    color: var(--texte);
-    background: var(--blanc);
-    border-color: #262626;
-}
-
-.header-actions .btn-outline:hover,
-.header-actions .header-login:hover {
-    color: var(--blanc);
-    background: #262626;
-}
-
-.header-actions .btn-primary,
-.header-actions .header-cta {
-    color: var(--blanc);
-    background: var(--vert-principal);
-    border-color: var(--vert-principal);
-}
-
-.header-actions .btn-primary:hover,
-.header-actions .header-cta:hover {
-    color: var(--blanc);
-    background: var(--vert-fonce);
-    border-color: var(--vert-fonce);
-}
-
-.nav-toggle {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    width: 44px;
-    height: 44px;
-    padding: 9px;
-    border: 1px solid var(--bordure);
-    border-radius: 8px;
-    background: var(--blanc);
-    cursor: pointer;
-}
-
-.nav-toggle span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    background: var(--texte);
-    border-radius: 2px;
-}
-
-.page-hero {
-    padding: 70px 0 76px;
-    color: var(--blanc);
-    background: linear-gradient(125deg, #183b1a, #267d23);
-}
-
-.breadcrumb {
-    margin: 0 0 18px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-}
-
-.breadcrumb a {
-    color: var(--blanc);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.page-hero h1 {
-    max-width: 850px;
-    margin: 0 0 16px;
-    font-size: clamp(2rem, 5vw, 3.3rem);
-    font-weight: 800;
-    line-height: 1.15;
-}
-
-.page-hero > .container > p:last-child {
-    max-width: 760px;
-    margin-bottom: 0;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.05rem;
-}
-
-.section {
-    padding: 64px 0 80px;
-}
-
 .offres-section h2 {
-    margin: 0 0 8px;
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    font-weight: 800;
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
 }
-
 .section-description {
-    margin: 0 0 30px;
-    color: var(--texte-secondaire);
+  margin: 0 0 30px;
+  color: var(--color-muted);
 }
-
 .message {
-    margin: 24px 0;
-    padding: 15px 18px;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    font-weight: 700;
+  margin: 24px 0;
+  padding: 15px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-weight: 700;
 }
-
 .message-succes {
-    color: var(--succes);
-    background: var(--succes-fond);
-    border-color: #c5e9d0;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  border-color: #c5e9d0;
 }
-
 .message-erreur {
-    color: var(--erreur);
-    background: var(--erreur-fond);
-    border-color: #ffd3ce;
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+  border-color: #ffd3ce;
 }
-
 .offres-grille {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 }
-
 .offre-carte {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 26px;
-    border: 1px solid var(--bordure);
-    border-radius: 16px;
-    background: var(--blanc);
-    box-shadow: var(--ombre);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 26px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-white);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
 .offre-carte:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 34px rgba(26, 53, 24, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(26, 53, 24, 0.12);
 }
-
 .offre-entete {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
 }
-
 .offre-type,
 .offre-statut {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 11px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
-
 .offre-type {
-    color: var(--vert-fonce);
-    background: var(--vert-clair);
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
 }
-
 .offre-statut {
-    color: var(--succes);
-    background: var(--succes-fond);
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
 }
-
 .offre-carte h3 {
-    margin: 0 0 6px;
-    font-size: 1.4rem;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
-
 .offre-entreprise {
-    margin: 0 0 20px;
-    color: var(--vert-fonce);
-    font-weight: 800;
+  margin: 0 0 20px;
+  color: var(--color-primary-dark);
+  font-weight: 800;
 }
-
 .offre-description,
 .offre-missions {
-    color: var(--texte-secondaire);
-    overflow-wrap: anywhere;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
 }
-
 .offre-description p,
 .offre-missions p {
-    margin-top: 0;
+  margin-top: 0;
 }
-
 .offre-missions {
-    margin-top: 12px;
-    padding-top: 16px;
-    border-top: 1px solid var(--bordure);
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
 }
-
 .offre-missions h4 {
-    margin: 0 0 8px;
-    color: var(--texte);
-    font-size: 1rem;
+  margin: 0 0 8px;
+  color: var(--color-text);
+  font-size: 1rem;
 }
-
 .offre-informations {
-    display: grid;
-    gap: 8px;
-    margin: 20px 0;
-    padding: 16px;
-    border-radius: 10px;
-    background: var(--fond);
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--color-light);
 }
-
 .offre-informations p {
-    margin: 0;
-    font-size: 0.9rem;
-    overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }
-
 .offre-informations strong {
-    color: var(--texte);
+  color: var(--color-text);
 }
-
 .offre-candidature {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid var(--bordure);
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
 }
-
 .offre-candidature > p {
-    color: var(--texte-secondaire);
-    font-size: 0.9rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
 }
-
 .deja-postule {
-    padding: 12px 14px;
-    border-radius: 8px;
-    color: var(--succes);
-    background: var(--succes-fond);
-    font-weight: 800;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-light);
+  font-weight: 800;
 }
-
 .form-candidature {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-
 .form-candidature label {
-    font-weight: 800;
-    font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 0.95rem;
 }
-
 .form-candidature textarea {
-    width: 100%;
-    min-height: 110px;
-    padding: 12px 14px;
-    resize: vertical;
-    border: 1px solid #cbd7c8;
-    border-radius: 8px;
-    color: var(--texte);
-    background: var(--blanc);
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  min-height: 110px;
+  padding: 12px 14px;
+  resize: vertical;
+  border: 1px solid #cbd7c8;
+  border-radius: 8px;
+  color: var(--color-text);
+  background: var(--color-white);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
-
 .form-candidature textarea:focus {
-    border-color: var(--vert-principal);
-    box-shadow: 0 0 0 3px rgba(41, 191, 18, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(41, 191, 18, 0.15);
 }
-
 .bouton {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    align-self: flex-start;
-    min-height: 44px;
-    padding: 11px 20px;
-    border: 1px solid var(--vert-principal);
-    border-radius: 8px;
-    color: var(--blanc);
-    background: var(--vert-principal);
-    font-weight: 800;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 11px 20px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  color: var(--color-white);
+  background: var(--color-primary);
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
-
 .bouton:hover {
-    border-color: var(--vert-fonce);
-    background: var(--vert-fonce);
+  border-color: var(--color-primary-dark);
+  background: var(--color-primary-dark);
 }
-
 .offres-vides {
-    padding: 45px 24px;
-    border: 1px dashed #bdcdb9;
-    border-radius: 14px;
-    background: var(--blanc);
-    text-align: center;
+  padding: 45px 24px;
+  border: 1px dashed #bdcdb9;
+  border-radius: 14px;
+  background: var(--color-white);
+  text-align: center;
 }
-
 .offres-vides h3 {
-    margin: 0 0 8px;
-    font-size: 1.35rem;
+  margin: 0 0 8px;
+  font-size: 1.35rem;
 }
-
 .offres-vides p {
-    margin: 0;
-    color: var(--texte-secondaire);
+  margin: 0;
+  color: var(--color-muted);
 }
-
-.site-footer {
-    padding: 28px 0;
-    color: var(--texte-secondaire);
-    background: var(--blanc);
-    border-top: 1px solid var(--bordure);
-}
-
-.site-footer p {
-    margin: 0;
-    font-size: 0.85rem;
-    text-align: center;
-}
-
-@media (max-width: 1450px) {
-    .header-inner {
-        gap: 22px;
-    }
-
-    .logo {
-        font-size: 1.65rem;
-    }
-
-    .main-nav ul {
-        gap: 24px;
-    }
-
-    .main-nav a {
-        font-size: 1rem;
-    }
-
-    .header-actions {
-        gap: 12px;
-        margin-left: 16px;
-    }
-
-    .header-actions a {
-        min-height: 68px;
-        padding: 14px 26px;
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 1100px) {
-    .header-inner {
-        min-height: 90px;
-        gap: 16px;
-    }
-
-    .logo {
-        font-size: 1.35rem;
-    }
-
-    .main-nav ul {
-        gap: 16px;
-    }
-
-    .main-nav a {
-        font-size: 0.9rem;
-    }
-
-    .header-actions {
-        gap: 8px;
-        margin-left: 8px;
-    }
-
-    .header-actions a {
-        min-height: 52px;
-        padding: 12px 18px;
-        font-size: 0.85rem;
-        border-width: 2px;
-    }
-}
-
 @media (max-width: 900px) {
-    .header-inner {
-        min-height: 82px;
-        flex-wrap: wrap;
-        padding-top: 14px;
-        padding-bottom: 14px;
-    }
-
-    .logo {
-        font-size: 1.4rem;
-    }
-
-    .nav-toggle {
-        display: flex;
-        flex-shrink: 0;
-        margin-left: auto;
-    }
-
-    .main-nav {
-        display: none;
-        order: 4;
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .main-nav.is-open {
-        display: block;
-    }
-
-    .main-nav ul {
-        align-items: stretch;
-        flex-direction: column;
-        gap: 0;
-        padding-top: 10px;
-    }
-
-    .main-nav li a {
-        display: block;
-        padding: 12px 0;
-        border-top: 1px solid var(--bordure);
-        font-size: 1rem;
-    }
-
-    .header-actions {
-        margin-left: auto;
-    }
-
-    .header-actions a {
-        min-height: 46px;
-        padding: 10px 16px;
-        font-size: 0.85rem;
-    }
-
-    .offres-grille {
-        grid-template-columns: 1fr;
-    }
+  .offres-grille {
+    grid-template-columns: 1fr;
+  }
 }
-
 @media (max-width: 520px) {
-    .container {
-        width: min(100% - 28px, 1200px);
-    }
-
-    .header-inner {
-        gap: 10px;
-    }
-
-    .logo {
-        font-size: 1.1rem;
-    }
-
-    .header-actions {
-        order: 3;
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .header-actions a {
-        flex: 1;
-        min-height: 44px;
-        padding: 9px 10px;
-        font-size: 0.78rem;
-    }
-
-    .nav-toggle {
-        margin-left: auto;
-    }
-
-    .page-hero {
-        padding: 48px 0;
-    }
-
-    .section {
-        padding: 42px 0 54px;
-    }
-
-    .offre-carte {
-        padding: 19px;
-    }
-
-    .offre-carte h3 {
-        font-size: 1.2rem;
-    }
-
-    .bouton {
-        width: 100%;
-    }
+  .offre-carte {
+    padding: 19px;
+  }
+  .offre-carte h3 {
+    font-size: 1.2rem;
+  }
+  .bouton {
+    width: 100%;
+  }
 }
+
 /* Garde les retours à la ligne saisis dans la description et les missions */
 .offre-description,
 .offre-missions p {
-    white-space: pre-line;
+  white-space: pre-line;
 }

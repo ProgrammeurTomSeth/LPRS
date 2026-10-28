@@ -1,48 +1,87 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+/* =========================================================
+   Lycée Robert Schuman — styles propres à la page d'administration
+   (la base commune : couleurs, boutons, en-tête, menu, bannière,
+   pied de page et messages est dans ../style.css)
+   ========================================================= */
+
+.admin-section { background: var(--color-light); }
+
+.admin-card {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  margin-bottom: 32px;
+}
+.admin-card h2 { font-size: 1.4rem; margin-bottom: 20px; }
+
+/* ---------- Formulaire Ajouter / Modifier ---------- */
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.admin-form input,
+.admin-form select {
+  flex: 1 1 180px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-text);
+}
+.admin-form input:focus,
+.admin-form select:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
+/* ---------- Tableau des utilisateurs ---------- */
+.table-wrapper { overflow-x: auto; }
 
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
 }
+.admin-table th,
+.admin-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+.admin-table th {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  background: var(--color-light);
+}
+.admin-table td { color: var(--color-dark); }
+.admin-table tbody tr:last-child td { border-bottom: none; }
+.admin-table tbody tr:hover { background: var(--color-light); }
 
-th {
-    background: #f0f0f0;
-}
+.actions { white-space: nowrap; }
+.actions .btn { margin: 2px 0; }
+form.inline { display: inline; }
 
-form.inline {
-    display: inline;
+/* ---------- Couleurs des statuts ---------- */
+.statut {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
+.statut.valide { background: var(--color-primary-light); color: var(--color-primary-dark); }
+.statut.en_attente { background: #fff4e0; color: #b36b00; }
+.statut.refuse { background: var(--color-danger-light); color: var(--color-danger); }
 
-.formulaire input,
-.formulaire select {
-    margin: 4px 4px 4px 0;
-    padding: 6px;
-}
-
-/* Couleurs des statuts */
-.en_attente {
-    color: #b36b00;
-    font-weight: bold;
-}
-
-.valide {
-    color: green;
-}
-
-.refuse {
-    color: red;
-}
-/* Message affiché si une suppression est impossible */
-.message-erreur {
-    color: red;
-    font-weight: bold;
+@media (max-width: 720px) {
+  .admin-card { padding: 20px; }
 }

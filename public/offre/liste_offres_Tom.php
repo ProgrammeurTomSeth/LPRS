@@ -46,6 +46,9 @@ if (estConnecte()) {
 $offreRepository = new OffreRepository_Tom();
 $offres = $offreRepository->getOffresOuvertes();
 
+// Lien du menu à mettre en vert (voir ../commun/entete.php)
+$pageActive = 'offres';
+
 ?>
 
 <!DOCTYPE html>
@@ -53,57 +56,23 @@ $offres = $offreRepository->getOffresOuvertes();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offres d'emploi et de stage — Lycée Robert Shuman</title>
+    <title>Offres d'emploi et de stage — Lycée Robert Schuman</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="liste_offres_Tom.css">
 </head>
 <body>
-<header class="site-header">
-    <div class="container header-inner">
-        <a href="../page_acceuille/page_accueil.php" class="logo">
-            Lycée<span>Robert Shuman</span>
-        </a>
-        <nav class="main-nav" id="main-nav">
-            <ul>
-                <li>
-                    <a href="../page_acceuille/page_accueil.php">Programme</a>
-                </li>
-                <li>
-                    <a href="../evenement/liste_evenement_Tom.php">Événements</a>
-                </li>
-                <li>
-                    <a href="liste_offres_Tom.php" aria-current="page">Offres</a>
-                </li>
-                <li>
-                    <a href="../page_acceuille/page_accueil.php">Contact</a>
-                </li>
-            </ul>
-        </nav>
-        <div class="header-actions">
-            <?php afficherActionsHeader(); ?>
-        </div>
-        <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-    </div>
-</header>
+<?php require_once '../commun/entete.php'; ?>
 
 <main id="main">
     <section class="page-hero">
-        <div class="container">
-            <p class="breadcrumb">
-                <a href="../page_acceuille/page_accueil.php">Accueil</a>
-                / Offres
-            </p>
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Offres</p>
             <h1>Offres d'emploi et de stage</h1>
-            <p>
-                Découvrez les opportunités proposées par les entreprises partenaires
-                et postulez aux offres qui vous intéressent.
-            </p>
+            <p>Découvrez les opportunités proposées par les entreprises partenaires et postulez aux offres qui vous intéressent.</p>
         </div>
     </section>
 
@@ -232,11 +201,7 @@ $offres = $offreRepository->getOffresOuvertes();
     </section>
 </main>
 
-<footer class="site-footer">
-    <div class="container">
-        <p>© 2026 Lycée Robert Shuman</p>
-    </div>
-</footer>
+<?php require_once '../commun/pied_de_page.php'; ?>
 
 <script src="liste_offres_Tom.js"></script>
 </body>

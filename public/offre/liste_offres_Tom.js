@@ -1,11 +1,10 @@
-const boutonMenu = document.getElementById('nav-toggle');
-const menu = document.getElementById('main-nav');
+// Menu mobile
+const navToggle = document.getElementById('nav-toggle');
+const mainNav = document.getElementById('main-nav');
 
-if (boutonMenu && menu) {
-    boutonMenu.addEventListener('click', function () {
-        const ouvert = boutonMenu.getAttribute('aria-expanded') === 'true';
-
-        boutonMenu.setAttribute('aria-expanded', String(!ouvert));
-        menu.classList.toggle('is-open', !ouvert);
+if (navToggle && mainNav) {
+    navToggle.addEventListener('click', () => {
+        const isOpen = mainNav.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
     });
 }

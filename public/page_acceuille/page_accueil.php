@@ -2,45 +2,26 @@
 
 require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 
+// Lien du menu à mettre en vert (voir ../commun/entete.php)
+$pageActive = 'accueil';
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lycée Robert Shuman</title>
-    <meta name="description" content="Lycée Robert Shuman : une éducation moderne et dynamique pour tous les élèves. Programmes, activités, événements et accompagnement personnalisé.">
+    <title>Lycée Robert Schuman</title>
+    <meta name="description" content="Lycée Robert Schuman : une éducation moderne et dynamique pour tous les élèves. Programmes, activités, événements et accompagnement personnalisé.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="page_accueil.css">
 </head>
 <body>
 
-<a class="skip-link" href="#main">Aller au contenu principal</a>
-
-<header class="site-header">
-    <div class="container header-inner">
-        <a href="#" class="logo">Lycée<span>Robert Shuman</span></a>
-
-        <nav class="main-nav" id="main-nav">
-            <ul>
-                <li><a href="#mission">Programme</a></li>
-                <li><a href="#evenements">Activités</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="../page_entreprise/page_entreprise.php">Entreprise</a></li>
-            </ul>
-        </nav>
-
-        <div class="header-actions">
-            <?php afficherActionsHeader(); ?>
-        </div>
-
-        <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
-</header>
+<?php require_once '../commun/entete.php'; ?>
 
 <main id="main">
 
@@ -56,12 +37,12 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
     <section class="section mission" id="mission">
         <div class="container mission-grid">
             <div class="mission-media">
-                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=900&q=70" alt="Élèves en classe à Lycée Lourdeault">
+                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=900&q=70" alt="Élèves en classe à Lycée Robert Schuman">
             </div>
             <div class="mission-text">
                 <p class="eyebrow">Notre Mission</p>
                 <h2>Une éducation qui s'adapte à chaque élève</h2>
-                <p>À l'École Lourdeault, nous croyons fermement que chaque élève mérite une éducation qui répond à ses besoins et révèle son plein potentiel.</p>
+                <p>À le Lycée Robert Schuman, nous croyons fermement que chaque élève mérite une éducation qui répond à ses besoins et révèle son plein potentiel.</p>
                 <p>Notre vision est d'inspirer l'apprentissage tout au long de la vie et d'encourager chacun à atteindre l'excellence, à son rythme et selon ses talents.</p>
                 <p>Fort d'un historique riche depuis 1995, nous avons cultivé une communauté d'apprentissage engagée, bienveillante et inclusive.</p>
 
@@ -198,7 +179,7 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
         </div>
     </section>
 
-    <section class="section faq">
+    <section class="section faq" id="faq">
         <div class="container">
             <p class="eyebrow center">FAQ</p>
             <h2 class="center">Questions Fréquemment Posées</h2>
@@ -266,18 +247,7 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 
 </main>
 
-<footer class="site-footer">
-    <div class="container footer-inner">
-        <a href="#" class="logo">École<span>Robert Shuman</span></a>
-        <ul class="footer-links">
-            <li><a href="#">Politique</a></li>
-            <li><a href="#">Mentions légales</a></li>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <p class="footer-copy">© 2026 École Robert Shuman. Tous droits réservés.</p>
-    </div>
-</footer>
+<?php require_once '../commun/pied_de_page.php'; ?>
 
 <script src="script.js"></script>
 </body>

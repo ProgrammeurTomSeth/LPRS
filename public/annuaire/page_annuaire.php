@@ -8,46 +8,25 @@ require_once '../../src/repository/UtilisateurRepository_malik.php';
 $utilisateurRepository = new UtilisateurRepository_malik();
 $alumni = $utilisateurRepository->getAnnuaireAlumni();
 
+// Lien du menu à mettre en vert (voir ../commun/entete.php)
+$pageActive = 'annuaire';
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annuaire des anciens élèves — Lycée Robert Shuman</title>
+    <title>Annuaire des anciens élèves — Lycée Robert Schuman</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="annuaire.css">
 </head>
 <body>
 
-<a class="skip-link" href="#main">Aller au contenu principal</a>
-
-<!-- ===== HEADER / NAV ===== -->
-<header class="site-header">
-    <div class="container header-inner">
-        <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
-
-        <nav class="main-nav" id="main-nav">
-            <ul>
-                <li><a href="../page_acceuille/page_accueil.php">Programme</a></li>
-                <li><a href="../page_acceuille/page_accueil.php">Activités</a></li>
-                <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
-                <li><a href="../page_entreprise/page_entreprise.php">Entreprise</a></li>
-                <li><a href="page_annuaire.php">Annuaire</a></li>
-            </ul>
-        </nav>
-
-        <div class="header-actions">
-            <?php afficherActionsHeader(); ?>
-        </div>
-
-        <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
-</header>
+<?php require_once '../commun/entete.php'; ?>
 
 <main id="main">
 
@@ -95,19 +74,7 @@ $alumni = $utilisateurRepository->getAnnuaireAlumni();
 
 </main>
 
-<!-- ===== FOOTER ===== -->
-<footer class="site-footer">
-    <div class="container footer-inner">
-        <a href="../page_acceuille/page_accueil.php" class="logo">Lycée<span>Robert Shuman</span></a>
-        <ul class="footer-links">
-            <li><a href="#">Politique</a></li>
-            <li><a href="#">Mentions légales</a></li>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="../page_acceuille/page_accueil.php">Contact</a></li>
-        </ul>
-        <p class="footer-copy">© 2026 Lycée Robert Shuman. Tous droits réservés.</p>
-    </div>
-</footer>
+<?php require_once '../commun/pied_de_page.php'; ?>
 
 <script src="script_annuaire.js"></script>
 </body>
