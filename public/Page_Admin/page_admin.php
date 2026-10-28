@@ -32,9 +32,9 @@ $roles = array('etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire')
 
 // Libellés affichés pour chaque statut
 $statuts = array(
-    'valide' => 'Activé',
-    'refuse' => 'Désactivé',
-    'en_attente' => 'En attente'
+        'valide' => 'Activé',
+        'refuse' => 'Désactivé',
+        'en_attente' => 'En attente'
 );
 
 ?>
@@ -131,6 +131,13 @@ $statuts = array(
 
                 <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline">
                     <input type="hidden" name="id_utilisateur" value="<?php echo $ligne['id_utilisateur']; ?>">
+
+                    <?php if ($ligne['statut_validation'] == 'valide') { ?>
+                        <button type="submit" name="action" value="desactiver">Désactiver</button>
+                    <?php } else { ?>
+                        <button type="submit" name="action" value="activer">Activer</button>
+                    <?php } ?>
+
                     <button type="submit" name="action" value="supprimer">Supprimer</button>
                 </form>
             </td>
