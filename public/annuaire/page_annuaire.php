@@ -1,5 +1,12 @@
 <?php
-require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
+
+require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/repository/UtilisateurRepository_malik.php';
+
+// Liste des alumni validés
+$utilisateurRepository = new UtilisateurRepository_malik();
+$alumni = $utilisateurRepository->getAnnuaireAlumni();
 
 ?>
 <!DOCTYPE html>
@@ -30,7 +37,7 @@ require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
         </nav>
 
         <div class="header-actions">
-            <?php afficherActionsHeader('../'); ?>
+            <?php afficherActionsHeader(); ?>
         </div>
 
         <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">
@@ -42,9 +49,9 @@ require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
 <h1>Annuaire des Anciens Elèves</h1>
 
 <div class="container">
-    <?php if (empty($alumni)): ?>
+    <?php if (count($alumni) == 0) { ?>
         <p class="empty">Aucun alumni validé pour le moment.</p>
-    <?php else: ?>
+    <?php } else { ?>
         <table>
             <thead>
             <tr>
@@ -55,18 +62,18 @@ require_once __DIR__ . '/../../src/traitement/traitement_annuaire.php';
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($alumni as $a): ?>
+            <?php foreach ($alumni as $a) { ?>
                 <tr>
-                    <td><?= htmlspecialchars($a['nom_utilisateur'] ?? "") ?></td>
-                    <td><?= htmlspecialchars($a['prenom_utilisateur'] ?? "") ?></td>
-                    <td><?= htmlspecialchars($a['mail'] ?? "") ?></td>
-                    <td><?= htmlspecialchars($a['telephone'] ?? "") ?></td>
+                    <td><?php echo htmlspecialchars($a['nom_utilisateur']); ?></td>
+                    <td><?php echo htmlspecialchars($a['prenom_utilisateur']); ?></td>
+                    <td><?php echo htmlspecialchars($a['mail']); ?></td>
+                    <td><?php if ($a['telephone'] != null) { echo htmlspecialchars($a['telephone']); } ?></td>
 
                 </tr>
-            <?php endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
-    <?php endif; ?>
+    <?php } ?>
 </div>
 <!-- ===== FOOTER ===== -->
 <footer class="site-footer">
