@@ -29,6 +29,7 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
                 <li><a href="#evenements">Activités</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li><a href="../page_entreprise/page_entreprise.php">Entreprise</a></li>
+                <li><a href="../annuaire/page_annuaire.php">Annuaire</a></li>
             </ul>
         </nav>
 
