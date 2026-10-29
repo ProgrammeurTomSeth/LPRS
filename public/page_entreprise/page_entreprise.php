@@ -12,6 +12,8 @@ if (isset($_GET['search'])) {
     $recherche = $_GET['search'];
 }
 
+// getAllEntreprises() et getEntreprisesParNom() renvoient des TABLEAUX (fetchAll),
+// on lit donc chaque entreprise avec $entreprise['colonne'] et non avec des getters.
 $entrepriseRepository = new EntrepriseRepository_Tom();
 if ($recherche == "") {
     $entreprises = $entrepriseRepository->getAllEntreprises();
@@ -109,20 +111,22 @@ $pageActive = 'entreprises';
             <?php } else { ?>
                 <div class="cards-grid">
                     <?php foreach ($entreprises as $entreprise) { ?>
-                        <?php $estMonEntreprise = ($idEntrepriseUtilisateur == $entreprise->getIdEntreprise()); ?>
+                        <?php $estMonEntreprise = ($idEntrepriseUtilisateur == $entreprise['id_entreprise']); ?>
                         <article class="card<?php if ($estMonEntreprise) { echo ' card--mon-entreprise'; } ?>">
-                            <h3><?php $entreprise->getIdEntreprise() ?></h3>
+                            <h3><?php echo htmlspecialchars($entreprise['nom_entreprise']); ?></h3>
                             <?php if ($estMonEntreprise) { ?>
                                 <span class="badge">Votre entreprise</span>
                             <?php } ?>
-                            <p><strong>Activité :</strong> <?php $entreprise->getNomEntreprise() ?></p>
-                            <p><strong>Adresse :</strong> <?php $entreprise->getActivite() ?></p>
-                            <p><strong>Site web :</strong>
-                                <a href="<?php $entreprise->getIdEntreprise() ?>" target="_blank" rel="noopener"><?php $entreprise->getSiteWeb() ?></a>
-                            </p>
+                            <p><strong>Activité :</strong> <?php echo htmlspecialchars((string) $entreprise['activite']); ?></p>
+                            <p><strong>Adresse :</strong> <?php echo htmlspecialchars((string) $entreprise['adresse']); ?></p>
+                            <?php if (!empty($entreprise['site_web'])) { ?>
+                                <p><strong>Site web :</strong>
+                                    <a href="<?php echo htmlspecialchars($entreprise['site_web']); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($entreprise['site_web']); ?></a>
+                                </p>
+                            <?php } ?>
 
                             <div class="card-actions">
-                                <a href="profil_entreprise.php?id=<?php echo $entreprise->getIdEntreprise(); ?>">
+                                <a href="profil_entreprise.php?id=<?php echo $entreprise['id_entreprise']; ?>" class="btn btn-sm">Voir la fiche</a>
                                 <?php if ($peutSeRattacher && !$estMonEntreprise) { ?>
                                     <form action="../../src/traitement/rattachement_entreprise.php" method="post">
                                         <input type="hidden" name="id_entreprise" value="<?php echo $entreprise['id_entreprise']; ?>">
