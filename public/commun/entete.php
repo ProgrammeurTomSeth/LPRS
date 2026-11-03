@@ -5,7 +5,7 @@
 // Menu regroupé par catégorie pour ne pas surcharger la barre de navigation.
 // Tableau associatif : titre de la catégorie => liens de la catégorie,
 // chaque lien étant nom => [texte affiché, adresse, petite description].
-// Une catégorie avec un seul lien (Accueil, Admin) s'affiche comme un lien simple.
+// Une catégorie avec un seul lien (Accueil) s'affiche comme un lien simple.
 $menu = array(
     'Accueil' => array(
         'accueil' => array('Accueil', '../page_acceuille/page_accueil.php', '')
@@ -27,7 +27,9 @@ $menu = array(
 // Lien vers l'administration : seulement pour un gestionnaire connecté
 if (estConnecte() && $_SESSION['role'] == 'gestionnaire') {
     $menu['Admin'] = array(
-        'admin' => array('Admin', '../Page_Admin/page_admin.php', '')
+        'admin' => array('Utilisateurs', '../Page_Admin/page_admin.php', 'Gérer les comptes'),
+        'admin_evenements' => array('Événements', '../Page_Admin/page_admin_Evenement.php', 'Valider ou refuser'),
+        'admin_forum' => array('Modération du forum', '../Page_Admin/moderation_forum.php', 'Messages signalés')
     );
 }
 ?>

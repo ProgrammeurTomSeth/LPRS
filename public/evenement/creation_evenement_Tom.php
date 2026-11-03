@@ -36,7 +36,7 @@ $pageActive = 'evenements';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../style.css?v=<?php echo filemtime(__DIR__ . '/../style.css'); ?>">
     <link rel="stylesheet" href="creation_evenement_Tom.css">
 </head>
 <body>
@@ -69,7 +69,7 @@ $pageActive = 'evenements';
                 <?php if ($afficherFormulaire) { ?>
 
                     <div class="alert alert--info">
-                        Le créateur est automatiquement ajouté comme organisateur. Si le créateur est étudiant, un professeur doit faire partie des organisateurs pour que l'événement soit publié.
+                        Le créateur est automatiquement ajouté comme organisateur. Au moins un professeur doit faire partie des organisateurs. L'événement sera publié après validation par un gestionnaire.
                     </div>
                     <form method="POST" action="../../src/traitement/EvenementTraitement_Tom.php">
                         <div class="form-group">

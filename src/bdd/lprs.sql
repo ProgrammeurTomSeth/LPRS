@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `elements_requis` varchar(255) DEFAULT NULL,
   `nb_places` smallint UNSIGNED DEFAULT NULL,
   `date_evenement` datetime NOT NULL,
-  `statut` enum('brouillon','publie') NOT NULL DEFAULT 'brouillon',
+  `statut` enum('brouillon','en_attente','publie','refuse') NOT NULL DEFAULT 'brouillon',
   PRIMARY KEY (`id_evenement`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
