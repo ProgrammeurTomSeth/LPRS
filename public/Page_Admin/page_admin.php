@@ -4,6 +4,7 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 require_once '../../src/bdd/bdd.php';
 require_once '../../src/modele/Utilisateur_Malik.php';
 require_once '../../src/repository/UtilisateurRepository_malik.php';
+require_once '../../src/repository/SignalementForumRepository_ahmed.php';
 
 // Page réservée aux gestionnaires
 if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
@@ -13,6 +14,10 @@ if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
 
 $repository = new UtilisateurRepository_malik();
 $utilisateurs = $repository->getAllUtilisateurs();
+
+// Nombre de messages du forum signalés, affiché dans le bloc "Modération du forum"
+$signalementRepository = new SignalementForumRepository_ahmed();
+$nbMessagesSignales = $signalementRepository->compterMessagesSignales();
 
 // Si on a cliqué sur "Modifier" (?modifier=ID), on charge l'utilisateur à modifier
 $u = null;
@@ -71,6 +76,21 @@ $pageActive = 'admin';
 
     <section class="section admin-section">
         <div class="container">
+
+            <!-- Accès à la modération du forum (signalements) -->
+            <div class="admin-card admin-moderation<?php if ($nbMessagesSignales > 0) { echo ' admin-moderation--alerte'; } ?>">
+                <div>
+                    <h2>Modération du forum</h2>
+                    <p>
+                        <?php if ($nbMessagesSignales == 0) { ?>
+                            Aucun message signalé.
+                        <?php } else { ?>
+                            <strong><?php echo $nbMessagesSignales; ?></strong> message<?php if ($nbMessagesSignales > 1) { echo 's'; } ?> signalé<?php if ($nbMessagesSignales > 1) { echo 's'; } ?> en attente.
+                        <?php } ?>
+                    </p>
+                </div>
+                <a href="moderation_forum.php" class="btn btn-primary btn-sm">Ouvrir la modération</a>
+            </div>
 
             <?php if ($erreur != "") { ?>
                 <p class="form-status form-status--error" role="alert"><?php echo $erreur; ?></p>
