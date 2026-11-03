@@ -10,6 +10,7 @@ require_once '../../src/repository/Formation_ahmed.php';
 require_once '../../src/repository/EntrepriseRepository_Tom.php';
 require_once '../../src/repository/EvenementRepository_ahmed.php';
 
+// Page réservée aux utilisateurs connectés
 if (!estConnecte()) {
     header('Location: ../connexion/connexion.php');
     exit;
@@ -18,121 +19,107 @@ if (!estConnecte()) {
 $utilisateurRepository = new UtilisateurRepository_malik();
 $utilisateur = $utilisateurRepository->getUtilisateurParId($_SESSION['id_utilisateur']);
 
+// Compte supprimé entre-temps : on ferme la session
 if ($utilisateur == null) {
     header('Location: ../../src/traitement/DeconnexionTraitement_ahmed.php');
     exit;
 }
 
-$peutCreerOffre = (($utilisateur->getRole() == 'partenaire' || $utilisateur->getRole() == 'alumni') && $utilisateur->getStatutValidation() == 'valide' && !empty($utilisateur->getIdEntreprise()));
-
 $roles = array(
-        'etudiant' => 'Étudiant',
-        'alumni' => 'Ancien élève (alumni)',
-        'partenaire' => 'Partenaire entreprise',
-        'professeur' => 'Professeur',
-        'gestionnaire' => 'Gestionnaire'
+    'etudiant' => 'Étudiant',
+    'alumni' => 'Ancien élève (alumni)',
+    'partenaire' => 'Partenaire entreprise',
+    'professeur' => 'Professeur',
+    'gestionnaire' => 'Gestionnaire'
 );
-
 $statutsEvenement = array(
-        'brouillon' => 'Brouillon',
-        'publie' => 'Publié'
+    'brouillon' => 'Brouillon',
+    'publie' => 'Publié'
 );
-
 $statutsInscription = array(
-        'acceptee' => 'Acceptée',
-        'refusee' => 'Refusée'
+    'acceptee' => 'Acceptée',
+    'refusee' => 'Refusée'
 );
 
+// Lignes affichées sur le profil : tableau associatif libellé => valeur
+// (on n'ajoute une ligne que si l'information est renseignée)
 $infos = array();
 $infos['Email'] = $utilisateur->getEmail();
-
 if ($utilisateur->getTelephone() != null) {
     $infos['Téléphone'] = $utilisateur->getTelephone();
 }
-
 if ($utilisateur->getDateNaissance() != null) {
     $infos['Date de naissance'] = $utilisateur->getDateNaissance();
 }
-
 if ($utilisateur->getIdFormation() != null) {
     $formationRepository = new Formation_ahmed();
     $formation = $formationRepository->getFormation($utilisateur->getIdFormation());
     $infos['Formation'] = $formation->getNomFormation();
 }
-
 if ($utilisateur->getAnneePromo() != null) {
     $infos['Année de promotion'] = $utilisateur->getAnneePromo();
 }
-
 if ($utilisateur->getSpecialite() != null) {
     $infos['Spécialité'] = $utilisateur->getSpecialite();
 }
-
 if ($utilisateur->getIdEntreprise() != null) {
     $entrepriseRepository = new EntrepriseRepository_Tom();
     $entreprise = $entrepriseRepository->getEntreprise($utilisateur->getIdEntreprise());
     $infos['Entreprise'] = $entreprise->getNomEntreprise();
 }
-
 if ($utilisateur->getPoste() != null) {
     $infos['Poste'] = $utilisateur->getPoste();
 }
-
 $infos['Membre depuis'] = $utilisateur->getDateInscription();
+
+// Initiales affichées dans le rond (mb_ : versions de substr/strtoupper qui gèrent les accents)
 $initiales = mb_strtoupper(mb_substr($utilisateur->getPrenom(), 0, 1) . mb_substr($utilisateur->getNom(), 0, 1));
+
 $evenementRepository = new EvenementRepository_ahmed();
 $evenementsOrganises = $evenementRepository->getEvenementsOrganises($utilisateur->getIdUtilisateur());
 $evenementsInscrits = $evenementRepository->getEvenementsInscrits($utilisateur->getIdUtilisateur());
-$messageSucces = "";
 
+// Message laissé par une autre page (ex : création d'un événement)
+$messageSucces = "";
 if (!empty($_SESSION['message_profil'])) {
     $messageSucces = $_SESSION['message_profil'];
     $_SESSION['message_profil'] = "";
 }
 
+// Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'profil';
 
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Mon profil — Lycée Robert Schuman</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="profil_utilisateur.css">
 </head>
-
 <body>
 
 <?php require_once '../commun/entete.php'; ?>
 
 <main id="main">
 
+    <!-- ===== PAGE HERO ===== -->
     <section class="page-hero">
         <div class="hero-overlay"></div>
-
         <div class="container hero-content">
-            <p class="breadcrumb">
-                <a href="../page_acceuille/page_accueil.php">Accueil</a>
-                / Mon profil
-            </p>
-
+            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Mon profil</p>
             <h1>Mon profil</h1>
-
             <p>Retrouvez les informations de votre compte.</p>
         </div>
     </section>
 
+    <!-- ===== PROFIL ===== -->
     <section class="section profil-section">
         <div class="container profil-layout">
             <div class="profil-card">
@@ -142,12 +129,8 @@ $pageActive = 'profil';
                         <?php echo htmlspecialchars($initiales); ?>
                     </div>
                     <div>
-                        <h2>
-                            <?php echo htmlspecialchars($utilisateur->getPrenom() . ' ' . $utilisateur->getNom()); ?>
-                        </h2>
-                        <span class="badge">
-                            <?php echo $roles[$utilisateur->getRole()]; ?>
-                        </span>
+                        <h2><?php echo htmlspecialchars($utilisateur->getPrenom() . ' ' . $utilisateur->getNom()); ?></h2>
+                        <span class="badge"><?php echo $roles[$utilisateur->getRole()]; ?></span>
                     </div>
                 </div>
 
@@ -161,19 +144,10 @@ $pageActive = 'profil';
                 </dl>
 
                 <div class="profil-actions">
-                    <?php if ($peutCreerOffre) { ?>
-                        <a href="../offre/creation_offre.php" class="btn btn-primary">
-                            Créer une offre
-                        </a>
-                    <?php } ?>
                     <?php if ($utilisateur->getRole() != 'gestionnaire') { ?>
-                        <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">
-                            Créer un événement
-                        </a>
+                        <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">Créer un événement</a>
                     <?php } ?>
-                    <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">
-                        Se déconnecter
-                    </a>
+                    <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">Se déconnecter</a>
                 </div>
 
             </div>
@@ -181,124 +155,83 @@ $pageActive = 'profil';
             <div class="profil-evenements">
 
                 <?php if ($messageSucces != "") { ?>
-                    <p class="form-status form-status--success" role="status">
-                        <?php echo htmlspecialchars($messageSucces); ?>
-                    </p>
+                    <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($messageSucces); ?></p>
                 <?php } ?>
 
+                <!-- ===== ÉVÉNEMENTS CRÉÉS ===== -->
                 <div class="profil-card evenements-card">
                     <h2>Mes événements créés</h2>
                     <?php if (count($evenementsOrganises) == 0) { ?>
-                        <p class="evenements-vide">
-                            Vous n'avez créé aucun événement pour le moment.
-                        </p>
+                        <p class="evenements-vide">Vous n'avez créé aucun événement pour le moment.</p>
                     <?php } else { ?>
                         <div class="table-wrapper">
                             <table class="evenements-table">
                                 <thead>
-                                <tr>
-                                    <th scope="col">Titre</th>
-                                    <th scope="col">Type</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Lieu</th>
-                                    <th scope="col">Places</th>
-                                    <th scope="col">Statut</th>
-                                </tr>
+                                    <tr>
+                                        <th scope="col">Titre</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Lieu</th>
+                                        <th scope="col">Places</th>
+                                        <th scope="col">Statut</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($evenementsOrganises as $evenement) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
-                                        <td><?php echo $evenement['date_fr']; ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
-                                        <td>
-                                            <?php
-                                            if ($evenement['nb_places'] != null) {
-                                                echo $evenement['nb_places'];
-                                            } else {
-                                                echo '—';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td>
-                                                <span class="badge">
-                                                    <?php echo $statutsEvenement[$evenement['statut']]; ?>
-                                                </span>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
+                                    <?php foreach ($evenementsOrganises as $evenement) { ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
+                                            <td><?php echo $evenement['date_fr']; ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                            <td><?php if ($evenement['nb_places'] != null) { echo $evenement['nb_places']; } else { echo '—'; } ?></td>
+                                            <td><span class="badge"><?php echo $statutsEvenement[$evenement['statut']]; ?></span></td>
+                                        </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
                     <?php } ?>
                 </div>
+
+                <!-- ===== ÉVÉNEMENTS INSCRITS ===== -->
                 <div class="profil-card evenements-card">
                     <h2>Mes inscriptions aux événements</h2>
                     <?php if (count($evenementsInscrits) == 0) { ?>
-                        <p class="evenements-vide">
-                            Vous n'êtes inscrit à aucun événement pour le moment.
-                        </p>
+                        <p class="evenements-vide">Vous n'êtes inscrit à aucun événement pour le moment.</p>
                     <?php } else { ?>
                         <div class="table-wrapper">
                             <table class="evenements-table">
                                 <thead>
-                                <tr>
-                                    <th scope="col">Titre</th>
-                                    <th scope="col">Type</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Lieu</th>
-                                    <th scope="col">Inscrit le</th>
-                                    <th scope="col">Inscription</th>
-                                </tr>
+                                    <tr>
+                                        <th scope="col">Titre</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Lieu</th>
+                                        <th scope="col">Inscrit le</th>
+                                        <th scope="col">Inscription</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($evenementsInscrits as $evenement) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
-                                        <td><?php echo $evenement['date_fr']; ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
-                                        <td><?php echo $evenement['date_inscription_fr']; ?></td>
-                                        <td>
-                                                <span class="badge">
-                                                    <?php echo $statutsInscription[$evenement['statut_inscription']]; ?>
-                                                </span>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
+                                    <?php foreach ($evenementsInscrits as $evenement) { ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
+                                            <td><?php echo $evenement['date_fr']; ?></td>
+                                            <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                            <td><?php echo $evenement['date_inscription_fr']; ?></td>
+                                            <td><span class="badge"><?php echo $statutsInscription[$evenement['statut_inscription']]; ?></span></td>
+                                        </tr>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>
                     <?php } ?>
                 </div>
-                <div class="profil-card cv-card">
-                    <h2>Mon CV</h2>
-                    <?php if (!empty($utilisateur->getCv())) { ?>
-                        <p class="cv-info">
-                            <strong>CV actuel :</strong>
-                            <a href="profil_utilisateur.php <?php echo htmlspecialchars($utilisateur->getCv()); ?>" target="_blank">
-                                <?php echo htmlspecialchars($utilisateur->getCv()); ?>
-                            </a>
-                        </p>
-                    <?php } else { ?>
-                        <p class="cv-info">
-                            Aucun CV enregistré pour le moment.
-                        </p>
-                    <?php } ?>
-                    <form action="ajout_cv.php" method="POST" enctype="multipart/form-data" class="cv-form">
-                        <label for="cv">
-                            Ajouter / Modifier votre CV (PDF uniquement) :
-                        </label>
-                        <input type="file" id="cv" name="cv" accept="application/pdf" required>
-                        <button type="submit" class="btn-upload">
-                            Enregistrer mon CV
-                        </button>
-                    </form>
-                </div>
+
             </div>
         </div>
     </section>
+
 </main>
 
 <?php require_once '../commun/pied_de_page.php'; ?>

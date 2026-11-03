@@ -1,0 +1,244 @@
+/* =========================================================
+   Lycée Robert Schuman — styles propres à la page discussion du forum
+   (un sujet, ses commentaires et leurs réponses).
+   Les styles communs du forum sont dans forum.css, la base dans ../style.css
+   ========================================================= */
+
+/* ---------- Carte du sujet ---------- */
+.post-carte {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 36px;
+}
+
+/* Image d'illustration selon le canal du sujet */
+.post-banniere {
+  height: 200px;
+  background-color: #dfe7df;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.post-banniere--general {
+  background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=60');
+}
+.post-banniere--alumni_entreprises {
+  background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=60');
+}
+.post-banniere--etudiants {
+  background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=60');
+}
+
+.post-contenu {
+  padding: 24px 28px 22px;
+}
+.post-contenu h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 14px;
+}
+.post-contenu .auteur {
+  margin-bottom: 16px;
+}
+.post-texte {
+  overflow-wrap: anywhere;
+  margin-bottom: 12px;
+}
+
+/* ---------- Actions sous un message (Répondre, Signaler, Supprimer) ---------- */
+.message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+.message-actions form {
+  margin: 0;
+}
+.action-lien {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  cursor: pointer;
+}
+.action-lien:hover {
+  text-decoration: underline;
+}
+.action-signaler {
+  color: var(--color-muted);
+}
+.action-signaler::before {
+  content: "⚑ ";
+}
+.action-supprimer {
+  color: var(--color-danger);
+}
+.action-faite {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+/* ---------- En-tête des commentaires + tri ---------- */
+.commentaires-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.commentaires-entete h2 {
+  font-size: 1.3rem;
+  margin: 0 8px 0 0;
+}
+.tri {
+  display: flex;
+  gap: 8px;
+}
+.tri-option {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--color-light);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+.tri-option[aria-current="true"] {
+  background: var(--color-dark);
+  color: #fff;
+}
+
+/* ---------- Ajouter un commentaire ---------- */
+.commentaire-nouveau {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.commentaire-champ {
+  flex: 1;
+  min-width: 0;
+}
+.commentaire-champ textarea,
+.form-reponse textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 8px 2px;
+  border: none;
+  border-bottom: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  resize: vertical;
+}
+.commentaire-champ textarea:focus,
+.form-reponse textarea:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+.commentaire-boutons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+.commentaire-boutons .btn {
+  font-family: inherit;
+}
+.btn-texte {
+  background: none;
+  color: var(--color-dark);
+}
+.btn-texte:hover {
+  background: var(--color-light);
+}
+
+/* ---------- Commentaires ---------- */
+.commentaires {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.commentaire {
+  display: flex;
+  gap: 14px;
+}
+.commentaire-corps {
+  flex: 1;
+  min-width: 0;
+}
+.commentaire-meta {
+  font-size: 0.88rem;
+  margin-bottom: 4px;
+}
+.commentaire-meta strong {
+  color: var(--color-dark);
+}
+.commentaire-texte {
+  overflow-wrap: anywhere;
+  margin-bottom: 8px;
+}
+/* Un message ciblé dans l'adresse (#message-12) est mis en évidence */
+.commentaire:target > .commentaire-corps,
+.post-carte:target {
+  animation: surligner 2s ease;
+}
+@keyframes surligner {
+  from { background: var(--color-primary-light); }
+  to { background: transparent; }
+}
+
+/* Formulaire de réponse à un commentaire (caché par défaut avec l'attribut hidden) */
+.form-reponse {
+  margin-top: 12px;
+}
+.form-reponse[hidden] {
+  display: none;
+}
+
+/* Réponses à un commentaire : bloc repliable <details> */
+.sous-reponses {
+  margin-top: 10px;
+}
+.sous-reponses summary {
+  display: inline-block;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  list-style: none;
+}
+.sous-reponses summary::-webkit-details-marker {
+  display: none;
+}
+.sous-reponses summary::before {
+  content: "▾ ";
+}
+.sous-reponses[open] summary::before {
+  content: "▴ ";
+}
+.commentaire--reponse {
+  margin-top: 16px;
+}
+
+.forum-vide-texte {
+  color: var(--color-muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .post-banniere {
+    height: 140px;
+  }
+  .post-contenu {
+    padding: 18px;
+  }
+  .commentaire-nouveau,
+  .commentaire {
+    gap: 10px;
+  }
+}

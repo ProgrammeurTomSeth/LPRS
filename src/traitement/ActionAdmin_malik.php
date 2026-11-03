@@ -1,11 +1,13 @@
 <?php
 
-// Traitement des boutons Ajouter / Enregistrer / Activer / Désactiver / Supprimer de public/Page_Admin/page_admin.php
+// Traitement des boutons Ajouter / Enregistrer / Activer / Désactiver / Supprimer / Valider un événement de public/Page_Admin/page_admin.php et page_admin_Evenement.php
 
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
 require_once '../modele/Utilisateur_Malik.php';
+require_once '../modele/evenement_anais.php';
 require_once '../repository/UtilisateurRepository_malik.php';
+require_once '../repository/EvenementRepository_ahmed.php';
 
 // Réservé aux gestionnaires
 if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
@@ -77,6 +79,20 @@ if ($action == 'ajouter') {
     } catch (PDOException $e) {
         $_SESSION['admin_erreur'] = "Impossible de supprimer cet utilisateur : il est l'auteur d'offres ou de messages.";
     }
+} elseif ($action == 'valider_evenement') {
+    // On publie l'événement choisi, puis on retourne sur la page de gestion des événements
+    $evenementRepository = new EvenementRepository_ahmed();
+    $evenementRepository->publierEvenement(lireChamp('id_evenement'));
+
+    header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
+    exit;
+} elseif ($action == 'refuser_evenement') {
+    // On refuse l'événement choisi, puis on retourne sur la page de gestion des événements
+    $evenementRepository = new EvenementRepository_ahmed();
+    $evenementRepository->refuserEvenement(lireChamp('id_evenement'));
+
+    header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
+    exit;
 }
 
 header('Location: ../../public/Page_Admin/page_admin.php');

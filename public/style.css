@@ -153,11 +153,15 @@ h2.center, p.eyebrow.center { display: block; }
 }
 .logo span { color: var(--color-primary); }
 
-.main-nav ul {
+/* "> ul" : seulement la liste principale, pas les listes des sous-menus */
+.main-nav > ul {
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 28px;
 }
-.main-nav a {
+.main-nav a,
+.menu-groupe-titre {
+  font-family: inherit;
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--color-dark);
@@ -166,6 +170,106 @@ h2.center, p.eyebrow.center { display: block; }
 .main-nav a:hover { color: var(--color-primary); }
 /* Lien de la page en cours (aria-current="page" est ajouté par commun/entete.php) */
 .main-nav a[aria-current="page"] { color: var(--color-primary); }
+
+/* ---------- Sous-menus (catégories du menu) ---------- */
+/* La catégorie prend toute la hauteur de la barre (78px) :
+   son sous-menu peut ainsi s'accrocher pile sous la barre de navigation */
+.menu-groupe {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 78px;
+}
+.menu-groupe-titre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+/* Petite flèche après le titre de la catégorie */
+.menu-groupe-titre::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--transition);
+}
+.menu-groupe:hover .menu-groupe-titre,
+.menu-groupe-titre:focus-visible,
+.menu-groupe--actif .menu-groupe-titre {
+  color: var(--color-primary);
+}
+
+/* Sous-menu fermé : collé sous la barre (top: 100% + 1px de bordure),
+   coins du haut droits, et caché par clip-path (on n'en montre que 0 % en partant du haut) */
+.sous-menu {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: -18px;
+  min-width: 250px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
+  z-index: 200;
+  visibility: hidden;
+  clip-path: inset(0 -40px 100% -40px);
+  transform: translateY(-10px);
+  transition: clip-path 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+}
+/* Ouverture au survol de la souris, ou au clavier (Tab) grâce à :focus-within :
+   le clip-path s'agrandit vers le bas, la carte "sort" de dessous la barre */
+.menu-groupe:hover .sous-menu,
+.menu-groupe:focus-within .sous-menu {
+  visibility: visible;
+  clip-path: inset(0 -40px -40px -40px);
+  transform: translateY(0);
+  transition: clip-path 0.3s ease, transform 0.3s ease, visibility 0s;
+}
+/* Correctif superposition : un clic laisse le focus sur le titre (:focus-within),
+   donc son sous-menu restait ouvert pendant qu'on en survolait un autre.
+   Quand la souris est sur le menu, seule la catégorie survolée reste ouverte.
+   (Ordinateur uniquement : sur tablette/téléphone les sous-menus sont toujours dépliés.) */
+@media (min-width: 1025px) {
+  .main-nav > ul:hover .menu-groupe:not(:hover) .sous-menu {
+    visibility: hidden;
+    clip-path: inset(0 -40px 100% -40px);
+    transform: translateY(-10px);
+    transition: clip-path 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+  }
+  .main-nav > ul:hover .menu-groupe:not(:hover) .menu-groupe-titre::after {
+    transform: translateY(-2px) rotate(45deg);
+  }
+}
+/* Si l'utilisateur a désactivé les animations dans son système : ouverture directe */
+@media (prefers-reduced-motion: reduce) {
+  .sous-menu { transition: none !important; }
+}
+.menu-groupe:hover .menu-groupe-titre::after,
+.menu-groupe:focus-within .menu-groupe-titre::after {
+  transform: translateY(1px) rotate(225deg);
+}
+.sous-menu a {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+.sous-menu a:hover {
+  background: var(--color-light);
+}
+.sous-menu-description {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-muted);
+}
 
 .header-cta { flex-shrink: 0; }
 
@@ -298,8 +402,8 @@ h2.center, p.eyebrow.center { display: block; }
 
 /* ---------- Responsive ---------- */
 
-/* Menu "hamburger" dès que les 6 liens ne tiennent plus sur une ligne */
-@media (max-width: 1100px) {
+/* Menu "hamburger" quand le menu ne tient plus sur une ligne (tablette) */
+@media (max-width: 1024px) {
   .main-nav {
     position: absolute;
     top: 78px;
@@ -312,7 +416,35 @@ h2.center, p.eyebrow.center { display: block; }
     transition: transform var(--transition), opacity var(--transition);
   }
   .main-nav.open { transform: translateY(0); opacity: 1; }
-  .main-nav ul { flex-direction: column; padding: 20px 24px; gap: 18px; }
+  .main-nav > ul { flex-direction: column; align-items: stretch; padding: 20px 24px; gap: 14px; }
+
+  /* Dans le menu hamburger, les sous-menus sont toujours dépliés :
+     le titre de la catégorie devient une petite étiquette grise */
+  .menu-groupe-titre {
+    cursor: default;
+    color: var(--color-muted) !important;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .menu-groupe-titre::after { display: none; }
+  .menu-groupe { display: block; height: auto; }
+  .sous-menu {
+    position: static;
+    min-width: 0;
+    padding: 4px 0 0 12px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    visibility: visible;
+    clip-path: none;
+    transform: none;
+    transition: none;
+  }
+  .sous-menu a { padding: 6px 0; }
+  .sous-menu a:hover { background: none; }
+  .sous-menu-description { display: none; }
+
   .header-actions { margin-left: auto; }
   .nav-toggle { display: flex; }
 }

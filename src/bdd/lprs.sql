@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `evenement` (
   `elements_requis` varchar(255) DEFAULT NULL,
   `nb_places` smallint UNSIGNED DEFAULT NULL,
   `date_evenement` datetime NOT NULL,
-  `statut` enum('brouillon','publie') NOT NULL DEFAULT 'brouillon',
+  `statut` enum('brouillon','en_attente','publie','refuse') NOT NULL DEFAULT 'brouillon',
   PRIMARY KEY (`id_evenement`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -251,6 +251,25 @@ INSERT INTO `organise_evenement` (`id_utilisateur`, `id_evenement`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `signalement_forum`
+--
+
+DROP TABLE IF EXISTS `signalement_forum`;
+CREATE TABLE IF NOT EXISTS `signalement_forum` (
+  `id_signalement` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_forum` int UNSIGNED NOT NULL,
+  `id_utilisateur` int UNSIGNED NOT NULL,
+  `motif` enum('spam','insulte','donnees_personnelles','hors_sujet','autre') NOT NULL,
+  `commentaire` varchar(500) DEFAULT NULL,
+  `date_signalement` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_signalement`),
+  UNIQUE KEY `uq_signalement_message_utilisateur` (`id_forum`,`id_utilisateur`),
+  KEY `fk_signalement_utilisateur` (`id_utilisateur`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `utilisateur`
 --
 
@@ -340,6 +359,13 @@ ALTER TABLE `offre`
 ALTER TABLE `organise_evenement`
   ADD CONSTRAINT `fk_organise_evenement` FOREIGN KEY (`id_evenement`) REFERENCES `evenement` (`id_evenement`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_organise_utilisateur` FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateur` (`id_utilisateur`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `signalement_forum`
+--
+ALTER TABLE `signalement_forum`
+  ADD CONSTRAINT `fk_signalement_forum` FOREIGN KEY (`id_forum`) REFERENCES `forum` (`id_forum`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_signalement_utilisateur` FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateur` (`id_utilisateur`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `utilisateur`

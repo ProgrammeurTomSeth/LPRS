@@ -1,0 +1,155 @@
+/* =========================================================
+   Lycée Robert Schuman — styles propres à la page de modération du forum
+   (la base commune : couleurs, boutons, en-tête, menu, bannière,
+   pied de page et messages est dans ../style.css)
+   ========================================================= */
+
+.moderation-section {
+  background: var(--color-light);
+}
+.moderation-retour {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+.moderation-retour:hover {
+  text-decoration: underline;
+}
+.moderation-titre {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+.moderation-vide {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  text-align: center;
+}
+
+/* ---------- Carte d'un message signalé ---------- */
+.moderation-carte {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 26px 28px;
+  margin-bottom: 24px;
+  border: 1px solid #f3c7c7; /* encadré rouge pâle, comme sur la page de signalement */
+}
+.moderation-entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.moderation-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.badge-canal,
+.badge-type,
+.badge-nombre {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.badge-canal {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  text-transform: uppercase;
+}
+.badge-type {
+  background: var(--color-light);
+  border: 1px solid var(--color-border);
+}
+.badge-nombre {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+.moderation-lien {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-primary-dark);
+}
+.moderation-lien:hover {
+  text-decoration: underline;
+}
+
+/* Message signalé */
+.moderation-message {
+  background: var(--color-light);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.moderation-auteur {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  margin-bottom: 8px;
+}
+.moderation-auteur strong {
+  color: var(--color-dark);
+}
+.moderation-message-titre {
+  font-weight: 700;
+  color: var(--color-dark);
+  margin-bottom: 4px;
+}
+.moderation-message-texte {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Liste des signalements */
+.moderation-signalements {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 0.9rem;
+}
+.moderation-signalements li {
+  padding-left: 14px;
+  border-left: 3px solid var(--color-border);
+}
+.moderation-signalements strong {
+  color: var(--color-danger);
+}
+.moderation-commentaire {
+  display: block;
+  color: var(--color-muted);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+/* Boutons */
+.moderation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.moderation-actions form {
+  margin: 0;
+}
+.moderation-actions .btn {
+  font-family: inherit;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .moderation-carte {
+    padding: 18px;
+  }
+  .moderation-actions form,
+  .moderation-actions .btn {
+    flex: 1;
+    width: 100%;
+  }
+}

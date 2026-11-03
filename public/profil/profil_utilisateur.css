@@ -183,6 +183,45 @@
   color: var(--color-primary-dark);
 }
 
+/* ---------- CV ---------- */
+.cv-card {
+  margin-top: 32px;
+}
+.cv-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+.cv-info {
+  margin: 0 0 20px;
+  color: var(--color-muted);
+}
+.btn-consulter {
+  display: inline-block;
+  padding: 12px 24px;
+  margin-bottom: 24px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: background 0.2s, transform 0.2s;
+}
+.btn-consulter:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+.cv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+.cv-form label {
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {
   .profil-layout {
