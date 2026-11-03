@@ -58,3 +58,14 @@ if (location.hash.startsWith('#message-')) {
         message.scrollIntoView({ block: 'center' });
     }
 }
+
+// Messages de confirmation (vert) éphémères : ils disparaissent en fondu
+// au bout de 3 secondes. Les messages d'erreur (rouge) restent affichés.
+document.querySelectorAll('.form-status--success').forEach((message) => {
+    setTimeout(() => {
+        message.classList.add('form-status--disparait'); // lance le fondu (forum.css)
+        setTimeout(() => {
+            message.remove(); // puis on retire le message de la page
+        }, 500);
+    }, 3000);
+});

@@ -35,7 +35,7 @@
   box-shadow: var(--shadow);
   padding: 26px 28px;
   margin-bottom: 24px;
-  border-left: 5px solid var(--color-danger);
+  border: 1px solid #f3c7c7; /* encadré rouge pâle, comme sur la page de signalement */
 }
 .moderation-entete {
   display: flex;
