@@ -9,7 +9,8 @@ $liensMenu = array(
     'entreprises' => array('Entreprises', '../page_entreprise/page_entreprise.php'),
     'offres' => array('Offres', '../offre/liste_offres_Tom.php'),
     'evenements' => array('Événements', '../evenement/liste_evenement_Tom.php'),
-    'annuaire' => array('Annuaire', '../annuaire/page_annuaire.php')
+    'annuaire' => array('Annuaire', '../annuaire/page_annuaire.php'),
+    'forum' => array('Forum', '../forum/forum.php')
 );
 
 // Lien vers l'administration : seulement pour un gestionnaire connecté

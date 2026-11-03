@@ -298,8 +298,8 @@ h2.center, p.eyebrow.center { display: block; }
 
 /* ---------- Responsive ---------- */
 
-/* Menu "hamburger" dès que les 6 liens ne tiennent plus sur une ligne */
-@media (max-width: 1100px) {
+/* Menu "hamburger" dès que les liens (jusqu'à 8 pour un gestionnaire) ne tiennent plus sur une ligne */
+@media (max-width: 1300px) {
   .main-nav {
     position: absolute;
     top: 78px;
