@@ -250,7 +250,36 @@ $pageActive = 'inscription';
 
                 <fieldset class="form-fieldset">
                     <legend>Informations complémentaires</legend>
+                    <!-- ===== MON CV ===== -->
 
+                    <?php
+                    $role = strtolower((string) $utilisateur->getRole());
+                    if (in_array($role, ['etudiant', 'alumni'], true)) { ?>
+
+                        <div class="profil-card cv-card">
+                            <h2>Mon CV</h2>
+
+                            <?php if (!empty($utilisateur->getCv())) { ?>
+                                <a href="../../uploads/cv/<?php echo rawurlencode($utilisateur->getCv()); ?>"
+                                   target="_blank" rel="noopener" class="btn-consulter">
+                                    Consulter mon CV
+                                </a>
+                            <?php } else { ?>
+                                <p class="cv-info">Aucun CV enregistré pour le moment.</p>
+                            <?php } ?>
+
+                            <form action="../profil/ajout_cv.php" method="POST" enctype="multipart/form-data" class="cv-form">
+                                <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
+                                <input type="file" id="cv" name="cv" accept="application/pdf" required>
+
+                                <button type="submit" class="btn-upload">Enregistrer mon CV</button>
+                            </form>
+                        </div>
+
+                    <?php } ?>   <!-- ← à ajouter : ferme le if du rôle -->
+
+        </div>
+        <fieldset class="form-fieldset">
                     <div class="form-group">
                         <label for="motif_inscription">Motif de l'inscription (optionnel)</label>
                         <textarea id="motif_inscription" name="motif_inscription" rows="3" maxlength="255" placeholder="Pourquoi souhaitez-vous rejoindre la plateforme ?"><?php echo htmlspecialchars(ancienneValeur($valeurs, 'motif_inscription')); ?></textarea>
