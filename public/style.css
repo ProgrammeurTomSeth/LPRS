@@ -172,8 +172,13 @@ h2.center, p.eyebrow.center { display: block; }
 .main-nav a[aria-current="page"] { color: var(--color-primary); }
 
 /* ---------- Sous-menus (catégories du menu) ---------- */
+/* La catégorie prend toute la hauteur de la barre (78px) :
+   son sous-menu peut ainsi s'accrocher pile sous la barre de navigation */
 .menu-groupe {
   position: relative;
+  display: flex;
+  align-items: center;
+  height: 78px;
 }
 .menu-groupe-titre {
   display: inline-flex;
@@ -200,32 +205,52 @@ h2.center, p.eyebrow.center { display: block; }
   color: var(--color-primary);
 }
 
+/* Sous-menu fermé : collé sous la barre (top: 100% + 1px de bordure),
+   coins du haut droits, et caché par clip-path (on n'en montre que 0 % en partant du haut) */
 .sous-menu {
-  display: none;
   position: absolute;
-  top: calc(100% + 14px);
+  top: calc(100% + 1px);
   left: -18px;
   min-width: 250px;
   padding: 8px;
   background: #fff;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
   z-index: 200;
+  visibility: hidden;
+  clip-path: inset(0 -40px 100% -40px);
+  transform: translateY(-10px);
+  transition: clip-path 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
 }
-/* Zone invisible entre le titre et le sous-menu : la souris peut descendre sans le fermer */
-.sous-menu::before {
-  content: "";
-  position: absolute;
-  top: -16px;
-  left: 0;
-  right: 0;
-  height: 16px;
-}
-/* Ouverture : au survol de la souris, ou au clavier (Tab) grâce à :focus-within */
+/* Ouverture au survol de la souris, ou au clavier (Tab) grâce à :focus-within :
+   le clip-path s'agrandit vers le bas, la carte "sort" de dessous la barre */
 .menu-groupe:hover .sous-menu,
 .menu-groupe:focus-within .sous-menu {
-  display: block;
+  visibility: visible;
+  clip-path: inset(0 -40px -40px -40px);
+  transform: translateY(0);
+  transition: clip-path 0.3s ease, transform 0.3s ease, visibility 0s;
+}
+/* Correctif superposition : un clic laisse le focus sur le titre (:focus-within),
+   donc son sous-menu restait ouvert pendant qu'on en survolait un autre.
+   Quand la souris est sur le menu, seule la catégorie survolée reste ouverte.
+   (Ordinateur uniquement : sur tablette/téléphone les sous-menus sont toujours dépliés.) */
+@media (min-width: 1025px) {
+  .main-nav > ul:hover .menu-groupe:not(:hover) .sous-menu {
+    visibility: hidden;
+    clip-path: inset(0 -40px 100% -40px);
+    transform: translateY(-10px);
+    transition: clip-path 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+  }
+  .main-nav > ul:hover .menu-groupe:not(:hover) .menu-groupe-titre::after {
+    transform: translateY(-2px) rotate(45deg);
+  }
+}
+/* Si l'utilisateur a désactivé les animations dans son système : ouverture directe */
+@media (prefers-reduced-motion: reduce) {
+  .sous-menu { transition: none !important; }
 }
 .menu-groupe:hover .menu-groupe-titre::after,
 .menu-groupe:focus-within .menu-groupe-titre::after {
@@ -403,16 +428,19 @@ h2.center, p.eyebrow.center { display: block; }
     text-transform: uppercase;
   }
   .menu-groupe-titre::after { display: none; }
+  .menu-groupe { display: block; height: auto; }
   .sous-menu {
-    display: block;
     position: static;
     min-width: 0;
     padding: 4px 0 0 12px;
     border: none;
     border-radius: 0;
     box-shadow: none;
+    visibility: visible;
+    clip-path: none;
+    transform: none;
+    transition: none;
   }
-  .sous-menu::before { display: none; }
   .sous-menu a { padding: 6px 0; }
   .sous-menu a:hover { background: none; }
   .sous-menu-description { display: none; }
