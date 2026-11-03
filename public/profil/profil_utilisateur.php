@@ -227,6 +227,28 @@ $pageActive = 'profil';
                         </div>
                     <?php } ?>
                 </div>
+                <!-- ===== MON CV ===== -->
+                <div class="profil-card cv-card">
+                    <h2>Mon CV</h2>
+
+                    <?php if (!empty($utilisateur->getCv())) { ?>
+                        <p class="cv-info">
+                            <strong>CV actuel :</strong>
+                            <a href="/uploads/cv/<?php echo htmlspecialchars($utilisateur->getCv()); ?>" target="_blank">
+                                <?php echo htmlspecialchars($utilisateur->getCv()); ?>
+                            </a>
+                        </p>
+                    <?php } else { ?>
+                        <p class="cv-info">Aucun CV enregistré pour le moment.</p>
+                    <?php } ?>
+
+                    <form action="profil_utilisateur.php" method="POST" enctype="multipart/form-data" class="cv-form">
+                        <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
+                        <input type="file" id="cv" name="cv" accept="application/pdf" required>
+
+                        <button type="submit" class="btn-upload">Enregistrer mon CV</button>
+                    </form>
+                </div>
 
             </div>
         </div>
