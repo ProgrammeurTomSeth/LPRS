@@ -103,4 +103,26 @@ class EvenementRepository_ahmed
         $req = $this->connexionBdd->prepare("INSERT INTO organise_evenement (id_utilisateur, id_evenement) VALUES (:id_utilisateur, :id_evenement)");
         $req->execute(array('id_utilisateur' => $id_utilisateur, 'id_evenement' => $id_evenement));
     }
+
+    // Récupère tous les événements qui attendent la validation de l'admin
+    public function getEvenementsEnAttente()
+    {
+        $req = $this->connexionBdd->prepare("SELECT * FROM evenement WHERE statut = 'en_attente'");
+        $req->execute();
+        return $req->fetchAll();
+    }
+
+    // Passe un événement en "publie"
+    public function publierEvenement($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE evenement SET statut = 'publie' WHERE id_evenement = :id");
+        $req->execute(array('id' => $id_evenement));
+    }
+
+    // Passe un événement en "refuse"
+    public function refuserEvenement($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE evenement SET statut = 'refuse' WHERE id_evenement = :id");
+        $req->execute(array('id' => $id_evenement));
+    }
 }

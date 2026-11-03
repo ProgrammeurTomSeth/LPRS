@@ -69,7 +69,7 @@ if (isset($_POST['coorganisateurs'])) {
     }
 }
 
-// Un étudiant doit avoir un professeur parmi les organisateurs pour publier
+// Il faut au moins un professeur parmi les organisateurs
 $professeurPresent = false;
 foreach ($organisateurs as $id => $role) {
     if ($role == 'professeur') {
@@ -77,10 +77,15 @@ foreach ($organisateurs as $id => $role) {
     }
 }
 
-$statut = 'publie';
-if ($roleConnecte == 'etudiant' && $professeurPresent == false) {
-    $statut = 'brouillon';
+// Pas de professeur : on renvoie vers le formulaire avec un message d'erreur
+if ($professeurPresent == false) {
+    $_SESSION['evenement_erreur'] = "Vous devez ajouter au moins un professeur parmi les organisateurs.";
+    header('Location: ../../public/evenement/creation_evenement_Tom.php');
+    exit;
 }
+
+// Tous les nouveaux événements attendent la validation d'un gestionnaire
+$statut = 'en_attente';
 
 // Création de l'objet événement puis enregistrement
 $evenement = new evenement_anais();
@@ -99,11 +104,7 @@ foreach ($organisateurs as $id => $role) {
     $evenementRepository->ajouterOrganisateur($idEvenement, $id);
 }
 
-if ($statut == 'publie') {
-    $_SESSION['message_profil'] = "L'événement a été créé et publié.";
-} else {
-    $_SESSION['message_profil'] = "L'événement a été créé en brouillon. Il sera publié lorsqu'un professeur sera ajouté aux organisateurs.";
-}
+$_SESSION['message_profil'] = "L'événement a été créé. Il sera publié après validation par un gestionnaire.";
 
 header('Location: ../../public/profil/profil_utilisateur.php');
 exit;

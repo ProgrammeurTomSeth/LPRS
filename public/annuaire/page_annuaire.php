@@ -45,7 +45,7 @@ $pageActive = 'annuaire';
             rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../style.css?v=<?php echo filemtime(__DIR__ . '/../style.css'); ?>">
     <link rel="stylesheet" href="annuaire.css">
 </head>
 

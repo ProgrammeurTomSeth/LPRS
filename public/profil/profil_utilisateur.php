@@ -34,7 +34,9 @@ $roles = array(
 );
 $statutsEvenement = array(
     'brouillon' => 'Brouillon',
-    'publie' => 'Publié'
+    'en_attente' => 'En attente de validation',
+    'publie' => 'Publié',
+    'refuse' => 'Refusé'
 );
 $statutsInscription = array(
     'acceptee' => 'Acceptée',
@@ -100,7 +102,7 @@ $pageActive = 'profil';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../style.css?v=<?php echo filemtime(__DIR__ . '/../style.css'); ?>">
     <link rel="stylesheet" href="profil_utilisateur.css">
 </head>
 <body>
@@ -228,25 +230,32 @@ $pageActive = 'profil';
                     <?php } ?>
                 </div>
                 <!-- ===== MON CV ===== -->
-                <div class="profil-card cv-card">
-                    <h2>Mon CV</h2>
 
-                    <?php if (!empty($utilisateur->getCv())) { ?>
-                        <a href="../../uploads/cv/<?php echo rawurlencode($utilisateur->getCv()); ?>"
-                           target="_blank" rel="noopener" class="btn-consulter">
-                            Consulter mon CV
-                        </a>
-                    <?php } else { ?>
-                        <p class="cv-info">Aucun CV enregistré pour le moment.</p>
-                    <?php } ?>
+                <?php
+                $role = strtolower((string) $utilisateur->getRole());
+                if (in_array($role, ['etudiant', 'alumni'], true)) { ?>
 
-                    <form action="ajout_cv.php" method="POST" enctype="multipart/form-data" class="cv-form">
-                        <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
-                        <input type="file" id="cv" name="cv" accept="application/pdf" required>
+                    <div class="profil-card cv-card">
+                        <h2>Mon CV</h2>
 
-                        <button type="submit" class="btn-upload">Enregistrer mon CV</button>
-                    </form>
-                </div>
+                        <?php if (!empty($utilisateur->getCv())) { ?>
+                            <a href="../../uploads/cv/<?php echo rawurlencode($utilisateur->getCv()); ?>"
+                               target="_blank" rel="noopener" class="btn-consulter">
+                                Consulter mon CV
+                            </a>
+                        <?php } else { ?>
+                            <p class="cv-info">Aucun CV enregistré pour le moment.</p>
+                        <?php } ?>
+
+                        <form action="ajout_cv.php" method="POST" enctype="multipart/form-data" class="cv-form">
+                            <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
+                            <input type="file" id="cv" name="cv" accept="application/pdf" required>
+
+                            <button type="submit" class="btn-upload">Enregistrer mon CV</button>
+                        </form>
+                    </div>
+
+                <?php } ?>   <!-- ← à ajouter : ferme le if du rôle -->
 
             </div>
         </div>

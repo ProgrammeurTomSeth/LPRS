@@ -1,0 +1,7 @@
+# Le navigateur vérifie à chaque chargement si les fichiers CSS et JS ont changé
+# (évite d'afficher une ancienne version du style après un changement du site).
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>
