@@ -247,6 +247,7 @@ $pageActive = 'profil';
                         <button type="submit" class="btn-upload">Enregistrer mon CV</button>
                     </form>
                 </div>
+
             </div>
         </div>
     </section>
