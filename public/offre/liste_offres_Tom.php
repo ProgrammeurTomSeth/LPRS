@@ -2,51 +2,59 @@
 
 require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 require_once '../../src/bdd/bdd.php';
+require_once '../../src/modele/Utilisateur_Malik.php';
+require_once '../../src/repository/UtilisateurRepository_malik.php';
 require_once '../../src/repository/OffreRepository_Tom.php';
 
-// Messages possibles après une candidature (résultat envoyé dans l'URL par
-// src/traitement/ListeOffreTraitement_Tom.php)
 $messages = array(
-    'succes' => 'Votre candidature a bien été enregistrée.',
-    'connexion' => 'Vous devez être connecté pour postuler.',
-    'profil' => 'Seuls les étudiants et les alumni peuvent postuler.',
-    'profil_offre' => 'Cette offre ne correspond pas à votre profil.',
-    'deja_postule' => 'Vous avez déjà postulé à cette offre.',
-    'indisponible' => 'Cette offre n’est plus disponible.',
-    'motivation' => 'Veuillez saisir votre motivation.',
-    'erreur' => 'Une erreur est survenue. Veuillez réessayer.'
+        'succes' => 'Votre candidature a bien été enregistrée.',
+        'connexion' => 'Vous devez être connecté pour postuler.',
+        'profil' => 'Seuls les étudiants et les alumni peuvent postuler.',
+        'profil_offre' => 'Cette offre ne correspond pas à votre profil.',
+        'deja_postule' => 'Vous avez déjà postulé à cette offre.',
+        'indisponible' => 'Cette offre n’est plus disponible.',
+        'motivation' => 'Veuillez saisir votre motivation.',
+        'erreur' => 'Une erreur est survenue. Veuillez réessayer.'
 );
 
 $message = "";
 $resultat = "";
+
 if (isset($_GET['resultat']) && isset($messages[$_GET['resultat']])) {
     $resultat = $_GET['resultat'];
     $message = $messages[$resultat];
 }
 
-// Libellés affichés pour les valeurs stockées en base
 $types = array(
-    'stage' => 'Stage',
-    'alternance' => 'Alternance',
-    'cdd' => 'CDD',
-    'cdi' => 'CDI'
-);
-$profils = array(
-    'tous' => 'Étudiants et alumni',
-    'etudiant' => 'Étudiants',
-    'alumni' => 'Alumni'
+        'stage' => 'Stage',
+        'alternance' => 'Alternance',
+        'cdd' => 'CDD',
+        'cdi' => 'CDI'
 );
 
-// Rôle de l'utilisateur connecté ("" si personne n'est connecté)
+$profils = array(
+        'tous' => 'Étudiants et alumni',
+        'etudiant' => 'Étudiants',
+        'alumni' => 'Alumni'
+);
+
 $roleUtilisateur = "";
+$peutCreerOffre = false;
+
 if (estConnecte()) {
-    $roleUtilisateur = $_SESSION['role'];
+    $utilisateurRepository = new UtilisateurRepository_malik();
+    $utilisateur = $utilisateurRepository->getUtilisateurParId(
+            $_SESSION['id_utilisateur']
+    );
+    if ($utilisateur != null) {
+        $roleUtilisateur = $utilisateur->getRole();
+        $peutCreerOffre = (($roleUtilisateur == 'partenaire' || $roleUtilisateur == 'alumni') && $utilisateur->getStatutValidation() == 'valide' && !empty($utilisateur->getIdEntreprise()));
+    }
 }
 
 $offreRepository = new OffreRepository_Tom();
 $offres = $offreRepository->getOffresOuvertes();
 
-// Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'offres';
 
 ?>
@@ -70,9 +78,15 @@ $pageActive = 'offres';
     <section class="page-hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Offres</p>
+            <p class="breadcrumb">
+                <a href="../page_acceuille/page_accueil.php">Accueil</a>
+                / Offres
+            </p>
             <h1>Offres d'emploi et de stage</h1>
-            <p>Découvrez les opportunités proposées par les entreprises partenaires et postulez aux offres qui vous intéressent.</p>
+            <p>
+                Découvrez les opportunités proposées par les entreprises partenaires
+                et postulez aux offres qui vous intéressent.
+            </p>
         </div>
     </section>
 
@@ -85,6 +99,13 @@ $pageActive = 'offres';
                 Retrouvez ici les offres actuellement ouvertes aux candidatures.
             </p>
 
+            <?php if ($peutCreerOffre) { ?>
+                <div class="offres-actions">
+                    <a href="creation_offre.php" class="btn btn-primary">
+                        Créer une offre
+                    </a>
+                </div>
+            <?php } ?>
             <?php if ($message != "") { ?>
                 <?php if ($resultat == 'succes') { ?>
                     <div class="message message-succes" role="status">
@@ -109,8 +130,6 @@ $pageActive = 'offres';
                 <div class="offres-grille">
                     <?php foreach ($offres as $offre) { ?>
                         <?php
-                        // L'utilisateur peut postuler s'il est étudiant ou alumni
-                        // et si l'offre est ouverte à son profil
                         $bonRole = ($roleUtilisateur == 'etudiant' || $roleUtilisateur == 'alumni');
                         $profilCompatible = ($offre['profil_cible'] == 'tous' || $offre['profil_cible'] == $roleUtilisateur);
                         $peutPostuler = ($bonRole && $profilCompatible);
@@ -129,15 +148,27 @@ $pageActive = 'offres';
                                     Ouverte
                                 </span>
                             </div>
-                            <h3><?php echo htmlspecialchars($offre['titre']); ?></h3>
+                            <h3>
+                                <?php echo htmlspecialchars($offre['titre']); ?>
+                            </h3>
                             <p class="offre-entreprise">
-                                <?php if ($offre['nom_entreprise'] != null) { echo htmlspecialchars($offre['nom_entreprise']); } else { echo 'Entreprise non renseignée'; } ?>
+                                <?php
+                                if ($offre['nom_entreprise'] != null) {
+                                    echo htmlspecialchars($offre['nom_entreprise']);
+                                } else {
+                                    echo 'Entreprise non renseignée';
+                                }
+                                ?>
                             </p>
-                            <div class="offre-description"><?php echo htmlspecialchars($offre['description']); ?></div>
+                            <div class="offre-description">
+                                <?php echo htmlspecialchars($offre['description']); ?>
+                            </div>
                             <?php if ($offre['missions'] != null) { ?>
                                 <div class="offre-missions">
                                     <h4>Missions</h4>
-                                    <p><?php echo htmlspecialchars($offre['missions']); ?></p>
+                                    <p>
+                                        <?php echo htmlspecialchars($offre['missions']); ?>
+                                    </p>
                                 </div>
                             <?php } ?>
                             <div class="offre-informations">
