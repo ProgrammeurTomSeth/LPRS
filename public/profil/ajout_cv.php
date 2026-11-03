@@ -1,4 +1,3 @@
-
 <?php
 require_once '../../src/bdd/bdd.php';
 require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
@@ -10,6 +9,22 @@ if (!isset($_SESSION['id_utilisateur'])) {
 }
 
 $id = $_SESSION['id_utilisateur'];
+
+// Connexion BDD
+$bdd = (new bdd())->getConnexionBdd();
+
+// Vérification du rôle : seuls les étudiants et les alumni peuvent déposer un CV
+$req = $bdd->prepare("SELECT role FROM utilisateur WHERE id_utilisateur = :id");
+$req->execute([':id' => $id]);
+$role = strtolower((string) $req->fetchColumn());
+
+$rolesAutorises = ['etudiant', 'alumni'];
+
+if (!in_array($role, $rolesAutorises, true)) {
+    $_SESSION['message_profil'] = "Seuls les étudiants et les alumni peuvent ajouter un CV.";
+    header("Location: profil_utilisateur.php");
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
 
@@ -46,8 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
     if (move_uploaded_file($fichier['tmp_name'], $destination)) {
 
         // Mise à jour BDD
-        $bdd = (new bdd())->getConnexionBdd();
-
         $sql = "UPDATE utilisateur
                 SET cv = :cv
                 WHERE id_utilisateur = :id";
@@ -69,4 +82,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
     exit;
 }
 ?>
-
