@@ -37,7 +37,7 @@ if (($roleUtilisateur != 'partenaire' && $roleUtilisateur != 'alumni') || empty(
 
 if (!isset($_POST['csrf_token']) || !isset($_SESSION['creation_offre_csrf']) || !hash_equals($_SESSION['creation_offre_csrf'], $_POST['csrf_token'])) {
     $_SESSION['creation_offre_erreur'] = "Le formulaire a expiré ou n'est pas valide. Veuillez réessayer.";
-    header('Location: ../../public/offre/creation_offre.php');
+    header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }
 
@@ -62,19 +62,19 @@ $_SESSION['creation_offre_ancien'] = array(
 
 if ($titre == '' || $description == '' || $missions == '' || $type == '' || $profilCible == '') {
     $_SESSION['creation_offre_erreur'] = "Veuillez remplir tous les champs obligatoires.";
-    header('Location: ../../public/offre/creation_offre.php');
+    header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }
 
 if (!in_array($type, $typesAutorises, true)) {
     $_SESSION['creation_offre_erreur'] = "Le type de contrat sélectionné n'est pas valide.";
-    header('Location: ../../public/offre/creation_offre.php');
+    header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }
 
 if (!in_array($profilCible, $profilsAutorises, true)) {
     $_SESSION['creation_offre_erreur'] = "Le profil ciblé sélectionné n'est pas valide.";
-    header('Location: ../../public/offre/creation_offre.php');
+    header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }
 
@@ -85,7 +85,7 @@ if ($salaireSaisi != '') {
 
     if (!is_numeric($salaireNormalise) || (float) $salaireNormalise < 0) {
         $_SESSION['creation_offre_erreur'] = "Le salaire doit être un nombre positif ou nul.";
-        header('Location: ../../public/offre/creation_offre.php');
+        header('Location: ../../public/offre/creation_offre_Tom.php');
         exit;
     }
 
@@ -94,7 +94,7 @@ if ($salaireSaisi != '') {
 
 if (strlen($titre) > 255) {
     $_SESSION['creation_offre_erreur'] = "Le titre ne doit pas dépasser 255 caractères.";
-    header('Location: ../../public/offre/creation_offre.php');
+    header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }
 
@@ -127,6 +127,6 @@ try {
 } catch (Exception $e) {
     $_SESSION['creation_offre_erreur'] = "Une erreur est survenue lors de l'enregistrement de l'offre. Veuillez réessayer.";
 
-    header('Location: ../../public/offre/creation_offre.php');
+    header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }

@@ -1,13 +1,10 @@
 <?php
 
-// Candidature de l'utilisateur connecté à une offre (bouton "Postuler")
-
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
 require_once '../modele/Offre_Tom.php';
 require_once '../repository/OffreRepository_Tom.php';
 
-// $resultat est envoyé dans l'URL : la page liste affiche le message correspondant
 if (!estConnecte()) {
     $resultat = 'connexion';
 } elseif ($_SESSION['role'] != 'etudiant' && $_SESSION['role'] != 'alumni') {

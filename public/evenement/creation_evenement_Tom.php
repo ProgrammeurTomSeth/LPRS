@@ -2,27 +2,23 @@
 
 require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 
-// Page réservée aux utilisateurs connectés
 if (!estConnecte()) {
     header('Location: ../connexion/connexion.php');
     exit;
 }
 
-// Message d'erreur laissé par src/traitement/EvenementTraitement_Tom.php
 $erreur = "";
 if (!empty($_SESSION['evenement_erreur'])) {
     $erreur = $_SESSION['evenement_erreur'];
     $_SESSION['evenement_erreur'] = "";
 }
 
-// Les gestionnaires ne peuvent pas créer d'événement : on n'affiche pas le formulaire
 $afficherFormulaire = true;
 if ($_SESSION['role'] == 'gestionnaire') {
     $erreur = "Les gestionnaires ne peuvent pas créer d'événement.";
     $afficherFormulaire = false;
 }
 
-// Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'evenements';
 
 ?>

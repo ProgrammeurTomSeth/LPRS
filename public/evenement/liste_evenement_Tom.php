@@ -4,8 +4,6 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 require_once '../../src/bdd/bdd.php';
 require_once '../../src/repository/EvenementRepository_ahmed.php';
 
-// Messages possibles après une inscription (résultat envoyé dans l'URL par
-// src/traitement/InscriptionEvenementTraitement_Tom.php)
 $messages = array(
     'succes' => 'Votre inscription a bien été enregistrée.',
     'connexion' => 'Vous devez être connecté pour vous inscrire.',
@@ -25,7 +23,6 @@ if (isset($_GET['resultat']) && isset($messages[$_GET['resultat']])) {
 $evenementRepository = new EvenementRepository_ahmed();
 $evenements = $evenementRepository->getEvenementsPublies();
 
-// Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'evenements';
 
 ?>

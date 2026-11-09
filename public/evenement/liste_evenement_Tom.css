@@ -1,8 +1,3 @@
-/* =========================================================
-   Lycée Robert Schuman — styles propres à la page liste des événements
-   (la base commune : couleurs, boutons, en-tête, menu, bannière,
-   pied de page et messages est dans ../style.css)
-   ========================================================= */
 .evenements-section {
   background: var(--color-light);
 }
@@ -161,7 +156,6 @@
   }
 }
 
-/* Garde les retours à la ligne saisis dans la description */
 .evenement-carte__description {
   white-space: pre-line;
 }

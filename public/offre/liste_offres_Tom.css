@@ -1,8 +1,3 @@
-/* =========================================================
-   Lycée Robert Schuman — styles propres à la page offres d'emploi et de stage
-   (la base commune : couleurs, boutons, en-tête, menu, bannière,
-   pied de page et messages est dans ../style.css)
-   ========================================================= */
 .offres-section {
   background: var(--color-light);
 }
@@ -219,7 +214,6 @@ textarea {
   }
 }
 
-/* Garde les retours à la ligne saisis dans la description et les missions */
 .offre-description,
 .offre-missions p {
   white-space: pre-line;

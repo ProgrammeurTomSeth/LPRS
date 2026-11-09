@@ -101,7 +101,7 @@ $pageActive = 'offres';
 
             <?php if ($peutCreerOffre) { ?>
                 <div class="offres-actions">
-                    <a href="creation_offre.php" class="btn btn-primary">
+                    <a href="creation_offre_Tom.php" class="btn btn-primary">
                         Créer une offre
                     </a>
                 </div>

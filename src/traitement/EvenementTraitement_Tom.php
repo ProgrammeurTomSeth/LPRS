@@ -1,9 +1,5 @@
 <?php
 
-// Traitement de la page public/evenement/creation_evenement_Tom.php :
-// 1) recherche des co-organisateurs (appelée par le JavaScript avec ?recherche=...)
-// 2) création de l'événement (formulaire en POST)
-
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
 require_once '../modele/Utilisateur_Malik.php';
@@ -19,7 +15,6 @@ if (!estConnecte()) {
 $idConnecte = $_SESSION['id_utilisateur'];
 $roleConnecte = $_SESSION['role'];
 
-// Les gestionnaires ne peuvent pas créer d'événement
 if ($roleConnecte == 'gestionnaire') {
     header('Location: ../../public/evenement/creation_evenement_Tom.php');
     exit;
@@ -27,14 +22,12 @@ if ($roleConnecte == 'gestionnaire') {
 
 $utilisateurRepository = new UtilisateurRepository_malik();
 
-// 1) Recherche : on renvoie la liste au format JSON, lu par le JavaScript de la page
 if (isset($_GET['recherche'])) {
     $utilisateurs = $utilisateurRepository->rechercherOrganisateurs($_GET['recherche'], $idConnecte);
     echo json_encode($utilisateurs);
     exit;
 }
 
-// 2) Création de l'événement
 $typeEvenement = lireChamp('type_evenement');
 $titre = lireChamp('titre');
 $description = lireChamp('description');
@@ -55,8 +48,6 @@ if ($erreur != "") {
     exit;
 }
 
-// Liste des organisateurs : tableau associatif id => rôle
-// (une même clé ne peut exister qu'une fois, donc pas de doublon)
 $organisateurs = array();
 $organisateurs[$idConnecte] = $roleConnecte;
 
@@ -69,7 +60,6 @@ if (isset($_POST['coorganisateurs'])) {
     }
 }
 
-// Il faut au moins un professeur parmi les organisateurs
 $professeurPresent = false;
 foreach ($organisateurs as $id => $role) {
     if ($role == 'professeur') {
@@ -77,17 +67,14 @@ foreach ($organisateurs as $id => $role) {
     }
 }
 
-// Pas de professeur : on renvoie vers le formulaire avec un message d'erreur
 if ($professeurPresent == false) {
     $_SESSION['evenement_erreur'] = "Vous devez ajouter au moins un professeur parmi les organisateurs.";
     header('Location: ../../public/evenement/creation_evenement_Tom.php');
     exit;
 }
 
-// Tous les nouveaux événements attendent la validation d'un gestionnaire
 $statut = 'en_attente';
 
-// Création de l'objet événement puis enregistrement
 $evenement = new evenement_anais();
 $evenement->setTypeEvenement($typeEvenement);
 $evenement->setTitre($titre);
