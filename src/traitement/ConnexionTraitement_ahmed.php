@@ -47,5 +47,5 @@ $_SESSION['role'] = $utilisateur->getRole();
 $_SESSION['nom_utilisateur'] = $utilisateur->getNom();
 $_SESSION['prenom_utilisateur'] = $utilisateur->getPrenom();
 
-header('Location: /LPRS/public/page_acceuille/page_accueil.php');
+header('Location: /SiteEcole/public/page_acceuille/page_accueil.php');
 exit;
