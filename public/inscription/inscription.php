@@ -250,9 +250,18 @@ $pageActive = 'inscription';
 
                 <fieldset class="form-fieldset">
                     <legend>Informations complémentaires</legend>
-
+                    <div class="form-group">
+                        <label for="motif">Motif de l'inscription</label>
+                        <textarea
+                                id="motif"
+                                name="motif"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Veuillez indiquer le motif de votre inscription..."
+                        ></textarea>
+                    </div>
                     <!-- ===== MON CV ===== -->
-                            <h2>Mon CV</h2>
+                    <h2>Mon CV</h2>
 
                     <form class="register-form"
                           id="register-form"
@@ -262,18 +271,18 @@ $pageActive = 'inscription';
 
 
 
-                                <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
+                        <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
 
-                                <input type="file"
-                                       id="cv"
-                                       name="cv"
-                                       accept="application/pdf"
-                                       required>
+                        <input type="file"
+                               id="cv"
+                               name="cv"
+                               accept="application/pdf"
+                               required>
 
-                                <button type="submit" class="btn-upload">
-                                    Enregistrer mon CV
-                                </button>
-                            </form>
+                        <button type="submit" class="btn-upload">
+                            Enregistrer mon CV
+                        </button>
+                    </form>
                         </div>
 
 
