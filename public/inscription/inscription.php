@@ -48,7 +48,8 @@ function ancienneValeur($valeurs, $champ)
 
 // Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'inscription';
-
+if (isset($_POST['inscription'])) {
+}
 ?>
 
 <!DOCTYPE html>
@@ -284,7 +285,11 @@ $pageActive = 'inscription';
                         </button>
                     </form>
                         </div>
+        <form action="inscription.php" method="POST">
 
+            <!-- Tes champs du formulaire ici -->
+            <button type="submit">Inscription</button>
+        </form>
 
     </section>
 
