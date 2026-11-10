@@ -4,6 +4,7 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 require_once '../../src/bdd/bdd.php';
 require_once '../../src/modele/Utilisateur_Malik.php';
 require_once '../../src/repository/UtilisateurRepository_malik.php';
+require_once '../../src/repository/OffreRepository_Tom.php';
 
 if (!estConnecte()) {
     header('Location: ../connexion/connexion.php');

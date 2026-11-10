@@ -5,7 +5,7 @@ require_once '../bdd/bdd.php';
 require_once '../modele/Offre_Tom.php';
 require_once '../modele/Utilisateur_Malik.php';
 require_once '../repository/UtilisateurRepository_malik.php';
-require_once '../repository/CreationOffreRepository.php';
+require_once '../repository/OffreRepository_Tom.php';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     header('Location: ../../public/offre/liste_offres_Tom.php');
@@ -113,8 +113,8 @@ $offre->setRefEntreprise($idEntreprise);
 $offre->setIdUtilisateurAuteur($idUtilisateurAuteur);
 
 try {
-    $creationOffreRepository = new CreationOffreRepository();
-    $idOffre = $creationOffreRepository->ajouterOffre($offre);
+    $offreRepository = new OffreRepository_Tom();
+    $idOffre = $offreRepository->ajouterOffre($offre);
 
     unset($_SESSION['creation_offre_ancien']);
     unset($_SESSION['creation_offre_csrf']);
