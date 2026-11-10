@@ -1,0 +1,3 @@
+Bibliothèque PHPMailer 7.2.0 (https://github.com/PHPMailer/PHPMailer), licence LGPL 2.1.
+Copiée à la main, sans Composer : seuls les 3 fichiers utiles à l'envoi par SMTP sont présents.
+Ne pas modifier ces fichiers. Notre code est dans src/mail/Mailer_ahmed.php.

@@ -1,2 +1,3 @@
 src/bdd/config.local.php
 *.sql.bak
+src/mail/config.mail.local.php

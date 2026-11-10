@@ -3,36 +3,36 @@
    (la base commune : couleurs, boutons, en-tête, menu, bannière,
    pied de page et messages est dans ../style.css)
    ========================================================= */
-.form-status {
-  margin-top: 14px;
-  font-weight: 600;
-  color: var(--color-primary-dark);
-}
 
-/* ---------- Registration form (page dédiée) ---------- */
+/* ---------- Mise en page : explications à gauche, formulaire à droite ---------- */
 .register-section {
   background: var(--color-light);
 }
 .register-grid {
   display: grid;
-  grid-template-columns: 0.9fr 1.4fr;
-  gap: 48px;
+  grid-template-columns: 0.8fr 1.5fr;
+  gap: 40px;
   align-items: flex-start;
 }
+
+/* ---------- Bloc "Comment ça marche ?" ---------- */
 .register-aside {
+  position: sticky; /* reste visible pendant qu'on fait défiler le formulaire */
+  top: 100px;
   background: var(--color-dark);
   color: rgba(255, 255, 255, 0.85);
   border-radius: var(--radius);
-  padding: 36px 32px;
+  padding: 32px 28px;
 }
 .register-aside h2 {
   color: #fff;
+  font-size: 1.6rem;
 }
 .register-aside .eyebrow {
   color: var(--color-primary);
 }
 .register-aside p {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.8);
 }
 .register-steps {
   margin-top: 24px;
@@ -59,34 +59,161 @@
   justify-content: center;
 }
 .register-step-text strong {
-  display: block; color: #fff; font-size: 0.95rem;
+  display: block;
+  color: #fff;
+  font-size: 0.95rem;
 }
 .register-step-text span {
-  font-size: 0.85rem; color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
 }
+.register-aside-contact {
+  margin: 28px 0 0;
+}
+.register-aside-contact a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ---------- Carte du formulaire ---------- */
 .register-form {
   background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 40px;
+  counter-reset: etape; /* compteur pour numéroter les étapes affichées */
 }
+.register-form [hidden] {
+  display: none !important;
+}
+.form-legende {
+  margin: 0 0 24px;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+/* Messages d'erreur ou de succès en haut du formulaire */
+.register-form .form-status {
+  margin: 0 0 24px;
+}
+.register-form .form-status p {
+  margin: 0 0 6px;
+  color: inherit;
+}
+.register-form .form-status ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+  font-weight: 600;
+}
+.register-form .form-status:focus {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ---------- Étapes numérotées ---------- */
+/* Seules les étapes visibles sont comptées : une étape cachée (display: none) n'incrémente pas le compteur */
 .form-fieldset {
   border: none;
   padding: 0;
-  margin: 0 0 28px;
-}
-.form-fieldset:last-of-type {
-  margin-bottom: 0;
+  margin: 0 0 32px;
+  min-width: 0;
+  counter-increment: etape;
 }
 .form-fieldset legend {
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: var(--color-dark);
-  padding: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  border-bottom: 1px solid var(--color-border);
+  padding: 0 0 14px;
   margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--color-dark);
 }
+.form-fieldset legend::before {
+  content: counter(etape);
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Choix du profil : cartes cliquables ---------- */
+.profil-choix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+/* Le bouton radio est caché visuellement mais reste utilisable au clavier */
+.profil-radio {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.profil-carte {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.profil-carte:hover {
+  border-color: var(--color-primary);
+}
+.profil-icone {
+  grid-row: span 2;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--color-light);
+  color: var(--color-primary-dark);
+}
+.profil-titre {
+  font-weight: 800;
+  color: var(--color-dark);
+}
+.profil-description {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+/* Carte choisie : bordure et fond verts (le "+" cible la carte juste après le radio coché) */
+.profil-radio:checked + .profil-carte {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+.profil-radio:checked + .profil-carte .profil-icone {
+  background: var(--color-primary);
+  color: #fff;
+}
+.profil-radio:focus-visible + .profil-carte {
+  outline: 3px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+.profil-attente {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--color-light);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ---------- Champs ---------- */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -101,99 +228,210 @@
 .form-group:last-child {
   margin-bottom: 0;
 }
-.form-group label {
+.form-group label,
+.form-label {
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--color-dark);
 }
-.form-group .required {
+.required {
   color: var(--color-danger);
+}
+.form-facultatif {
+  font-weight: 500;
+  color: var(--color-muted);
 }
 .form-group input,
 .form-group select,
 .form-group textarea {
+  width: 100%;
+  min-height: 48px;
   font-family: inherit;
   font-size: 1rem;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid var(--color-border);
-  background: var(--color-light);
+  border: 1px solid #8a8a8a; /* bordure assez foncée pour bien voir le champ */
+  background: #fff;
   resize: vertical;
   color: var(--color-text);
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #8a8a8a;
 }
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  outline: none;
+  outline: 3px solid var(--color-primary-light);
   border-color: var(--color-primary);
-  background: #fff;
+}
+/* Champ mal rempli, signalé seulement après que l'utilisateur l'a quitté (:user-invalid) */
+.form-group input:user-invalid,
+.form-group select:user-invalid,
+.form-group textarea:user-invalid {
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
 }
 .form-hint {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--color-muted);
+}
+.form-hint a {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+.form-hint--ok {
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+.form-hint--erreur {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+.form-compteur {
+  align-self: flex-end;
+}
+
+/* ---------- Mot de passe avec bouton "Afficher" ---------- */
+.mdp-champ {
+  position: relative;
+}
+.mdp-champ input {
+  padding-right: 92px; /* place pour le bouton */
+}
+.mdp-afficher {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  min-height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-light);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  cursor: pointer;
+}
+.mdp-afficher:hover {
+  background: var(--color-border);
+}
+
+/* ---------- CV : zone de dépôt du fichier ---------- */
+.fichier-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.fichier-zone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 2px dashed #8a8a8a;
+  border-radius: 12px;
+  background: var(--color-light);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+.fichier-zone:hover,
+.fichier-input:focus-visible + .fichier-zone {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+.fichier-zone--rempli {
+  border-style: solid;
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+.fichier-zone--erreur {
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+.fichier-icone {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  color: var(--color-primary-dark);
+}
+.fichier-texte {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.fichier-action {
+  font-weight: 800;
+  color: var(--color-dark);
+}
+.fichier-nom {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Consentement et bouton final ---------- */
+.form-validation {
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
 }
 .form-check {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 .form-check input {
-  margin-top: 4px;
-  width: 18px;
-  height: 18px;
+  margin-top: 3px;
+  width: 20px;
+  height: 20px;
   accent-color: var(--color-primary);
   flex-shrink: 0;
+  cursor: pointer;
 }
 .form-check label {
-  font-size: 0.88rem;
-  color: var(--color-muted);
-  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  cursor: pointer;
 }
-.form-footer {
-  margin-top: 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
+.form-connexion {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 0.95rem;
 }
-.form-status--success {
+.form-connexion a {
+  font-weight: 700;
   color: var(--color-primary-dark);
-  font-weight: 700;
-}
-.form-status--error {
-  color: var(--color-danger);
-  font-weight: 700;
-}
-.register-form .form-status {
-  margin: 0 0 24px;
-}
-.register-form .form-status ul {
-  margin: 0; padding-left: 20px;
-}
-.register-form [hidden] {
-  display: none !important;
+  text-decoration: underline;
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 900px) {
+
+/* Tablette : le bloc d'explications passe au-dessus du formulaire */
+@media (max-width: 1024px) {
   .register-grid {
     grid-template-columns: 1fr;
   }
-}
-@media (max-width: 720px) {
-  .register-form {
-    padding: 26px;
-  }
-  .form-row {
-    grid-template-columns: 1fr;
+  .register-aside {
+    position: static;
   }
 }
 
-/* Paragraphe "Une question ?" du bloc de gauche (anciennement en style dans la page) */
-.register-aside-contact {
-  margin-top: 28px;
-}
-.register-aside-contact a {
-  color: #fff; text-decoration: underline;
+/* Téléphone : une seule colonne partout */
+@media (max-width: 720px) {
+  .register-form {
+    padding: 24px 18px;
+  }
+  .form-row,
+  .profil-choix {
+    grid-template-columns: 1fr;
+  }
+  .form-row {
+    gap: 0;
+  }
+  .form-row .form-group:last-child {
+    margin-bottom: 18px;
+  }
 }

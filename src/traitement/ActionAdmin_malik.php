@@ -8,6 +8,7 @@ require_once '../modele/Utilisateur_Malik.php';
 require_once '../modele/evenement_anais.php';
 require_once '../repository/UtilisateurRepository_malik.php';
 require_once '../repository/EvenementRepository_ahmed.php';
+require_once '../mail/Mailer_ahmed.php';
 
 // Réservé aux gestionnaires
 if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
@@ -45,6 +46,8 @@ if ($action == 'ajouter') {
     // Le mail ne doit pas appartenir à un autre utilisateur
     $mailLibre = ($autre == null || $autre->getIdUtilisateur() == $id);
     $statutValide = ($statut == 'valide' || $statut == 'refuse' || $statut == 'en_attente');
+    // Utilisateur avant la modification : sert à savoir si son statut change
+    $ancien = $repository->getUtilisateurParId($id);
 
     if (!empty($nom) && !empty($prenom) && !empty($mail) && $mailLibre && $statutValide) {
         $utilisateur = new Utilisateur_Malik();
@@ -56,6 +59,16 @@ if ($action == 'ajouter') {
         $utilisateur->setRole($role);
         $utilisateur->setStatutValidation($statut);
         $repository->modifierUtilisateur($utilisateur);
+
+        // Email seulement si le statut a changé (validé ou refusé)
+        if ($ancien != null && $ancien->getStatutValidation() != $statut) {
+            $mailer = new Mailer_ahmed();
+            if ($statut == 'valide') {
+                $mailer->envoyerCompteValide($utilisateur);
+            } elseif ($statut == 'refuse') {
+                $mailer->envoyerCompteRefuse($utilisateur);
+            }
+        }
     }
 } elseif ($action == 'activer' || $action == 'desactiver') {
     // Un gestionnaire ne peut pas désactiver son propre compte (il se bloquerait l'accès)
@@ -64,12 +77,23 @@ if ($action == 'ajouter') {
     } else {
         $utilisateur = $repository->getUtilisateurParId($id);
         if ($utilisateur != null) {
+            $ancienStatut = $utilisateur->getStatutValidation();
             if ($action == 'activer') {
                 $utilisateur->setStatutValidation('valide');
             } else {
                 $utilisateur->setStatutValidation('refuse');
             }
             $repository->modifierUtilisateur($utilisateur);
+
+            // Email à l'utilisateur, seulement si son statut a vraiment changé
+            if ($ancienStatut != $utilisateur->getStatutValidation()) {
+                $mailer = new Mailer_ahmed();
+                if ($action == 'activer') {
+                    $mailer->envoyerCompteValide($utilisateur);
+                } else {
+                    $mailer->envoyerCompteRefuse($utilisateur);
+                }
+            }
         }
     }
 } elseif ($action == 'supprimer') {

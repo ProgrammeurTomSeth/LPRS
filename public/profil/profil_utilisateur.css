@@ -242,3 +242,9 @@
     grid-template-columns: 1fr;
   }
 }
+/* ---------- Boutons Accepter / Refuser d'une invitation ---------- */
+.form-invitation {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

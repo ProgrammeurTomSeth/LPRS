@@ -236,6 +236,7 @@ DROP TABLE IF EXISTS `organise_evenement`;
 CREATE TABLE IF NOT EXISTS `organise_evenement` (
   `id_utilisateur` int UNSIGNED NOT NULL,
   `id_evenement` int UNSIGNED NOT NULL,
+  `statut_participation` enum('en_attente','acceptee','refusee') NOT NULL DEFAULT 'acceptee',
   PRIMARY KEY (`id_utilisateur`,`id_evenement`),
   KEY `fk_organise_evenement` (`id_evenement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

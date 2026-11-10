@@ -87,11 +87,21 @@ $evenement->setStatut($statut);
 $evenementRepository = new EvenementRepository_ahmed();
 $idEvenement = $evenementRepository->ajouterEvenement($evenement);
 
+// Si c'est un étudiant qui crée l'événement, les professeurs ajoutés doivent d'abord accepter :
+// leur participation est mise "en_attente". Les autres organisateurs sont acceptés directement.
 foreach ($organisateurs as $id => $role) {
-    $evenementRepository->ajouterOrganisateur($idEvenement, $id);
+    if ($roleConnecte == 'etudiant' && $role == 'professeur' && $id != $idConnecte) {
+        $evenementRepository->ajouterOrganisateur($idEvenement, $id, 'en_attente');
+    } else {
+        $evenementRepository->ajouterOrganisateur($idEvenement, $id, 'acceptee');
+    }
 }
 
-$_SESSION['message_profil'] = "L'événement a été créé. Il sera publié après validation par un gestionnaire.";
+if ($roleConnecte == 'etudiant') {
+    $_SESSION['message_profil'] = "L'événement a été créé. Le professeur doit d'abord accepter d'y participer, puis un gestionnaire le validera.";
+} else {
+    $_SESSION['message_profil'] = "L'événement a été créé. Il sera publié après validation par un gestionnaire.";
+}
 
 header('Location: ../../public/profil/profil_utilisateur.php');
 exit;
