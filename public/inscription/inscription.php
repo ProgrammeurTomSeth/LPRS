@@ -252,7 +252,7 @@ $pageActive = 'inscription';
                     <legend>Informations complémentaires</legend>
 
                     <!-- ===== MON CV ===== -->
-                            <h2>Mon CV</h2>
+                    <h2>Mon CV</h2>
 
                     <form class="register-form"
                           id="register-form"
@@ -262,18 +262,18 @@ $pageActive = 'inscription';
 
 
 
-                                <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
+                        <label for="cv">Ajouter / Modifier votre CV (PDF uniquement) :</label>
 
-                                <input type="file"
-                                       id="cv"
-                                       name="cv"
-                                       accept="application/pdf"
-                                       required>
+                        <input type="file"
+                               id="cv"
+                               name="cv"
+                               accept="application/pdf"
+                               required>
 
-                                <button type="submit" class="btn-upload">
-                                    Enregistrer mon CV
-                                </button>
-                            </form>
+                        <button type="submit" class="btn-upload">
+                            Enregistrer mon CV
+                        </button>
+                    </form>
                         </div>
 
 
