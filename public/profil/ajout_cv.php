@@ -23,6 +23,7 @@ $rolesAutorises = ['etudiant', 'alumni'];
 if (!in_array($role, $rolesAutorises, true)) {
     $_SESSION['message_profil'] = "Seuls les étudiants et les alumni peuvent ajouter un CV.";
     header("Location: profil_utilisateur.php");
+
     exit;
 }
 
@@ -33,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
     if ($fichier['error'] !== UPLOAD_ERR_OK) {
         $_SESSION['message_profil'] = "Erreur lors de l'envoi du CV.";
         header("Location: profil_utilisateur.php");
+
         exit;
     }
 
@@ -42,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
     if ($extension !== 'pdf') {
         $_SESSION['message_profil'] = "Seul le format PDF est accepté.";
         header("Location: profil_utilisateur.php");
+
         exit;
     }
 
@@ -79,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
     }
 
     header("Location: profil_utilisateur.php");
+
     exit;
 }
 ?>
