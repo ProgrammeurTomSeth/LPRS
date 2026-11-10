@@ -250,7 +250,16 @@ $pageActive = 'inscription';
 
                 <fieldset class="form-fieldset">
                     <legend>Informations complémentaires</legend>
-
+                    <div class="form-group">
+                        <label for="motif">Motif de l'inscription</label>
+                        <textarea
+                                id="motif"
+                                name="motif"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Veuillez indiquer le motif de votre inscription..."
+                        ></textarea>
+                    </div>
                     <!-- ===== MON CV ===== -->
                     <h2>Mon CV</h2>
 
