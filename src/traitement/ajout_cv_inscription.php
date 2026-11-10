@@ -60,7 +60,32 @@ if ($extension !== 'pdf') {
     header("Location: inscription.php");
     exit;
 }
+// taille fichier
+$fichier = $_FILES['cv'];
 
+// Vérification de l'extension
+$extension = strtolower(
+    pathinfo($fichier['name'], PATHINFO_EXTENSION)
+);
+
+if ($extension !== 'pdf') {
+    $_SESSION['message_profil'] =
+        "Seuls les fichiers PDF sont autorisés.";
+
+    header("Location: inscription.php");
+    exit;
+}
+
+// Vérification de la taille (2 Mo maximum)
+$tailleMax = 2 * 1024 * 1024; // 2 Mo
+
+if ($fichier['size'] > $tailleMax) {
+    $_SESSION['message_profil'] =
+        "Le fichier PDF ne doit pas dépasser 2 Mo.";
+
+    header("Location: inscription.php");
+    exit;
+}
 // Création du dossier si nécessaire
 $dossier = '../../uploads/cv/';
 
