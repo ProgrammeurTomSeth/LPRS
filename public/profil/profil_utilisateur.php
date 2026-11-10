@@ -34,7 +34,9 @@ $roles = array(
 );
 $statutsEvenement = array(
     'brouillon' => 'Brouillon',
-    'publie' => 'Publié'
+    'en_attente' => 'En attente',
+    'publie' => 'Publié',
+    'refuse' => 'Refusé'
 );
 $statutsInscription = array(
     'acceptee' => 'Acceptée',
@@ -78,6 +80,8 @@ $initiales = mb_strtoupper(mb_substr($utilisateur->getPrenom(), 0, 1) . mb_subst
 $evenementRepository = new EvenementRepository_ahmed();
 $evenementsOrganises = $evenementRepository->getEvenementsOrganises($utilisateur->getIdUtilisateur());
 $evenementsInscrits = $evenementRepository->getEvenementsInscrits($utilisateur->getIdUtilisateur());
+// Événements créés par un étudiant pour lesquels ce professeur doit répondre
+$invitations = $evenementRepository->getInvitationsEnAttente($utilisateur->getIdUtilisateur());
 
 // Message laissé par une autre page (ex : création d'un événement)
 $messageSucces = "";
@@ -158,6 +162,48 @@ $pageActive = 'profil';
                     <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($messageSucces); ?></p>
                 <?php } ?>
 
+                <!-- ===== INVITATIONS À ORGANISER (professeurs) ===== -->
+                <?php if ($utilisateur->getRole() == 'professeur') { ?>
+                    <div class="profil-card evenements-card">
+                        <h2>Invitations à organiser un événement</h2>
+                        <?php if (count($invitations) == 0) { ?>
+                        <p class="evenements-vide">Aucune invitation en attente pour le moment.</p>
+                        <?php } else { ?>
+                        <p>Un étudiant vous a ajouté comme co-organisateur. L'événement ne pourra être envoyé à l'administration qu'après votre accord.</p>
+                        <div class="table-wrapper">
+                            <table class="evenements-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Titre</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Lieu</th>
+                                        <th scope="col">Proposé par</th>
+                                        <th scope="col">Réponse</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($invitations as $invitation) { ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($invitation['titre']); ?></td>
+                                            <td><?php echo htmlspecialchars($invitation['type_evenement']); ?></td>
+                                            <td><?php echo htmlspecialchars($invitation['lieu']); ?></td>
+                                            <td><?php echo htmlspecialchars($invitation['createurs']); ?></td>
+                                            <td>
+                                                <form method="post" action="../../src/traitement/InvitationEvenementTraitement_malik.php" class="form-invitation">
+                                                    <input type="hidden" name="id_evenement" value="<?php echo $invitation['id_evenement']; ?>">
+                                                    <button type="submit" name="action" value="accepter" class="btn btn-primary btn-sm">Accepter</button>
+                                                    <button type="submit" name="action" value="refuser" class="btn btn-danger btn-sm">Refuser</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php } ?>
+                    </div>
+                <?php } ?>
+
                 <!-- ===== ÉVÉNEMENTS CRÉÉS ===== -->
                 <div class="profil-card evenements-card">
                     <h2>Mes événements créés</h2>
@@ -184,7 +230,14 @@ $pageActive = 'profil';
                                             <td><?php echo $evenement['date_fr']; ?></td>
                                             <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
                                             <td><?php if ($evenement['nb_places'] != null) { echo $evenement['nb_places']; } else { echo '—'; } ?></td>
-                                            <td><span class="badge"><?php echo $statutsEvenement[$evenement['statut']]; ?></span></td>
+                                            <td><span class="badge"><?php
+                                                // Tant qu'un professeur n'a pas répondu, on l'indique à la place de "En attente"
+                                                if ($evenement['statut'] == 'en_attente' && $evenement['nb_reponses_attendues'] > 0) {
+                                                    echo 'En attente du professeur';
+                                                } else {
+                                                    echo $statutsEvenement[$evenement['statut']];
+                                                }
+                                            ?></span></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

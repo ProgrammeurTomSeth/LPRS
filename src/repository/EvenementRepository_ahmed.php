@@ -42,10 +42,11 @@ class EvenementRepository_ahmed
         return $req->fetchAll();
     }
 
-    // Événements dont l'utilisateur fait partie des organisateurs
+    // Événements dont l'utilisateur fait partie des organisateurs (seulement si sa participation est acceptée)
+    // nb_reponses_attendues = nombre de professeurs qui n'ont pas encore répondu à l'invitation
     public function getEvenementsOrganises($id_utilisateur)
     {
-        $req = $this->connexionBdd->prepare("SELECT evenement.*, DATE_FORMAT(date_evenement, '%d/%m/%Y %H:%i') AS date_fr FROM evenement INNER JOIN organise_evenement ON organise_evenement.id_evenement = evenement.id_evenement WHERE organise_evenement.id_utilisateur = :id ORDER BY date_evenement DESC");
+        $req = $this->connexionBdd->prepare("SELECT evenement.*, DATE_FORMAT(date_evenement, '%d/%m/%Y %H:%i') AS date_fr, (SELECT COUNT(*) FROM organise_evenement AS autre WHERE autre.id_evenement = evenement.id_evenement AND autre.statut_participation = 'en_attente') AS nb_reponses_attendues FROM evenement INNER JOIN organise_evenement ON organise_evenement.id_evenement = evenement.id_evenement WHERE organise_evenement.id_utilisateur = :id AND organise_evenement.statut_participation = 'acceptee' ORDER BY date_evenement DESC");
         $req->execute(array('id' => $id_utilisateur));
         return $req->fetchAll();
     }
@@ -98,16 +99,45 @@ class EvenementRepository_ahmed
         return $this->connexionBdd->lastInsertId();
     }
 
-    public function ajouterOrganisateur($id_evenement, $id_utilisateur)
+    // $statut_participation : 'acceptee' (par défaut) ou 'en_attente' si l'organisateur doit d'abord accepter
+    public function ajouterOrganisateur($id_evenement, $id_utilisateur, $statut_participation = 'acceptee')
     {
-        $req = $this->connexionBdd->prepare("INSERT INTO organise_evenement (id_utilisateur, id_evenement) VALUES (:id_utilisateur, :id_evenement)");
-        $req->execute(array('id_utilisateur' => $id_utilisateur, 'id_evenement' => $id_evenement));
+        $req = $this->connexionBdd->prepare("INSERT INTO organise_evenement (id_utilisateur, id_evenement, statut_participation) VALUES (:id_utilisateur, :id_evenement, :statut)");
+        $req->execute(array('id_utilisateur' => $id_utilisateur, 'id_evenement' => $id_evenement, 'statut' => $statut_participation));
     }
 
-    // Récupère tous les événements qui attendent la validation de l'admin
+    // Invitations auxquelles l'utilisateur (un professeur) n'a pas encore répondu
+    // createurs = noms des organisateurs qui ont déjà accepté (l'étudiant qui a créé l'événement)
+    public function getInvitationsEnAttente($id_utilisateur)
+    {
+        $req = $this->connexionBdd->prepare("SELECT evenement.*, DATE_FORMAT(date_evenement, '%d/%m/%Y %H:%i') AS date_fr, (SELECT GROUP_CONCAT(CONCAT(utilisateur.prenom_utilisateur, ' ', utilisateur.nom_utilisateur) SEPARATOR ', ') FROM organise_evenement AS autre INNER JOIN utilisateur ON utilisateur.id_utilisateur = autre.id_utilisateur WHERE autre.id_evenement = evenement.id_evenement AND autre.statut_participation = 'acceptee') AS createurs FROM evenement INNER JOIN organise_evenement ON organise_evenement.id_evenement = evenement.id_evenement WHERE organise_evenement.id_utilisateur = :id AND organise_evenement.statut_participation = 'en_attente' ORDER BY date_evenement ASC");
+        $req->execute(array('id' => $id_utilisateur));
+        return $req->fetchAll();
+    }
+
+    // Enregistre la réponse ('acceptee' ou 'refusee') d'un professeur à une invitation
+    // Renvoie true si une invitation en attente a bien été trouvée et modifiée
+    public function repondreInvitation($id_evenement, $id_utilisateur, $reponse)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE organise_evenement SET statut_participation = :reponse WHERE id_evenement = :id_evenement AND id_utilisateur = :id_utilisateur AND statut_participation = 'en_attente'");
+        $req->execute(array('reponse' => $reponse, 'id_evenement' => $id_evenement, 'id_utilisateur' => $id_utilisateur));
+        return $req->rowCount() > 0;
+    }
+
+    // Nombre de professeurs organisateurs qui n'ont pas refusé (acceptés ou encore en attente)
+    public function compterProfesseursRestants($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("SELECT COUNT(*) AS nb FROM organise_evenement INNER JOIN utilisateur ON utilisateur.id_utilisateur = organise_evenement.id_utilisateur WHERE organise_evenement.id_evenement = :id AND utilisateur.role = 'professeur' AND organise_evenement.statut_participation <> 'refusee'");
+        $req->execute(array('id' => $id_evenement));
+        $ligne = $req->fetch();
+        return $ligne['nb'];
+    }
+
+    // Récupère les événements qui attendent la validation de l'admin
+    // (on ne garde que ceux dont tous les professeurs invités ont déjà répondu)
     public function getEvenementsEnAttente()
     {
-        $req = $this->connexionBdd->prepare("SELECT * FROM evenement WHERE statut = 'en_attente'");
+        $req = $this->connexionBdd->prepare("SELECT * FROM evenement WHERE statut = 'en_attente' AND NOT EXISTS (SELECT * FROM organise_evenement WHERE organise_evenement.id_evenement = evenement.id_evenement AND organise_evenement.statut_participation = 'en_attente')");
         $req->execute();
         return $req->fetchAll();
     }
