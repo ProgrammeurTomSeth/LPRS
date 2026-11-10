@@ -1,0 +1,14 @@
+<?php
+// Modèle de configuration pour l'envoi des emails (serveur SMTP).
+// Copier ce fichier en config.mail.local.php et remplir les valeurs.
+// config.mail.local.php est ignoré par Git : le mot de passe n'est jamais publié.
+return [
+    'hote'          => 'smtp.exemple.fr',          // serveur SMTP (Gmail : smtp.gmail.com)
+    'port'          => 587,                        // 587 avec 'tls', 465 avec 'ssl'
+    'securite'      => 'tls',                      // 'tls', 'ssl' ou '' (aucun chiffrement)
+    'identifiant'   => 'A_REMPLIR',                // adresse ou identifiant du compte SMTP
+    'motDePasse'    => 'A_REMPLIR',                // Gmail : un « mot de passe d'application »
+    'expediteur'    => 'A_REMPLIR',                // adresse affichée comme expéditeur
+    'nomExpediteur' => 'Lycée Robert Schuman',
+    'urlSite'       => 'http://localhost/LPRS/public', // sert à écrire les liens dans les emails
+];

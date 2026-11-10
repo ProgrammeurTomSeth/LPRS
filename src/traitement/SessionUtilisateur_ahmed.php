@@ -29,6 +29,6 @@ function afficherActionsHeader()
         echo '<a href="../profil/profil_utilisateur.php" class="btn btn-primary header-cta">Profil</a>';
     } else {
         echo '<a href="../connexion/connexion.php" class="btn btn-outline header-login">Connexion</a>';
-        echo '<a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription Rapide</a>';
+        echo '<a href="../inscription/inscription.php" class="btn btn-primary header-cta">Inscription</a>';
     }
 }
