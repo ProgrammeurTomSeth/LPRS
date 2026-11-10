@@ -1,6 +1,43 @@
 <?php
 
 require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/repository/EvenementRepository_ahmed.php';
+require_once '../../src/repository/OffreRepository_Tom.php';
+
+// --- Prochains événements : les 3 premiers événements publiés qui ne sont pas encore passés ---
+$evenementRepository = new EvenementRepository_ahmed();
+$prochainsEvenements = array();
+foreach ($evenementRepository->getEvenementsPublies() as $evenement) {
+    // getEvenementsPublies() renvoie des tableaux, triés du plus proche au plus lointain
+    if (strtotime($evenement['date_evenement']) >= time() && count($prochainsEvenements) < 3) {
+        $prochainsEvenements[] = $evenement;
+    }
+}
+
+// --- Dernières offres : les 3 offres ouvertes les plus récentes ---
+$offreRepository = new OffreRepository_Tom();
+$dernieresOffres = array_slice($offreRepository->getOffresOuvertes(), 0, 3);
+
+// Mois en français pour la pastille de date d'un événement
+$mois = array(
+    '01' => 'janv.', '02' => 'févr.', '03' => 'mars', '04' => 'avr.',
+    '05' => 'mai', '06' => 'juin', '07' => 'juil.', '08' => 'août',
+    '09' => 'sept.', '10' => 'oct.', '11' => 'nov.', '12' => 'déc.'
+);
+
+// Libellés affichés pour le type et le profil ciblé d'une offre
+$types = array(
+    'stage' => 'Stage',
+    'alternance' => 'Alternance',
+    'cdd' => 'CDD',
+    'cdi' => 'CDI'
+);
+$profils = array(
+    'tous' => 'Ouvert aux étudiants et aux alumni',
+    'etudiant' => 'Ouvert aux étudiants',
+    'alumni' => 'Ouvert aux alumni'
+);
 
 // Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'accueil';
@@ -12,12 +49,12 @@ $pageActive = 'accueil';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lycée Robert Schuman</title>
-    <meta name="description" content="Lycée Robert Schuman : une éducation moderne et dynamique pour tous les élèves. Programmes, activités, événements et accompagnement personnalisé.">
+    <meta name="description" content="Lycée Robert Schuman : le réseau des élèves, des anciens élèves et des entreprises partenaires. Offres, événements, annuaire et forum.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css?v=<?php echo filemtime(__DIR__ . '/../style.css'); ?>">
-    <link rel="stylesheet" href="page_accueil.css">
+    <link rel="stylesheet" href="page_accueil.css?v=<?php echo filemtime(__DIR__ . '/page_accueil.css'); ?>">
 </head>
 <body>
 
@@ -25,222 +62,163 @@ $pageActive = 'accueil';
 
 <main id="main">
 
-    <section class="hero">
+    <!-- ===== BANNIÈRE : à quoi sert le site + les deux actions principales ===== -->
+    <section class="hero accueil-hero">
         <div class="hero-overlay"></div>
-        <div class="container hero-content">
-            <h1>Bienvenue ici</h1>
-            <p>Épanouissez-vous dans l'éducation moderne et dynamique.</p>
-            <a href="#mission" class="btn btn-primary btn-lg">Commencer Maintenant</a>
-        </div>
-    </section>
-
-    <section class="section mission" id="mission">
-        <div class="container mission-grid">
-            <div class="mission-media">
-                <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?auto=format&fit=crop&w=900&q=70" alt="Élèves en classe à Lycée Robert Schuman">
-            </div>
-            <div class="mission-text">
-                <p class="eyebrow">Notre Mission</p>
-                <h2>Une éducation qui s'adapte à chaque élève</h2>
-                <p>À le Lycée Robert Schuman, nous croyons fermement que chaque élève mérite une éducation qui répond à ses besoins et révèle son plein potentiel.</p>
-                <p>Notre vision est d'inspirer l'apprentissage tout au long de la vie et d'encourager chacun à atteindre l'excellence, à son rythme et selon ses talents.</p>
-                <p>Fort d'un historique riche depuis 1995, nous avons cultivé une communauté d'apprentissage engagée, bienveillante et inclusive.</p>
-
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">500+</span>
-                        <span class="stat-label">Élèves heureux</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">30</span>
-                        <span class="stat-label">Années d'excellence</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">12</span>
-                        <span class="stat-label">Programmes variés</span>
-                    </div>
+        <div class="container accueil-hero-grid">
+            <div class="accueil-hero-texte">
+                <h1>Le réseau des élèves, des anciens et des entreprises du lycée</h1>
+                <div class="accueil-hero-actions">
+                    <a href="../offre/liste_offres_Tom.php" class="btn btn-primary btn-lg">Voir les offres</a>
+                    <?php if (estConnecte()) { ?>
+                        <a href="../profil/profil_utilisateur.php" class="btn btn-outline btn-lg">Mon profil</a>
+                    <?php } else { ?>
+                        <a href="../inscription/inscription.php" class="btn btn-outline btn-lg">Rejoindre le réseau</a>
+                    <?php } ?>
                 </div>
+                <?php if (!estConnecte()) { ?>
+                    <p class="accueil-hero-note">Inscription gratuite, validée par un gestionnaire du lycée.</p>
+                <?php } ?>
             </div>
+
+            <ul class="accueil-chiffres">
+                <li>
+                    <span class="chiffre-nombre">1920</span>
+                    <span class="chiffre-libelle">Année de création</span>
+                </li>
+                <li>
+                    <span class="chiffre-nombre">450</span>
+                    <span class="chiffre-libelle">Élèves</span>
+                </li>
+                <li>
+                    <span class="chiffre-nombre">8</span>
+                    <span class="chiffre-libelle">Formations</span>
+                </li>
+            </ul>
         </div>
     </section>
 
-    <section class="section features">
+    <!-- ===== ACCÈS DIRECTS : une carte par profil ===== -->
+    <section class="section acces">
         <div class="container">
-            <p class="eyebrow center">La Vie Étudiante</p>
-            <h2 class="center">Ce qui rend notre école unique</h2>
+            <h2>Que voulez-vous faire ?</h2>
+            <p class="acces-intro">Un accès direct selon votre profil.</p>
 
-            <div class="features-grid">
-                <article class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Apprentissage Actif</h3>
-                    <p>Méthodes dynamiques et engageantes en classe.</p>
-                </article>
-                <article class="feature-card">
-                    <div class="feature-icon">💻</div>
-                    <h3>Technologie Avancée</h3>
-                    <p>Équipements modernes facilitant le processus éducatif.</p>
-                </article>
-                <article class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Environnement Sécure</h3>
-                    <p>Un espace accueillant pour tous les élèves.</p>
-                </article>
-                <article class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Programmes Variés</h3>
-                    <p>Des activités qui nourrissent la créativité et l'esprit.</p>
-                </article>
-                <article class="feature-card">
-                    <div class="feature-icon">🤝</div>
-                    <h3>Partenariats Locaux</h3>
-                    <p>Collaborations enrichissantes avec des entreprises et organismes.</p>
-                </article>
-                <article class="feature-card">
-                    <div class="feature-icon">🧑‍🏫</div>
-                    <h3>Support Personnalisé</h3>
-                    <p>Accompagnement dédié à chaque élève.</p>
-                </article>
+            <div class="acces-grid">
+                <a href="../offre/liste_offres_Tom.php" class="acces-card">
+                    <svg class="acces-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>
+                    <span class="acces-profil">Étudiant</span>
+                    <span class="acces-titre">Trouver un stage ou une alternance</span>
+                    <span class="acces-lien">Voir les offres →</span>
+                </a>
+                <a href="../annuaire/page_annuaire.php" class="acces-card">
+                    <svg class="acces-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6"></path><path d="M17 4a4 4 0 0 1 0 8"></path><path d="M22 21c0-3-1-5-4-6"></path></svg>
+                    <span class="acces-profil">Ancien élève</span>
+                    <span class="acces-titre">Retrouver sa promotion</span>
+                    <span class="acces-lien">Ouvrir l'annuaire →</span>
+                </a>
+                <a href="../inscription/inscription.php" class="acces-card">
+                    <svg class="acces-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h1M14 8h1M9 12h1M14 12h1M10 21v-4h4v4"></path></svg>
+                    <span class="acces-profil">Entreprise</span>
+                    <span class="acces-titre">Publier une offre et recruter</span>
+                    <span class="acces-lien">Créer un compte partenaire →</span>
+                </a>
+                <a href="../evenement/liste_evenement_Tom.php" class="acces-card">
+                    <svg class="acces-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                    <span class="acces-profil">Professeur</span>
+                    <span class="acces-titre">Proposer un événement</span>
+                    <span class="acces-lien">Voir les événements →</span>
+                </a>
             </div>
         </div>
     </section>
 
-    <section class="section testimonials">
-        <div class="container">
-            <p class="eyebrow center">Avis</p>
-            <h2 class="center">Voici ce que nos utilisateurs pensent de nous</h2>
+    <!-- ===== ACTUALITÉS : prochains événements et dernières offres, lus dans la base ===== -->
+    <section class="section actualites" id="evenements">
+        <div class="container actualites-grid">
 
-            <div class="testimonials-grid">
-                <blockquote class="testimonial-card">
-                    <p>« Une plateforme incroyable qui aide mes enfants dans leurs études. »</p>
-                    <cite>Marie Dupont</cite>
-                </blockquote>
-                <blockquote class="testimonial-card">
-                    <p>« Facile à utiliser et très utile pour mes cours. »</p>
-                    <cite>Pierre Martin</cite>
-                </blockquote>
-                <blockquote class="testimonial-card">
-                    <p>« Une ressource essentielle pour chaque étudiant moderne. »</p>
-                    <cite>Sophie Leroy</cite>
-                </blockquote>
+            <div class="actualites-colonne">
+                <div class="actualites-entete">
+                    <h2>Prochains événements</h2>
+                    <a href="../evenement/liste_evenement_Tom.php">Tout voir</a>
+                </div>
+
+                <?php if (count($prochainsEvenements) == 0) { ?>
+                    <p class="actualite-vide">Aucun événement à venir pour le moment.</p>
+                <?php } ?>
+
+                <?php foreach ($prochainsEvenements as $evenement) { ?>
+                    <?php $date = strtotime($evenement['date_evenement']); ?>
+                    <a href="../evenement/liste_evenement_Tom.php" class="actualite-card">
+                        <span class="actualite-date">
+                            <span class="actualite-jour"><?php echo date('d', $date); ?></span>
+                            <span class="actualite-mois"><?php echo $mois[date('m', $date)]; ?></span>
+                        </span>
+                        <span class="actualite-texte">
+                            <span class="actualite-titre"><?php echo htmlspecialchars($evenement['titre']); ?></span>
+                            <span class="actualite-detail"><?php echo date('H\hi', $date); ?> · <?php echo htmlspecialchars($evenement['lieu']); ?></span>
+                        </span>
+                        <?php if ($evenement['nb_places'] != null) { ?>
+                            <?php $placesRestantes = $evenement['nb_places'] - $evenement['nombre_inscrits']; ?>
+                            <?php if ($placesRestantes > 0) { ?>
+                                <span class="pastille pastille--verte"><?php echo $placesRestantes; ?> places</span>
+                            <?php } else { ?>
+                                <span class="pastille">Complet</span>
+                            <?php } ?>
+                        <?php } ?>
+                    </a>
+                <?php } ?>
             </div>
 
-            <div class="center">
-                <a href="#" class="btn btn-outline">Lire plus d'avis</a>
+            <div class="actualites-colonne">
+                <div class="actualites-entete">
+                    <h2>Dernières offres</h2>
+                    <a href="../offre/liste_offres_Tom.php">Tout voir</a>
+                </div>
+
+                <?php if (count($dernieresOffres) == 0) { ?>
+                    <p class="actualite-vide">Aucune offre ouverte pour le moment.</p>
+                <?php } ?>
+
+                <?php foreach ($dernieresOffres as $offre) { ?>
+                    <a href="../offre/liste_offres_Tom.php" class="actualite-card">
+                        <span class="actualite-texte">
+                            <span class="actualite-titre"><?php echo htmlspecialchars($offre['titre']); ?></span>
+                            <span class="actualite-detail"><?php echo htmlspecialchars((string) $offre['nom_entreprise']); ?> · <?php echo $profils[$offre['profil_cible']]; ?></span>
+                        </span>
+                        <span class="pastille pastille--bleue"><?php echo $types[$offre['type']]; ?></span>
+                    </a>
+                <?php } ?>
             </div>
+
         </div>
     </section>
 
-    <section class="section events" id="evenements">
-        <div class="container">
-            <p class="eyebrow center">Activités</p>
-            <h2 class="center">Événements à Venir</h2>
-
-            <div class="events-grid">
-                <article class="event-card">
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=70" alt="Journée Portes Ouvertes">
-                    <div class="event-body">
-                        <time datetime="2026-10-10">10 octobre 2026</time>
-                        <h3>Journée Portes Ouvertes</h3>
-                        <p>Venez découvrir notre école et rencontrer le personnel et les élèves.</p>
-                        <a href="#contact" class="btn btn-sm">S'inscrire</a>
-                    </div>
-                </article>
-
-                <article class="event-card">
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=70" alt="Remise des Diplômes">
-                    <div class="event-body">
-                        <time datetime="2026-11-15">15 novembre 2026</time>
-                        <h3>Remise des Diplômes</h3>
-                        <p>Célébration des réalisations de nos élèves avec fierté et émotion.</p>
-                        <a href="#contact" class="btn btn-sm">S'inscrire</a>
-                    </div>
-                </article>
-
-                <article class="event-card">
-                    <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=600&q=70" alt="Fête de Noël">
-                    <div class="event-body">
-                        <time datetime="2026-12-20">20 décembre 2026</time>
-                        <h3>Fête de Noël</h3>
-                        <p>Venez célébrer les festivités de fin d'année avec spectacles et surprises.</p>
-                        <a href="#contact" class="btn btn-sm">S'inscrire</a>
-                    </div>
-                </article>
-
-                <article class="event-card">
-                    <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=600&q=70" alt="Semaine de la Science">
-                    <div class="event-body">
-                        <time datetime="2027-01-18">18 janvier 2027</time>
-                        <h3>Semaine de la Science</h3>
-                        <p>Événements interactifs et ateliers pour éveiller la curiosité scientifique.</p>
-                        <a href="#contact" class="btn btn-sm">S'inscrire</a>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <section class="section faq" id="faq">
-        <div class="container">
-            <p class="eyebrow center">FAQ</p>
-            <h2 class="center">Questions Fréquemment Posées</h2>
-
-            <div class="faq-list">
-                <details class="faq-item" open>
-                    <summary>Comment s'inscrire sur la plateforme ?</summary>
-                    <p>Visitez notre page d'inscription et remplissez le formulaire.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Quels sujets sont couverts ici ?</summary>
-                    <p>Nous proposons des cours sur de nombreux sujets académiques.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Puis-je utiliser la plateforme sur mobile ?</summary>
-                    <p>Oui, notre site est entièrement compatible avec les mobiles.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Offrez-vous des cours en direct ?</summary>
-                    <p>Oui, nous avons des sessions en direct avec des instructeurs.</p>
-                </details>
-                <details class="faq-item">
-                    <summary>Comment contacter le support ?</summary>
-                    <p>Envoyez-nous un email à ...</p>
-                </details>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta-banner">
-        <div class="container">
-            <h2>Rejoignez notre communauté étudiante aujourd'hui</h2>
-            <p>Ne laissez pas vos études stagner ! Inscrivez-vous dès maintenant et profitez de ressources exceptionnelles.</p>
-            <a href="#contact" class="btn btn-primary btn-lg">Commencer ma formation</a>
-        </div>
-    </section>
-
+    <!-- ===== CONTACT ===== -->
     <section class="section contact" id="contact">
         <div class="container contact-grid">
             <div class="contact-info">
-                <p class="eyebrow">Nous Contacter</p>
-                <h2>Contactez-Nous Rapidement</h2>
+                <h2>Une question ?</h2>
+                <p>Écrivez aux gestionnaires de la plateforme. Votre message leur est transmis et vous recevez une réponse par email.</p>
                 <ul>
-                    <li><strong>Téléphone :</strong> <a href="tel:">...</a></li>
-                    <li><strong>Email :</strong> <a href="mai@RobertShuman.fr">...</a></li>
-                    <li><strong>Adresse :</strong>...Dugny</li>
+                    <li><strong>Téléphone :</strong> à compléter</li>
+                    <li><strong>Email :</strong> à compléter</li>
+                    <li><strong>Adresse :</strong> à compléter, Dugny</li>
                 </ul>
             </div>
 
             <form class="contact-form" id="contact-form">
                 <label for="name">Nom</label>
-                <input type="text" id="name" name="name" placeholder="Nom" required>
+                <input type="text" id="name" name="name" autocomplete="name" required>
 
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Email" required>
+                <input type="email" id="email" name="email" autocomplete="email" required>
 
                 <label for="message">Message</label>
-                <textarea id="message" name="message" placeholder="Message" rows="5" required></textarea>
+                <textarea id="message" name="message" rows="4" required></textarea>
 
-                <button type="submit" class="btn btn-primary">Envoyer</button>
-                <p class="form-status" id="form-status" hidden></p>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Envoyer le message</button>
+                <p class="form-status form-status--success" id="form-status" role="status" hidden></p>
             </form>
         </div>
     </section>

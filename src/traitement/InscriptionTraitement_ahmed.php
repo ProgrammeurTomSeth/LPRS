@@ -10,6 +10,7 @@ require_once '../modele/Entreprise_Tom.php';
 require_once '../repository/UtilisateurRepository_malik.php';
 require_once '../repository/Formation_ahmed.php';
 require_once '../repository/EntrepriseRepository_Tom.php';
+require_once '../mail/Mailer_ahmed.php';
 
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
     header('Location: ../../public/inscription/inscription.php');
@@ -135,6 +136,10 @@ $utilisateur->setIdEntreprise($idEntreprise);
 $utilisateur->setPoste($poste);
 
 $repository->ajouterUtilisateur($utilisateur);
+
+// Email de confirmation : si l'envoi échoue, l'inscription reste enregistrée
+$mailer = new Mailer_ahmed();
+$mailer->envoyerCompteCree($utilisateur);
 
 $_SESSION['inscription_succes'] = "Votre compte a été créé. Il est en attente de validation par un gestionnaire.";
 header('Location: ../../public/inscription/inscription.php');

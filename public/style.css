@@ -10,6 +10,8 @@
 :root {
   --color-primary: #29bf12;
   --color-primary-dark: #1f9a0d;
+  /* Même vert, utilisé pour les décorations (soulignement du menu, pied de page) */
+  --color-accent: #29bf12;
   --color-primary-light: #eaf8e7;
   --color-dark: #232323;
   --color-text: #3d3d3d;
@@ -170,6 +172,11 @@ h2.center, p.eyebrow.center { display: block; }
 .main-nav a:hover { color: var(--color-primary); }
 /* Lien de la page en cours (aria-current="page" est ajouté par commun/entete.php) */
 .main-nav a[aria-current="page"] { color: var(--color-primary); }
+/* Lien simple du menu (Accueil, Contact) : soulignement vert vif quand c'est la page en cours */
+.main-nav > ul > li > a[aria-current="page"] {
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--color-accent);
+}
 
 /* ---------- Sous-menus (catégories du menu) ---------- */
 /* La catégorie prend toute la hauteur de la barre (78px) :
@@ -298,12 +305,14 @@ h2.center, p.eyebrow.center { display: block; }
   display: flex;
   align-items: center;
   color: #fff;
-  background: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat;
+  /* Photo du lycée enregistrée dans le projet (public/img) */
+  background: var(--color-dark) url('img/lycee_robert_schuman.jpg') center/cover no-repeat;
 }
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 20, 15, 0.55), rgba(15, 20, 15, 0.7));
+  /* Voile sombre légèrement transparent : la photo reste visible et le texte blanc reste lisible */
+  background: linear-gradient(180deg, rgba(15, 20, 15, 0.45), rgba(15, 20, 15, 0.6));
 }
 .hero-content {
   position: relative;
@@ -320,10 +329,11 @@ h2.center, p.eyebrow.center { display: block; }
   display: flex;
   align-items: center;
   color: #fff;
-  background: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat;
+  /* Même photo que la page d'accueil, pour toutes les pages du site */
+  background: var(--color-dark) url('img/lycee_robert_schuman.jpg') center/cover no-repeat;
 }
 .page-hero .hero-overlay {
-  background: linear-gradient(180deg, rgba(15, 20, 15, 0.6), rgba(15, 20, 15, 0.75));
+  background: linear-gradient(180deg, rgba(15, 20, 15, 0.45), rgba(15, 20, 15, 0.6));
 }
 .page-hero .hero-content { max-width: 720px; }
 .page-hero h1 { margin-bottom: 0.3em; }
@@ -334,7 +344,7 @@ h2.center, p.eyebrow.center { display: block; }
   margin-bottom: 14px;
 }
 .breadcrumb a { color: #fff; font-weight: 600; }
-.breadcrumb a:hover { color: var(--color-primary); }
+.breadcrumb a:hover { color: var(--color-accent); }
 
 
 /* ---------- Footer ---------- */
@@ -351,9 +361,12 @@ h2.center, p.eyebrow.center { display: block; }
   gap: 20px;
 }
 .site-footer .logo { color: #fff; }
+/* Sur le fond sombre du pied de page : vert vif et texte clair pour rester lisibles */
+.site-footer .logo span { color: var(--color-accent); }
 .footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
-.footer-links a:hover { color: #fff; }
-.footer-copy { margin: 0; font-size: 0.85rem; }
+.footer-links a { color: #fff; text-decoration: underline; }
+.footer-links a:hover { color: var(--color-accent); }
+.footer-copy { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.75); }
 
 .header-actions {
   display: flex;

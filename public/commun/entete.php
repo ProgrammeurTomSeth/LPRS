@@ -5,7 +5,7 @@
 // Menu regroupé par catégorie pour ne pas surcharger la barre de navigation.
 // Tableau associatif : titre de la catégorie => liens de la catégorie,
 // chaque lien étant nom => [texte affiché, adresse, petite description].
-// Une catégorie avec un seul lien (Accueil) s'affiche comme un lien simple.
+// Une catégorie avec un seul lien (Accueil, Contact) s'affiche comme un lien simple.
 $menu = array(
     'Accueil' => array(
         'accueil' => array('Accueil', '../page_acceuille/page_accueil.php', '')
@@ -21,6 +21,9 @@ $menu = array(
     'Communauté' => array(
         'annuaire' => array('Annuaire', '../annuaire/page_annuaire.php', 'Retrouver les anciens élèves'),
         'forum' => array('Forum', '../forum/forum.php', 'Discuter avec les membres')
+    ),
+    'Contact' => array(
+        'contact' => array('Contact', '../page_acceuille/page_accueil.php#contact', '')
     )
 );
 
