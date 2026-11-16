@@ -32,8 +32,11 @@ if (isset($_GET['resultat'])) {
     if ($_GET['resultat'] == 'statut_modifie') {
         $message = "Le statut de l'offre a bien été modifié.";
         $typeMessage = 'succes';
+    } elseif ($_GET['resultat'] == 'modification_succes') {
+        $message = "L'offre a bien été modifiée.";
+        $typeMessage = 'succes';
     } elseif ($_GET['resultat'] == 'erreur') {
-        $message = "Impossible de modifier le statut de cette offre.";
+        $message = "Impossible de modifier cette offre.";
         $typeMessage = 'erreur';
     }
 }
@@ -77,7 +80,9 @@ $pageActive = 'offres';
                 / Mes offres
             </p>
             <h1>Mes offres</h1>
-            <p>Gérez les offres publiées par votre entreprise et consultez leur état de publication.</p>
+            <p>
+                Gérez les offres publiées par votre entreprise et consultez leur état de publication.
+            </p>
         </div>
     </section>
     <section class="section mes-offres-section">
@@ -118,7 +123,7 @@ $pageActive = 'offres';
                     <?php foreach ($offres as $offre) { ?>
                         <?php
                         $statutOuvert = ($offre['statut'] == 'ouverte');
-                        $nomAuteur = trim($offre['prenom_utilisateur'] . ' ' . $offre['nom_utilisateur']);
+                        $nomAuteur = trim(($offre['prenom_utilisateur'] ?? '') . ' ' . ($offre['nom_utilisateur'] ?? ''));
                         ?>
                         <article class="mes-offres-carte">
                             <div class="mes-offres-carte-entete">
@@ -131,11 +136,9 @@ $pageActive = 'offres';
                                     <?php echo $statutOuvert ? 'Ouverte' : 'Clôturée'; ?>
                                 </span>
                             </div>
-
                             <h3>
                                 <?php echo htmlspecialchars($offre['titre']); ?>
                             </h3>
-
                             <p class="offre-entreprise">
                                 <?php echo htmlspecialchars($offre['nom_entreprise'] ?? 'Entreprise'); ?>
                             </p>
@@ -147,29 +150,26 @@ $pageActive = 'offres';
                                     <strong>Auteur :</strong>
                                     <?php echo htmlspecialchars($nomAuteur != '' ? $nomAuteur : 'Inconnu'); ?>
                                 </p>
-
                                 <p>
                                     <strong>Profil recherché :</strong>
                                     <?php
-                                    echo htmlspecialchars(
-                                            $profils[$offre['profil_cible']] ?? $offre['profil_cible']
-                                    );
+                                    echo htmlspecialchars($profils[$offre['profil_cible']] ?? $offre['profil_cible']);
                                     ?>
                                 </p>
-
                                 <p>
                                     <strong>Salaire :</strong>
                                     <?php
-                                    echo $offre['salaire_fr'] !== null ? htmlspecialchars($offre['salaire_fr']) . ' €' : 'Non renseigné';
-                                    ?>
+                                    echo $offre['salaire_fr'] !== null ? htmlspecialchars($offre['salaire_fr']) . ' €' : 'Non renseigné'; ?>
                                 </p>
-
                                 <p>
                                     <strong>Publication :</strong>
                                     <?php echo htmlspecialchars($offre['date_fr']); ?>
                                 </p>
                             </div>
                             <div class="mes-offres-actions">
+                                <a href="modifier_offre_Tom.php?id=<?php echo (int) $offre['id_offre']; ?>" class="btn btn-primary">
+                                    Modifier
+                                </a>
                                 <form method="POST" action="../../src/traitement/GestionOffreTraitement_Tom.php">
                                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['mes_offres_csrf']); ?>">
                                     <input type="hidden" name="id_offre" value="<?php echo (int) $offre['id_offre']; ?>">
