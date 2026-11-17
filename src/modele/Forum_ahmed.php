@@ -1,91 +1,108 @@
 <?php
 
-// Modèle : représente une ligne de la table forum
-// Une ligne est soit un post (id_forum_parent = null, avec un titre),
-// soit une réponse à un post (id_forum_parent = id du post, sans titre)
-class Forum_ahmed
-{
-    private $id_forum;
-    private $titre;
-    private $text;
-    private $canal;
-    private $date_heure;
-    private $id_utilisateur;
-    private $id_forum_parent;
+// Repository : toutes les requêtes SQL sur la table formation
+class Formation_ahmed{
+    private $connexionBdd;
 
-    public function getIdForum()
-    {
-        return $this->id_forum;
+    public function __construct(){
+        $bdd = new Bdd();
+        $this->connexionBdd = $bdd->getConnexionBdd();
     }
 
-    public function setIdForum($id_forum)
-    {
-        $this->id_forum = $id_forum;
+    // Renvoie un objet formation_anais, ou null si l'id n'existe pas
+    public function getFormation($id_formation){
+        $req = $this->connexionBdd->prepare(
+            "SELECT * FROM formation WHERE id_formation = :id"
+        );
+
+        $req->execute(array('id' => $id_formation));
+        $ligne = $req->fetch();
+
+        if ($ligne) {
+            $formation = new formation_anais();
+            $formation->setIdFormation($ligne['id_formation']);
+            $formation->setNomFormation($ligne['nom_formation']);
+            $formation->setTypeFormation($ligne['type_formation']);
+            $formation->setDescription($ligne['description']);
+
+            return $formation;
+        }
+
+        return null;
     }
 
-    public function getTitre()
-    {
-        return $this->titre;
+    // Renvoie le tableau de toutes les formations
+    public function getAllFormations(){
+        $req = $this->connexionBdd->prepare(
+            "SELECT * FROM formation ORDER BY nom_formation ASC"
+        );
+
+        $req->execute();
+
+        return $req->fetchAll();
     }
 
-    public function setTitre($titre)
-    {
-        $this->titre = $titre;
+    // Vérifie si un nom de formation existe déjà
+    // L'identifiant permet d'exclure la formation en cours de modification
+    public function nomFormationExiste($nom_formation, $id_formation = null){
+        $sql = "SELECT COUNT(*) FROM formation WHERE LOWER(nom_formation) = LOWER(:nom)";
+
+        if ($id_formation !== null) {
+            $sql .= " AND id_formation != :id";
+        }
+
+        $req = $this->connexionBdd->prepare($sql);
+
+        $parametres = array('nom' => trim($nom_formation));
+
+        if ($id_formation !== null) {
+            $parametres['id'] = $id_formation;
+        }
+
+        $req->execute($parametres);
+
+        return $req->fetchColumn() > 0;
     }
 
-    public function getText()
-    {
-        return $this->text;
+    // Ajoute une formation
+    public function ajouterFormation($formation){
+        $req = $this->connexionBdd->prepare(
+            "INSERT INTO formation (nom_formation, type_formation, description)
+             VALUES (:nom, :type, :description)"
+        );
+
+        return $req->execute(array(
+            'nom' => trim($formation->getNomFormation()),
+            'type' => $formation->getTypeFormation(),
+            'description' => $formation->getDescription()
+        ));
     }
 
-    public function setText($text)
-    {
-        $this->text = $text;
+    // Modifie une formation existante
+    public function modifierFormation($formation){
+        $req = $this->connexionBdd->prepare(
+            "UPDATE formation
+             SET nom_formation = :nom,
+                 type_formation = :type,
+                 description = :description
+             WHERE id_formation = :id"
+        );
+
+        return $req->execute(array(
+            'nom' => trim($formation->getNomFormation()),
+            'type' => $formation->getTypeFormation(),
+            'description' => $formation->getDescription(),
+            'id' => $formation->getIdFormation()
+        ));
     }
 
-    public function getCanal()
-    {
-        return $this->canal;
-    }
+    // Supprime une formation.
+    // La clé étrangère de utilisateur met automatiquement id_formation à NULL.
+    public function supprimerFormation($id_formation){
+        $req = $this->connexionBdd->prepare(
+            "DELETE FROM formation WHERE id_formation = :id"
+        );
 
-    public function setCanal($canal)
-    {
-        $this->canal = $canal;
-    }
-
-    public function getDateHeure()
-    {
-        return $this->date_heure;
-    }
-
-    public function setDateHeure($date_heure)
-    {
-        $this->date_heure = $date_heure;
-    }
-
-    public function getIdUtilisateur()
-    {
-        return $this->id_utilisateur;
-    }
-
-    public function setIdUtilisateur($id_utilisateur)
-    {
-        $this->id_utilisateur = $id_utilisateur;
-    }
-
-    public function getIdForumParent()
-    {
-        return $this->id_forum_parent;
-    }
-
-    public function setIdForumParent($id_forum_parent)
-    {
-        $this->id_forum_parent = $id_forum_parent;
-    }
-
-    // Renvoie true si la ligne est un post principal (et pas une réponse)
-    public function estUnPost()
-    {
-        return $this->id_forum_parent == null;
+        return $req->execute(array('id' => $id_formation));
     }
 }

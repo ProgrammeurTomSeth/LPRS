@@ -189,3 +189,21 @@
         padding: 12px 10px;
     }
 }
+
+.formations-form textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    background: white;
+    color: var(--color-dark);
+}
+
+.formations-form textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}

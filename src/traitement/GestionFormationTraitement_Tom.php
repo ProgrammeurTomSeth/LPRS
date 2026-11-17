@@ -24,6 +24,7 @@ $typesAutorises = array('bac_pro', 'bac_techno', 'bts');
 if ($action == 'ajouter') {
     $nom = trim((string) lireChamp('nom_formation'));
     $type = lireChamp('type_formation');
+    $description = trim((string) lireChamp('description'));
     if ($nom == '' || $type == null) {
         $_SESSION['formation_erreur'] = "Veuillez renseigner le nom et le type de la formation.";
     } elseif (!in_array($type, $typesAutorises, true)) {
@@ -36,6 +37,7 @@ if ($action == 'ajouter') {
         $formation = new formation_anais();
         $formation->setNomFormation($nom);
         $formation->setTypeFormation($type);
+        $formation->setDescription($description);
         try {
             $formationRepository->ajouterFormation($formation);
             $_SESSION['formation_message'] = "La formation a été ajoutée avec succès.";
@@ -52,6 +54,7 @@ if ($action == 'ajouter') {
     $idFormation = (int) lireChamp('id_formation');
     $nom = trim((string) lireChamp('nom_formation'));
     $type = lireChamp('type_formation');
+    $description = trim((string) lireChamp('description'));
     if ($idFormation <= 0 || $formationRepository->getFormation($idFormation) == null) {
         $_SESSION['formation_erreur'] = "La formation à modifier n'existe pas.";
     } elseif ($nom == '' || $type == null) {
@@ -67,6 +70,7 @@ if ($action == 'ajouter') {
         $formation->setIdFormation($idFormation);
         $formation->setNomFormation($nom);
         $formation->setTypeFormation($type);
+        $formation->setDescription($description);
         try {
             $formationRepository->modifierFormation($formation);
             $_SESSION['formation_message'] = "La formation a été modifiée avec succès.";
@@ -79,7 +83,7 @@ if ($action == 'ajouter') {
         }
     }
 } elseif ($action == 'supprimer') {
-    $idFormation = (int)lireChamp('id_formation');
+    $idFormation = (int) lireChamp('id_formation');
     if ($idFormation <= 0 || $formationRepository->getFormation($idFormation) == null) {
         $_SESSION['formation_erreur'] = "La formation à supprimer n'existe pas.";
     } else {
