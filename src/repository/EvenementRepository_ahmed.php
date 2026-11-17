@@ -199,4 +199,19 @@ class EvenementRepository_ahmed
         $req = $this->connexionBdd->prepare("UPDATE inscription_evenement SET statut_inscription = 'refusee' WHERE id_evenement = :id_evenement AND id_utilisateur = :id_utilisateur");
         $req->execute(array('id_evenement' => $id_evenement, 'id_utilisateur' => $id_utilisateur));
     }
+
+    // Après une modification : l'événement n'est plus publié, il attend de nouveau la validation de l'admin
+    public function remettreEnAttente($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE evenement SET statut = 'en_attente' WHERE id_evenement = :id");
+        $req->execute(array('id' => $id_evenement));
+    }
+
+    // Après une modification faite par un étudiant : les professeurs organisateurs doivent de nouveau accepter
+    // (leur invitation réapparaît sur leur profil)
+    public function redemanderAccordProfesseurs($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE organise_evenement INNER JOIN utilisateur ON utilisateur.id_utilisateur = organise_evenement.id_utilisateur SET organise_evenement.statut_participation = 'en_attente' WHERE organise_evenement.id_evenement = :id AND utilisateur.role = 'professeur' AND organise_evenement.statut_participation = 'acceptee'");
+        $req->execute(array('id' => $id_evenement));
+    }
 }
