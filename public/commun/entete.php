@@ -7,32 +7,33 @@
 // chaque lien étant nom => [texte affiché, adresse, petite description].
 // Une catégorie avec un seul lien (Accueil, Contact) s'affiche comme un lien simple.
 $menu = array(
-    'Accueil' => array(
-        'accueil' => array('Accueil', '../page_acceuille/page_accueil.php', '')
-    ),
-    'Le lycée' => array(
-        'formations' => array('Formations', '../page_formation/page_formation.php', 'Bacs et BTS du lycée'),
-        'evenements' => array('Événements', '../evenement/liste_evenement_Tom.php', 'Rencontres et salons à venir')
-    ),
-    'Carrière' => array(
-        'offres' => array('Offres', '../offre/liste_offres_Tom.php', 'Stages, alternances et emplois'),
-        'entreprises' => array('Entreprises', '../page_entreprise/page_entreprise.php', 'Nos entreprises partenaires')
-    ),
-    'Communauté' => array(
-        'annuaire' => array('Annuaire', '../annuaire/page_annuaire.php', 'Retrouver les anciens élèves'),
-        'forum' => array('Forum', '../forum/forum.php', 'Discuter avec les membres')
-    ),
-    'Contact' => array(
-        'contact' => array('Contact', '../page_acceuille/page_accueil.php#contact', '')
-    )
+        'Accueil' => array(
+                'accueil' => array('Accueil', '../page_acceuille/page_accueil.php', '')
+        ),
+        'Le lycée' => array(
+                'formations' => array('Formations', '../page_formation/page_formation.php', 'Bacs et BTS du lycée'),
+                'evenements' => array('Événements', '../evenement/liste_evenement_Tom.php', 'Rencontres et salons à venir')
+        ),
+        'Carrière' => array(
+                'offres' => array('Offres', '../offre/liste_offres_Tom.php', 'Stages, alternances et emplois'),
+                'entreprises' => array('Entreprises', '../page_entreprise/page_entreprise.php', 'Nos entreprises partenaires')
+        ),
+        'Communauté' => array(
+                'annuaire' => array('Annuaire', '../annuaire/page_annuaire.php', 'Retrouver les anciens élèves'),
+                'forum' => array('Forum', '../forum/forum.php', 'Discuter avec les membres')
+        ),
+        'Contact' => array(
+                'contact' => array('Contact', '../page_acceuille/page_accueil.php#contact', '')
+        )
 );
 
 // Lien vers l'administration : seulement pour un gestionnaire connecté
 if (estConnecte() && $_SESSION['role'] == 'gestionnaire') {
     $menu['Admin'] = array(
-        'admin' => array('Utilisateurs', '../Page_Admin/page_admin.php', 'Gérer les comptes'),
-        'admin_evenements' => array('Événements', '../Page_Admin/page_admin_Evenement.php', 'Valider ou refuser'),
-        'admin_forum' => array('Modération du forum', '../Page_Admin/moderation_forum.php', 'Messages signalés')
+            'admin' => array('Utilisateurs', '../Page_Admin/page_admin.php', 'Gérer les comptes'),
+            'admin_evenements' => array('Événements', '../Page_Admin/page_admin_Evenement.php', 'Valider ou refuser'),
+            'admin_forum' => array('Modération du forum', '../Page_Admin/moderation_forum.php', 'Messages signalés'),
+            'admin_formations' => array('Formations', '../Page_Admin/gestion_formations_Tom.php', 'Gérer les formations')
     );
 }
 ?>
