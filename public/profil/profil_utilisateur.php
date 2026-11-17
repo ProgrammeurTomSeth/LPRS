@@ -252,8 +252,11 @@ $pageActive = 'profil';
                                                 // Tant qu'un professeur n'a pas répondu, on l'indique à la place de "En attente"
                                                 if ($evenement['statut'] == 'en_attente' && $evenement['nb_reponses_attendues'] > 0) {
                                                     echo 'En attente du professeur';
-                                                } else {
+                                                } elseif (isset($statutsEvenement[$evenement['statut']])) {
                                                     echo $statutsEvenement[$evenement['statut']];
+                                                } else {
+                                                    // Statut absent du tableau (ex : base pas à jour) : pas de warning
+                                                    echo 'Inconnu';
                                                 }
                                             ?></span></td>
                                         </tr>
