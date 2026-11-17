@@ -65,7 +65,26 @@ if ($action == 'modifier') {
     $evenement->setNbPlaces($nbPlaces);
 
     $evenementRepository->modifierEvenement($evenement);
-    $_SESSION['gestion_message'] = "Les modifications ont été enregistrées.";
+
+    // L'événement a changé : il doit être revalidé avant d'être publié à nouveau.
+    // (Mêmes règles qu'à la création.)
+    $roleConnecte = $_SESSION['role'];
+
+    if ($roleConnecte == 'gestionnaire') {
+        // L'admin est celui qui valide : l'événement reste publié tel quel
+        $_SESSION['gestion_message'] = "Les modifications ont été enregistrées.";
+
+    } elseif ($roleConnecte == 'etudiant') {
+        // Un étudiant a modifié : le professeur doit de nouveau accepter, puis l'admin valide
+        $evenementRepository->redemanderAccordProfesseurs($idEvenement);
+        $evenementRepository->remettreEnAttente($idEvenement);
+        $_SESSION['gestion_message'] = "Les modifications ont été enregistrées. Le professeur doit de nouveau accepter l'événement, puis un gestionnaire le validera avant qu'il soit publié.";
+
+    } else {
+        // Un professeur (ou un autre organisateur) a modifié : seul l'admin doit revalider
+        $evenementRepository->remettreEnAttente($idEvenement);
+        $_SESSION['gestion_message'] = "Les modifications ont été enregistrées. L'événement sera de nouveau publié après validation par un gestionnaire.";
+    }
 }
 
 // 4) Action "refuser_inscrit" : on refuse l'inscription d'une personne

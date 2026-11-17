@@ -192,7 +192,7 @@ $pageActive = 'profil';
                         <?php if (count($invitations) == 0) { ?>
                         <p class="evenements-vide">Aucune invitation en attente pour le moment.</p>
                         <?php } else { ?>
-                        <p>Un étudiant vous a ajouté comme co-organisateur. L'événement ne pourra être envoyé à l'administration qu'après votre accord.</p>
+                        <p>Un étudiant vous a ajouté comme co-organisateur, ou a modifié un événement que vous organisez. L'événement ne pourra être envoyé à l'administration qu'après votre accord.</p>
                         <div class="table-wrapper">
                             <table class="evenements-table">
                                 <thead>

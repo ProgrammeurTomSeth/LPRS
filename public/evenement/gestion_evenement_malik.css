@@ -79,6 +79,15 @@
   background: var(--color-light);
 }
 
+/* Message "Attention : après une modification..." */
+.gestion-info {
+  margin-bottom: 22px;
+  padding: 14px 18px;
+  background: var(--color-light);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 10px;
+}
+
 .gestion-vide {
   color: var(--color-muted);
 }

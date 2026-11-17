@@ -91,6 +91,18 @@ $pageActive = 'evenements';
             <div class="gestion-card">
                 <h2>Modifier la fiche</h2>
 
+                <?php if ($_SESSION['role'] != 'gestionnaire') { ?>
+                    <!-- Prévient l'organisateur : une modification retire l'événement de la liste publiée -->
+                    <p class="gestion-info">
+                        Attention : après une modification, l'événement n'est plus publié.
+                        <?php if ($_SESSION['role'] == 'etudiant') { ?>
+                            Le professeur doit de nouveau l'accepter, puis un gestionnaire doit le valider.
+                        <?php } else { ?>
+                            Un gestionnaire doit de nouveau le valider.
+                        <?php } ?>
+                    </p>
+                <?php } ?>
+
                 <form method="post" action="../../src/traitement/GestionEvenementTraitement_malik.php">
                     <input type="hidden" name="id_evenement" value="<?php echo $evenement->getIdEvenement(); ?>">
                     <input type="hidden" name="action" value="modifier">
