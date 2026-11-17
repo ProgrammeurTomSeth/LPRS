@@ -44,9 +44,9 @@ if (!empty($_SESSION['formation_erreur'])) {
 $pageActive = 'admin_formations';
 
 $typesFormation = array(
-    'bac_pro' => 'Bac professionnel',
-    'bac_techno' => 'Bac technologique',
-    'bts' => 'BTS'
+        'bac_pro' => 'Bac professionnel',
+        'bac_techno' => 'Bac technologique',
+        'bts' => 'BTS'
 );
 
 ?>
@@ -119,7 +119,7 @@ $typesFormation = array(
 
                     <h2>Modifier une formation</h2>
 
-                    <p>Modifiez le nom ou le type de cette formation.</p>
+                    <p>Modifiez le nom, le type ou la description de cette formation.</p>
 
                     <form method="post" action="../../src/traitement/GestionFormationTraitement_Tom.php" class="formations-form">
 
@@ -140,11 +140,15 @@ $typesFormation = array(
 
                                 <?php foreach ($typesFormation as $type => $libelle) { ?>
 
-                                    <option value="<?php echo htmlspecialchars($type); ?>"<?php if ($formationAModifier->getTypeFormation() == $type) { echo 'selected'; } ?>>
+                                    <option value="<?php echo htmlspecialchars($type); ?>"<?php if ($formationAModifier->getTypeFormation() == $type) { echo ' selected'; } ?>>
                                         <?php echo htmlspecialchars($libelle); ?>
                                     </option>
                                 <?php } ?>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description de la formation</label>
+                            <textarea id="description" name="description" rows="5" placeholder="Présentez cette formation, les matières étudiées et les compétences développées..."><?php echo htmlspecialchars($formationAModifier->getDescription() ?? ''); ?></textarea>
                         </div>
 
                         <div class="formations-form-actions">
@@ -185,6 +189,16 @@ $typesFormation = array(
                                 <?php } ?>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label for="description">Description de la formation</label>
+
+                            <textarea
+                                    id="description"
+                                    name="description"
+                                    rows="5"
+                                    placeholder="Présentez cette formation, les matières étudiées et les compétences développées..."
+                            ></textarea>
+                        </div>
 
                         <div class="formations-form-actions">
                             <button type="submit" class="btn btn-primary">
@@ -221,6 +235,7 @@ $typesFormation = array(
                             <tr>
                                 <th>Nom</th>
                                 <th>Type</th>
+                                <th>Description</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -239,6 +254,16 @@ $typesFormation = array(
                                             echo htmlspecialchars($typesFormation[$formation['type_formation']]);
                                         } else {
                                             echo htmlspecialchars($formation['type_formation']);
+                                        }
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php
+                                        if (!empty($formation['description'])) {
+                                            echo nl2br(htmlspecialchars($formation['description']));
+                                        } else {
+                                            echo '<span class="formations-vide">Aucune description</span>';
                                         }
                                         ?>
                                     </td>
@@ -267,7 +292,6 @@ $typesFormation = array(
             </div>
         </div>
     </section>
-
 </main>
 
 <?php require_once '../commun/pied_de_page.php'; ?>
