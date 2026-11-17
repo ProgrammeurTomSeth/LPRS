@@ -15,11 +15,6 @@ if (!estConnecte()) {
 $idConnecte = $_SESSION['id_utilisateur'];
 $roleConnecte = $_SESSION['role'];
 
-if ($roleConnecte == 'gestionnaire') {
-    header('Location: ../../public/evenement/creation_evenement_Tom.php');
-    exit;
-}
-
 $utilisateurRepository = new UtilisateurRepository_malik();
 
 if (isset($_GET['recherche'])) {
@@ -82,7 +77,13 @@ if ($roleConnecte == 'etudiant' && $professeurPresent == false) {
     exit;
 }
 
-$statut = 'en_attente';
+// Un événement créé par le gestionnaire est publié tout de suite (c'est lui qui valide),
+// les autres attendent la validation
+if ($roleConnecte == 'gestionnaire') {
+    $statut = 'publie';
+} else {
+    $statut = 'en_attente';
+}
 
 $evenement = new evenement_anais();
 $evenement->setTypeEvenement($typeEvenement);
@@ -105,6 +106,13 @@ foreach ($organisateurs as $id => $role) {
     } else {
         $evenementRepository->ajouterOrganisateur($idEvenement, $id, 'acceptee');
     }
+}
+
+// Le gestionnaire revient sur la page d'administration des événements
+if ($roleConnecte == 'gestionnaire') {
+    $_SESSION['admin_message'] = "L'événement a été créé et publié.";
+    header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
+    exit;
 }
 
 if ($roleConnecte == 'etudiant') {

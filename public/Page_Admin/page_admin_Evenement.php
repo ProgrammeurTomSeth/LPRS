@@ -15,6 +15,13 @@ if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
 $evenementRepository = new EvenementRepository_ahmed();
 $evenementsEnAttente = $evenementRepository->getEvenementsEnAttente();
 
+// Message laissé après la création d'un événement (src/traitement/EvenementTraitement_Tom.php)
+$message = "";
+if (!empty($_SESSION['admin_message'])) {
+    $message = $_SESSION['admin_message'];
+    $_SESSION['admin_message'] = "";
+}
+
 // Lien du menu à mettre en vert (voir ../commun/entete.php)
 $pageActive = 'admin_evenements';
 
@@ -49,6 +56,17 @@ $pageActive = 'admin_evenements';
 
     <section class="section admin-section">
         <div class="container">
+
+            <?php if ($message != "") { ?>
+                <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($message); ?></p>
+            <?php } ?>
+
+            <!-- Créer un nouvel événement -->
+            <div class="admin-card">
+                <h2>Créer un événement</h2>
+                <p>Un événement créé par l'administration est publié directement.</p>
+                <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">Créer un événement</a>
+            </div>
 
             <!-- Événements qui attendent la validation -->
             <div class="admin-card">

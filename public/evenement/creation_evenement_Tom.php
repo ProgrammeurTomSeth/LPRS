@@ -14,12 +14,15 @@ if (!empty($_SESSION['evenement_erreur'])) {
 }
 
 $afficherFormulaire = true;
-if ($_SESSION['role'] == 'gestionnaire') {
-    $erreur = "Les gestionnaires ne peuvent pas créer d'événement.";
-    $afficherFormulaire = false;
-}
 
-$pageActive = 'evenements';
+// Le gestionnaire (admin) peut aussi créer un événement : il est publié directement
+$estGestionnaire = ($_SESSION['role'] == 'gestionnaire');
+
+if ($estGestionnaire) {
+    $pageActive = 'admin_evenements';
+} else {
+    $pageActive = 'evenements';
+}
 
 ?>
 
@@ -65,7 +68,11 @@ $pageActive = 'evenements';
                 <?php if ($afficherFormulaire) { ?>
 
                     <div class="alert alert--info">
-                        Le créateur est automatiquement ajouté comme organisateur. Si vous êtes étudiant, au moins un professeur doit faire partie des organisateurs. L'événement sera publié après validation par un gestionnaire.
+                        <?php if ($estGestionnaire) { ?>
+                            Vous êtes administrateur : l'événement sera publié directement, sans validation. Les co-organisateurs sont facultatifs.
+                        <?php } else { ?>
+                            Le créateur est automatiquement ajouté comme organisateur. Si vous êtes étudiant, au moins un professeur doit faire partie des organisateurs. L'événement sera publié après validation par un gestionnaire.
+                        <?php } ?>
                     </div>
                     <form method="POST" action="../../src/traitement/EvenementTraitement_Tom.php">
                         <div class="form-group">
