@@ -1,3 +1,6 @@
 src/bdd/config.local.php
 *.sql.bak
 src/mail/config.mail.local.php
+
+# CV déposés par les utilisateurs (données personnelles : jamais sur Git)
+uploads/

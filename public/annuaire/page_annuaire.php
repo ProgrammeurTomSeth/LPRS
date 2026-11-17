@@ -6,18 +6,25 @@ require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
 require_once '../../src/bdd/bdd.php';
 require_once '../../src/repository/UtilisateurRepository_malik.php';
 
+// L'annuaire affiche des emails et des téléphones : réservé aux membres connectés
+if (!estConnecte()) {
+    header('Location: ../connexion/connexion.php');
+    exit;
+}
+
 $utilisateurRepository = new UtilisateurRepository_malik();
 
 // Récupération de tous les alumni validés
 $alumni = $utilisateurRepository->getAnnuaireAlumni();
 
 // Recherche par nom ou prénom
-$nom = trim($_GET['nom'] ?? '');
+// ($recherche et non $nom : l'en-tête commun utilise déjà $nom dans sa boucle du menu)
+$recherche = trim($_GET['nom'] ?? '');
 
-if ($nom !== '') {
-    $alumni = array_filter($alumni, function ($a) use ($nom) {
-        return stripos($a['nom_utilisateur'] ?? '', $nom) !== false
-                || stripos($a['prenom_utilisateur'] ?? '', $nom) !== false;
+if ($recherche !== '') {
+    $alumni = array_filter($alumni, function ($a) use ($recherche) {
+        return stripos($a['nom_utilisateur'] ?? '', $recherche) !== false
+                || stripos($a['prenom_utilisateur'] ?? '', $recherche) !== false;
     });
 
     // Réindexation du tableau
@@ -84,6 +91,8 @@ $pageActive = 'annuaire';
                         id="rechercheNom"
                         name="nom"
                         placeholder="Rechercher par nom ou prénom..."
+                        aria-label="Rechercher par nom ou prénom"
+                        value="<?php echo htmlspecialchars($recherche); ?>"
                         >
 
 

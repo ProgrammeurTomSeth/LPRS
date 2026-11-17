@@ -51,7 +51,7 @@ $profilCible = isset($_POST['profil_cible']) ? trim($_POST['profil_cible']) : ''
 $typesAutorises = array('stage', 'alternance', 'cdd', 'cdi');
 $profilsAutorises = array('tous', 'etudiant', 'alumni');
 
-$_SESSION['creation_offre_ancien'] = array(
+$_SESSION['creation_offre_anciennes_valeurs'] = array(
     'titre' => $titre,
     'description' => $description,
     'missions' => $missions,
@@ -92,8 +92,9 @@ if ($salaireSaisi != '') {
     $salaire = (float) $salaireNormalise;
 }
 
-if (strlen($titre) > 255) {
-    $_SESSION['creation_offre_erreur'] = "Le titre ne doit pas dépasser 255 caractères.";
+// La colonne titre de la table offre fait 200 caractères
+if (mb_strlen($titre) > 200) {
+    $_SESSION['creation_offre_erreur'] = "Le titre ne doit pas dépasser 200 caractères.";
     header('Location: ../../public/offre/creation_offre_Tom.php');
     exit;
 }
@@ -116,10 +117,8 @@ try {
     $offreRepository = new OffreRepository_Tom();
     $idOffre = $offreRepository->ajouterOffre($offre);
 
-    unset($_SESSION['creation_offre_ancien']);
+    unset($_SESSION['creation_offre_anciennes_valeurs']);
     unset($_SESSION['creation_offre_csrf']);
-
-    $_SESSION['creation_offre_succes'] = "Votre offre a bien été créée et publiée.";
 
     header('Location: ../../public/offre/liste_offres_Tom.php?resultat=creation_succes');
     exit;

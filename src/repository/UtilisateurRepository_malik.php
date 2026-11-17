@@ -68,7 +68,7 @@ class UtilisateurRepository_malik
 
     public function ajouterUtilisateur($utilisateur)
     {
-        $req = $this->connexionBdd->prepare("INSERT INTO utilisateur (nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, statut_validation, annee_promo, id_formation, specialite, motif_inscription, id_entreprise, poste, id_gestionnaire_createur) VALUES (:nom, :prenom, :mail, :mdp, :telephone, :date_naissance, :role, :statut, :annee_promo, :id_formation, :specialite, :motif, :id_entreprise, :poste, :id_gestionnaire)");
+        $req = $this->connexionBdd->prepare("INSERT INTO utilisateur (nom_utilisateur, prenom_utilisateur, mail, mdp, telephone, date_naissance, role, statut_validation, cv, annee_promo, id_formation, specialite, motif_inscription, id_entreprise, poste, id_gestionnaire_createur) VALUES (:nom, :prenom, :mail, :mdp, :telephone, :date_naissance, :role, :statut, :cv, :annee_promo, :id_formation, :specialite, :motif, :id_entreprise, :poste, :id_gestionnaire)");
         $req->execute(array(
             'nom' => $utilisateur->getNom(),
             'prenom' => $utilisateur->getPrenom(),
@@ -78,6 +78,7 @@ class UtilisateurRepository_malik
             'date_naissance' => $utilisateur->getDateNaissance(),
             'role' => $utilisateur->getRole(),
             'statut' => $utilisateur->getStatutValidation(),
+            'cv' => $utilisateur->getCv(),
             'annee_promo' => $utilisateur->getAnneePromo(),
             'id_formation' => $utilisateur->getIdFormation(),
             'specialite' => $utilisateur->getSpecialite(),
@@ -116,6 +117,16 @@ class UtilisateurRepository_malik
         $req->execute(array(
             'id_entreprise' => $id_entreprise,
             'poste' => $poste,
+            'id' => $id_utilisateur
+        ));
+    }
+
+    // Enregistre le nom du fichier CV de l'utilisateur
+    public function modifierCv($id_utilisateur, $cv)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE utilisateur SET cv = :cv WHERE id_utilisateur = :id");
+        $req->execute(array(
+            'cv' => $cv,
             'id' => $id_utilisateur
         ));
     }

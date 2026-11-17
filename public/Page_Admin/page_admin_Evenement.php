@@ -63,6 +63,7 @@ $pageActive = 'admin_evenements';
                                 <tr>
                                     <th>Titre</th>
                                     <th>Type</th>
+                                    <th>Date</th>
                                     <th>Lieu</th>
                                     <th>Places</th>
                                     <th>Actions</th>
@@ -73,6 +74,7 @@ $pageActive = 'admin_evenements';
                                     <tr>
                                         <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
                                         <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
+                                        <td><?php echo $evenement['date_fr']; ?></td>
                                         <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
                                         <td><?php if ($evenement['nb_places'] != null) { echo $evenement['nb_places']; } else { echo '—'; } ?></td>
                                         <td class="actions">

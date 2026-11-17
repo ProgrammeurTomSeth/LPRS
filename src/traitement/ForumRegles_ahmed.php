@@ -15,7 +15,7 @@ $canauxForum = array(
 $descriptionsCanaux = array(
     'general' => 'Ouvert à tous les membres : chacun peut répondre aux sujets.',
     'alumni_entreprises' => 'Espace réservé aux anciens élèves et aux entreprises partenaires.',
-    'etudiants' => 'Espace des étudiants et des professeurs : les professeurs lancent les sujets, les étudiants y répondent.'
+    'etudiants' => 'Espace des étudiants et des professeurs : les étudiants lancent les sujets, les professeurs peuvent y répondre.'
 );
 
 // Nom affiché de chaque rôle (à côté de l'auteur)
@@ -52,19 +52,20 @@ function peutAccederCanal($canal, $role)
     return in_array($role, $rolesAutorises[$canal]);
 }
 
-// Renvoie true si le rôle peut créer un sujet (dans au moins un canal).
-// Un élève ne crée pas de sujet : il peut seulement commenter et répondre.
+// Renvoie true si le rôle peut créer un sujet dans au moins un canal.
+// Le canal général est ouvert à tous : tout membre peut donc créer un sujet.
 function peutCreerSujet($role)
 {
-    return $role != 'etudiant';
+    return peutCreerPost('general', $role);
 }
 
-// Renvoie true si le rôle peut créer un nouveau sujet dans ce canal :
-// il faut avoir le droit de créer un sujet ET avoir accès au canal
+// Renvoie true si le rôle peut créer un nouveau sujet dans ce canal (cahier des charges) :
+// - canal "etudiants" : seuls les étudiants créent un sujet (les professeurs répondent)
+// - autres canaux : tous les rôles qui ont accès au canal
 function peutCreerPost($canal, $role)
 {
-    if (!peutCreerSujet($role)) {
-        return false;
+    if ($canal == 'etudiants') {
+        return $role == 'etudiant';
     }
     return peutAccederCanal($canal, $role);
 }

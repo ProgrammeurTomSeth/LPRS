@@ -34,12 +34,20 @@ $description = lireChamp('description');
 $lieu = lireChamp('lieu');
 $elementsRequis = lireChamp('elements_requis');
 $nbPlaces = lireChamp('nb_places');
+$dateEvenement = lireChamp('date_evenement');
+
+// La date arrive du champ datetime-local au format "2026-12-05T18:00"
+$dateValide = ($dateEvenement != null && strtotime($dateEvenement) != false);
 
 $erreur = "";
-if (empty($typeEvenement) || empty($titre) || empty($description) || empty($lieu)) {
+if (empty($typeEvenement) || empty($titre) || empty($description) || empty($lieu) || empty($dateEvenement)) {
     $erreur = "Veuillez remplir tous les champs obligatoires.";
+} elseif (!$dateValide || strtotime($dateEvenement) <= time()) {
+    $erreur = "La date de l'événement doit être dans le futur.";
 } elseif ($nbPlaces != null && (int) $nbPlaces <= 0) {
     $erreur = "Le nombre de places doit être un nombre entier positif.";
+} elseif (mb_strlen($typeEvenement) > 100 || mb_strlen($titre) > 200 || mb_strlen($lieu) > 255 || mb_strlen((string) $elementsRequis) > 255) {
+    $erreur = "Un des champs est trop long.";
 }
 
 if ($erreur != "") {
@@ -67,7 +75,8 @@ foreach ($organisateurs as $id => $role) {
     }
 }
 
-if ($professeurPresent == false) {
+// Cahier des charges : un professeur n'est obligatoire que si l'auteur est un étudiant
+if ($roleConnecte == 'etudiant' && $professeurPresent == false) {
     $_SESSION['evenement_erreur'] = "Vous devez ajouter au moins un professeur parmi les organisateurs.";
     header('Location: ../../public/evenement/creation_evenement_Tom.php');
     exit;
@@ -82,6 +91,7 @@ $evenement->setDescription($description);
 $evenement->setLieu($lieu);
 $evenement->setElementsRequis($elementsRequis);
 $evenement->setNbPlaces($nbPlaces);
+$evenement->setDateEvenement(date('Y-m-d H:i:s', strtotime($dateEvenement)));
 $evenement->setStatut($statut);
 
 $evenementRepository = new EvenementRepository_ahmed();

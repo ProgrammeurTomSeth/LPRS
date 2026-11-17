@@ -108,7 +108,7 @@ $pageActive = 'offres';
                 <input type="hidden" name="id_offre" value="<?php echo (int) $idOffre; ?>">
                 <div class="form-group">
                     <label for="titre">Titre de l'offre *</label>
-                    <input type="text" id="titre" name="titre" maxlength="255" required value="<?php echo valeurModification('titre', $offre, $anciennesValeurs); ?>">
+                    <input type="text" id="titre" name="titre" maxlength="200" required value="<?php echo valeurModification('titre', $offre, $anciennesValeurs); ?>">
                 </div>
                 <div class="form-group">
                     <label for="description">Description de l'offre *</label>
@@ -171,6 +171,8 @@ $pageActive = 'offres';
 </main>
 
 <?php require_once '../commun/pied_de_page.php'; ?>
+
+<script src="creation_offre_Tom.js"></script>
 
 </body>
 </html>

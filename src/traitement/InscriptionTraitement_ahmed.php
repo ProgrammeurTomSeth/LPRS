@@ -40,7 +40,7 @@ $erreurs = array();
 if (empty($nom) || empty($prenom)) {
     $erreurs[] = "Le nom et le prénom sont obligatoires.";
 }
-if (empty($mail)) {
+if (empty($mail) || filter_var($mail, FILTER_VALIDATE_EMAIL) == false) {
     $erreurs[] = "L'adresse email n'est pas valide.";
 }
 if (empty($mdp) || strlen($mdp) < 8) {
@@ -88,6 +88,35 @@ if ($role == 'etudiant' || $role == 'alumni') {
     $idFormation = null;
     $anneePromo = null;
     $specialite = null;
+} elseif ($role == 'professeur') {
+    if (empty($specialite)) {
+        $erreurs[] = "La spécialité est obligatoire pour un professeur.";
+    }
+    $idFormation = null;
+    $anneePromo = null;
+    $idEntreprise = null;
+    $poste = null;
+    $motifInscription = null;
+}
+
+// Le motif n'est demandé qu'à un partenaire
+if ($role != 'partenaire') {
+    $motifInscription = null;
+}
+
+// --- CV (PDF) : obligatoire pour un étudiant, facultatif pour un alumni ---
+$cvEnvoye = isset($_FILES['cv']) && $_FILES['cv']['error'] != UPLOAD_ERR_NO_FILE;
+if ($role == 'etudiant' || $role == 'alumni') {
+    if (!$cvEnvoye) {
+        if ($role == 'etudiant') {
+            $erreurs[] = "Le CV est obligatoire pour un étudiant.";
+        }
+    } elseif ($_FILES['cv']['error'] != UPLOAD_ERR_OK || $_FILES['cv']['size'] > 2 * 1024 * 1024) {
+        $erreurs[] = "Le CV n'a pas pu être envoyé (2 Mo maximum).";
+    } elseif (strtolower(pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION)) != 'pdf' || file_get_contents($_FILES['cv']['tmp_name'], false, null, 0, 4) != '%PDF') {
+        // Un vrai PDF commence toujours par "%PDF" : on ne se fie pas seulement à l'extension
+        $erreurs[] = "Le CV doit être au format PDF.";
+    }
 }
 
 
@@ -118,6 +147,19 @@ if (count($erreurs) > 0) {
     exit;
 }
 
+// Enregistrement du CV dans LPRS/uploads/cv/ avec un nom unique (jamais le nom envoyé)
+$cv = null;
+if (($role == 'etudiant' || $role == 'alumni') && $cvEnvoye) {
+    $dossier = '../../uploads/cv/';
+    if (!is_dir($dossier)) {
+        mkdir($dossier, 0755, true);
+    }
+    $nomCv = bin2hex(random_bytes(16)) . '.pdf';
+    if (move_uploaded_file($_FILES['cv']['tmp_name'], $dossier . $nomCv)) {
+        $cv = $nomCv;
+    }
+}
+
 // Création de l'objet utilisateur puis enregistrement en base
 $utilisateur = new Utilisateur_Malik();
 $utilisateur->setNom($nom);
@@ -128,6 +170,7 @@ $utilisateur->setTelephone($telephone);
 $utilisateur->setDateNaissance($dateNaissance);
 $utilisateur->setRole($role);
 $utilisateur->setStatutValidation('en_attente');
+$utilisateur->setCv($cv);
 $utilisateur->setAnneePromo($anneePromo);
 $utilisateur->setIdFormation($idFormation);
 $utilisateur->setSpecialite($specialite);
@@ -144,86 +187,3 @@ $mailer->envoyerCompteCree($utilisateur);
 $_SESSION['inscription_succes'] = "Votre compte a été créé. Il est en attente de validation par un gestionnaire.";
 header('Location: ../../public/inscription/inscription.php');
 exit;
-
-
-$cv = null;
-
-$cv = null;
-
-if ($role == 'etudiant' || $role == 'alumni') {
-
-    if (
-        !isset($_FILES['cv']) ||
-        $_FILES['cv']['error'] !== UPLOAD_ERR_OK
-    ) {
-
-        $erreurs[] = "Le CV est obligatoire pour les étudiants et les alumni.";
-
-    } else {
-
-        $extension = strtolower(
-            pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION)
-        );
-
-        if ($extension != 'pdf') {
-
-            $erreurs[] = "Le CV doit être au format PDF.";
-
-        } else {
-
-            $nomCV = uniqid('cv_') . '.pdf';
-
-            $dossier = '../../uploads/cv/';
-
-            if (!is_dir($dossier)) {
-                mkdir($dossier, 0755, true);
-            }
-
-            if (
-                move_uploaded_file(
-                    $_FILES['cv']['tmp_name'],
-                    $dossier . $nomCV
-                )
-            ) {
-                $cv = $nomCV;
-            } else {
-                $erreurs[] = "Erreur lors de l'enregistrement du CV.";
-            }
-        }
-    }
-}
-
-if (in_array($role, ['etudiant', 'alumni'])) {
-
-    if (
-        !isset($_FILES['cv']) ||
-        $_FILES['cv']['error'] !== UPLOAD_ERR_OK
-    ) {
-        $erreurs[] = "Le CV est obligatoire pour les étudiants et les alumni.";
-    } else {
-
-        $extension = strtolower(
-            pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION)
-        );
-
-        if ($extension !== 'pdf') {
-            $erreurs[] = "Le CV doit être au format PDF.";
-        } else {
-
-            $nomCV = uniqid('cv_') . '.pdf';
-
-            $dossier = '../../uploads/cv/';
-
-            if (!is_dir($dossier)) {
-                mkdir($dossier, 0755, true);
-            }
-
-            move_uploaded_file(
-                $_FILES['cv']['tmp_name'],
-                $dossier . $nomCV
-            );
-
-            $cv = $nomCV;
-        }
-    }
-}

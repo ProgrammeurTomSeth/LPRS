@@ -73,7 +73,7 @@ $pageActive = 'admin';
         <div class="container">
 
             <?php if ($erreur != "") { ?>
-                <p class="form-status form-status--error" role="alert"><?php echo $erreur; ?></p>
+                <p class="form-status form-status--error" role="alert"><?php echo htmlspecialchars($erreur); ?></p>
             <?php } ?>
 
             <!-- Formulaire : Ajouter, ou Modifier si on a cliqué sur Modifier -->

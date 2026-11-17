@@ -73,6 +73,29 @@
   color: var(--color-dark);
   overflow-wrap: anywhere;
 }
+/* Formulaire de dépôt du CV */
+.profil-cv {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.profil-cv label {
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.profil-cv input[type="file"] {
+  font-size: 0.9rem;
+}
+
+.profil-cv button {
+  align-self: flex-start;
+}
+
 .profil-actions {
   display: flex;
   flex-wrap: wrap;

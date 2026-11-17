@@ -14,7 +14,8 @@ $messages = array(
         'deja_postule' => 'Vous avez déjà postulé à cette offre.',
         'indisponible' => 'Cette offre n’est plus disponible.',
         'motivation' => 'Veuillez saisir votre motivation.',
-        'erreur' => 'Une erreur est survenue. Veuillez réessayer.'
+        'erreur' => 'Une erreur est survenue. Veuillez réessayer.',
+        'creation_succes' => 'Votre offre a bien été créée et publiée.'
 );
 
 $message = "";
@@ -23,6 +24,13 @@ $resultat = "";
 if (isset($_GET['resultat']) && isset($messages[$_GET['resultat']])) {
     $resultat = $_GET['resultat'];
     $message = $messages[$resultat];
+}
+
+// Message laissé par la création d'offre quand l'utilisateur n'a pas le droit de créer
+if (!empty($_SESSION['creation_offre_erreur'])) {
+    $resultat = 'erreur';
+    $message = $_SESSION['creation_offre_erreur'];
+    unset($_SESSION['creation_offre_erreur']);
 }
 
 $types = array(
@@ -102,7 +110,7 @@ $pageActive = 'offres';
                 </div>
             <?php } ?>
             <?php if ($message != "") { ?>
-                <?php if ($resultat == 'succes') { ?>
+                <?php if ($resultat == 'succes' || $resultat == 'creation_succes') { ?>
                     <div class="message message-succes" role="status">
                         <?php echo htmlspecialchars($message); ?>
                     </div>

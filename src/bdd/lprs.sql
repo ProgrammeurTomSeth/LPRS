@@ -309,11 +309,11 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id_utilisateur`, `nom_utilisateur`, `prenom_utilisateur`, `mail`, `mdp`, `telephone`, `date_naissance`, `role`, `statut_validation`, `cv`, `annee_promo`, `id_formation`, `specialite`, `motif_inscription`, `id_entreprise`, `poste`, `id_gestionnaire_createur`, `date_inscription`) VALUES
-(1, 'Admin', 'Root', 'admin@ecole.fr', 'hash_admin', NULL, NULL, 'gestionnaire', 'valide', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
-(2, 'Martin', 'Leo', 'leo.martin@mail.fr', 'hash_leo', NULL, NULL, 'etudiant', 'valide', 'cv_leo.pdf', '2026', 1, NULL, NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
-(3, 'Durand', 'Paul', 'paul.durand@ecole.fr', 'hash_paul', NULL, NULL, 'professeur', 'valide', NULL, NULL, NULL, 'Reseaux', NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
-(4, 'Petit', 'Sarah', 'sarah.petit@mail.fr', 'hash_sarah', NULL, NULL, 'alumni', 'valide', 'cv_sarah.pdf', '2020', NULL, NULL, NULL, 1, 'Developpeuse', NULL, '2026-09-15 11:42:24'),
-(5, 'Bernard', 'Julie', 'julie.bernard@acme.example', 'hash_julie', NULL, NULL, 'partenaire', 'valide', NULL, NULL, NULL, NULL, 'Recrutement de stagiaires', 1, 'Responsable RH', NULL, '2026-09-15 11:42:24');
+(1, 'Admin', 'Root', 'admin@ecole.fr', '$2y$10$m4NZwwUkHdJyALT8afZbTegQgGG76e61IYtkAS3SftjzivTPgs36.', NULL, NULL, 'gestionnaire', 'valide', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
+(2, 'Martin', 'Leo', 'leo.martin@mail.fr', '$2y$10$m4NZwwUkHdJyALT8afZbTegQgGG76e61IYtkAS3SftjzivTPgs36.', NULL, NULL, 'etudiant', 'valide', 'cv_leo.pdf', '2026', 1, NULL, NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
+(3, 'Durand', 'Paul', 'paul.durand@ecole.fr', '$2y$10$m4NZwwUkHdJyALT8afZbTegQgGG76e61IYtkAS3SftjzivTPgs36.', NULL, NULL, 'professeur', 'valide', NULL, NULL, NULL, 'Reseaux', NULL, NULL, NULL, NULL, '2026-09-15 11:42:24'),
+(4, 'Petit', 'Sarah', 'sarah.petit@mail.fr', '$2y$10$m4NZwwUkHdJyALT8afZbTegQgGG76e61IYtkAS3SftjzivTPgs36.', NULL, NULL, 'alumni', 'valide', 'cv_sarah.pdf', '2020', NULL, NULL, NULL, 1, 'Developpeuse', NULL, '2026-09-15 11:42:24'),
+(5, 'Bernard', 'Julie', 'julie.bernard@acme.example', '$2y$10$m4NZwwUkHdJyALT8afZbTegQgGG76e61IYtkAS3SftjzivTPgs36.', NULL, NULL, 'partenaire', 'valide', NULL, NULL, NULL, NULL, 'Recrutement de stagiaires', 1, 'Responsable RH', NULL, '2026-09-15 11:42:24');
 
 --
 -- Contraintes pour les tables déchargées

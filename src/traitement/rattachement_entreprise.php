@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 $utilisateurRepository = new UtilisateurRepository_malik();
 $utilisateur = $utilisateurRepository->getUtilisateurParId($_SESSION['id_utilisateur']);
 
-if ($utilisateur->getRole() != 'alumni' && $utilisateur->getRole() != 'partenaire') {
+if ($utilisateur == null || ($utilisateur->getRole() != 'alumni' && $utilisateur->getRole() != 'partenaire')) {
     $_SESSION['entreprise_erreur'] = "Seuls les alumni et les partenaires peuvent se rattacher à une entreprise.";
 } elseif ($action == 'detacher') {
     if ($utilisateur->getRole() == 'partenaire') {

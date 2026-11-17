@@ -65,17 +65,17 @@ $pageActive = 'evenements';
                 <?php if ($afficherFormulaire) { ?>
 
                     <div class="alert alert--info">
-                        Le créateur est automatiquement ajouté comme organisateur. Au moins un professeur doit faire partie des organisateurs. L'événement sera publié après validation par un gestionnaire.
+                        Le créateur est automatiquement ajouté comme organisateur. Si vous êtes étudiant, au moins un professeur doit faire partie des organisateurs. L'événement sera publié après validation par un gestionnaire.
                     </div>
                     <form method="POST" action="../../src/traitement/EvenementTraitement_Tom.php">
                         <div class="form-group">
                             <label for="type_evenement">Type d'événement *</label>
-                            <input type="text" id="type_evenement" name="type_evenement" required placeholder="Exemple : Conférence, rencontre, atelier...">
+                            <input type="text" id="type_evenement" name="type_evenement" maxlength="100" required placeholder="Exemple : Conférence, rencontre, atelier...">
                         </div>
 
                         <div class="form-group">
                             <label for="titre">Titre *</label>
-                            <input type="text" id="titre" name="titre" required>
+                            <input type="text" id="titre" name="titre" maxlength="200" required>
                         </div>
 
                         <div class="form-group">
@@ -85,12 +85,17 @@ $pageActive = 'evenements';
 
                         <div class="form-group">
                             <label for="lieu">Lieu / adresse *</label>
-                            <input type="text" id="lieu" name="lieu" required placeholder="Exemple : Lycée Robert Schuman, Dugny">
+                            <input type="text" id="lieu" name="lieu" maxlength="255" required placeholder="Exemple : Lycée Robert Schuman, Dugny">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date_evenement">Date et heure *</label>
+                            <input type="datetime-local" id="date_evenement" name="date_evenement" min="<?php echo date('Y-m-d\TH:i'); ?>" required>
                         </div>
 
                         <div class="form-group">
                             <label for="elements_requis">Éléments requis</label>
-                            <input type="text" id="elements_requis" name="elements_requis" placeholder="Facultatif">
+                            <input type="text" id="elements_requis" name="elements_requis" maxlength="255" placeholder="Facultatif">
                         </div>
 
                         <div class="form-group">

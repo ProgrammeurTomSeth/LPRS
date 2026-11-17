@@ -76,7 +76,6 @@ $pageActive = 'connexion';
                 <button type="submit" class="btn btn-primary btn-lg btn-block">Se connecter</button>
 
                 <p class="login-footer">Pas encore de compte ? <a href="../inscription/inscription.php">Inscrivez-vous</a></p>
-                <p class="login-footer">Connexion <a href="../Page_Admin/page_admin.php">Admin</a></p>
 
             </form>
         </div>

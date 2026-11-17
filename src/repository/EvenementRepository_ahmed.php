@@ -86,7 +86,7 @@ class EvenementRepository_ahmed
     // Ajoute l'événement et renvoie son id
     public function ajouterEvenement($evenement)
     {
-        $req = $this->connexionBdd->prepare("INSERT INTO evenement (type_evenement, titre, description, lieu, elements_requis, nb_places, date_evenement, statut) VALUES (:type, :titre, :description, :lieu, :elements_requis, :nb_places, NOW(), :statut)");
+        $req = $this->connexionBdd->prepare("INSERT INTO evenement (type_evenement, titre, description, lieu, elements_requis, nb_places, date_evenement, statut) VALUES (:type, :titre, :description, :lieu, :elements_requis, :nb_places, :date_evenement, :statut)");
         $req->execute(array(
             'type' => $evenement->getTypeEvenement(),
             'titre' => $evenement->getTitre(),
@@ -94,6 +94,7 @@ class EvenementRepository_ahmed
             'lieu' => $evenement->getLieu(),
             'elements_requis' => $evenement->getElementsRequis(),
             'nb_places' => $evenement->getNbPlaces(),
+            'date_evenement' => $evenement->getDateEvenement(),
             'statut' => $evenement->getStatut()
         ));
         return $this->connexionBdd->lastInsertId();
@@ -137,16 +138,17 @@ class EvenementRepository_ahmed
     // (on ne garde que ceux dont tous les professeurs invités ont déjà répondu)
     public function getEvenementsEnAttente()
     {
-        $req = $this->connexionBdd->prepare("SELECT * FROM evenement WHERE statut = 'en_attente' AND NOT EXISTS (SELECT * FROM organise_evenement WHERE organise_evenement.id_evenement = evenement.id_evenement AND organise_evenement.statut_participation = 'en_attente')");
+        $req = $this->connexionBdd->prepare("SELECT *, DATE_FORMAT(date_evenement, '%d/%m/%Y %H:%i') AS date_fr FROM evenement WHERE statut = 'en_attente' AND NOT EXISTS (SELECT * FROM organise_evenement WHERE organise_evenement.id_evenement = evenement.id_evenement AND organise_evenement.statut_participation = 'en_attente')");
         $req->execute();
         return $req->fetchAll();
     }
 
-    // Passe un événement en "publie"
+    // Passe un événement en "publie" (seulement s'il attend la validation
+    // et qu'aucun professeur invité n'a encore à répondre)
     public function publierEvenement($id_evenement)
     {
-        $req = $this->connexionBdd->prepare("UPDATE evenement SET statut = 'publie' WHERE id_evenement = :id");
-        $req->execute(array('id' => $id_evenement));
+        $req = $this->connexionBdd->prepare("UPDATE evenement SET statut = 'publie' WHERE id_evenement = :id AND statut = 'en_attente' AND NOT EXISTS (SELECT * FROM organise_evenement WHERE organise_evenement.id_evenement = :id_attente AND organise_evenement.statut_participation = 'en_attente')");
+        $req->execute(array('id' => $id_evenement, 'id_attente' => $id_evenement));
     }
 
     // Passe un événement en "refuse"

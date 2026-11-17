@@ -20,9 +20,9 @@ foreach ($canauxForum as $canal => $libelle) {
     }
 }
 
-// Un élève ne peut pas créer de sujet : retour à la liste avec un message
+// Aucun canal autorisé pour ce rôle : retour à la liste avec un message
 if (!peutCreerSujet($roleConnecte)) {
-    $_SESSION['forum_erreur'] = "Les élèves ne peuvent pas créer de sujet, mais vous pouvez commenter ceux des autres membres.";
+    $_SESSION['forum_erreur'] = "Vous ne pouvez pas créer de sujet.";
     header('Location: forum.php');
     exit;
 }

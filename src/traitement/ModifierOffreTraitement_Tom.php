@@ -25,8 +25,7 @@ if ($utilisateur == null || !in_array($utilisateur->getRole(), array('partenaire
 }
 
 if (!isset($_POST['csrf_token']) || !isset($_SESSION['modifier_offre_csrf']) || !hash_equals($_SESSION['modifier_offre_csrf'], $_POST['csrf_token'])) {
-    $_SESSION['modifier_offre_erreur'] = "Le formulaire a expiré. Veuillez réessayer.";
-    header('Location: ../../public/offre/mes_offres_Tom.php');
+    header('Location: ../../public/offre/mes_offres_Tom.php?resultat=erreur');
     exit;
 }
 
@@ -63,7 +62,7 @@ $_SESSION['modifier_offre_anciennes_valeurs'] = array(
 
 function retournerModification($idOffre, $message){
     $_SESSION['modifier_offre_erreur'] = $message;
-    header('Location: ../../public/offre/modifier_offre_Tom.php?id=' . (int) $idOffre);
+    header('Location: ../../public/offre/Modifier_offre_Tom.php?id=' . (int) $idOffre);
     exit;
 }
 
@@ -71,8 +70,9 @@ if ($titre == '' || $description == '' || $missions == '' || $type == '' || $pro
     retournerModification($idOffre, "Veuillez remplir tous les champs obligatoires.");
 }
 
-if (strlen($titre) > 255) {
-    retournerModification($idOffre, "Le titre ne doit pas dépasser 255 caractères.");
+// La colonne titre de la table offre fait 200 caractères
+if (mb_strlen($titre) > 200) {
+    retournerModification($idOffre, "Le titre ne doit pas dépasser 200 caractères.");
 }
 
 $typesAutorises = array('stage', 'alternance', 'cdd', 'cdi');

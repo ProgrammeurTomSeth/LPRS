@@ -9,6 +9,9 @@ if (!estConnecte()) {
     $resultat = 'connexion';
 } elseif ($_SERVER["REQUEST_METHOD"] != "POST") {
     $resultat = 'erreur';
+} elseif ($_SESSION['role'] == 'gestionnaire') {
+    // Cahier des charges : tout le monde peut s'inscrire, sauf les gestionnaires
+    $resultat = 'gestionnaire';
 } else {
     $idEvenement = (int) lireChamp('id_evenement');
     $idUtilisateur = $_SESSION['id_utilisateur'];
@@ -16,7 +19,8 @@ if (!estConnecte()) {
     $repository = new EvenementRepository_ahmed();
     $evenement = $repository->getEvenement($idEvenement);
 
-    if ($evenement == null || $evenement->getStatut() != 'publie') {
+    // Événement inexistant, pas encore publié ou déjà passé
+    if ($evenement == null || $evenement->getStatut() != 'publie' || strtotime($evenement->getDateEvenement()) < time()) {
         $resultat = 'indisponible';
     } elseif ($repository->estInscrit($idEvenement, $idUtilisateur)) {
         $resultat = 'deja_inscrit';

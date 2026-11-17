@@ -10,3 +10,17 @@ L'envoi utilise PHPMailer, copié dans `src/lib/phpmailer` (pas de Composer).
 3. Ce fichier est ignoré par Git : le mot de passe n'est jamais publié.
 
 Tant que le fichier contient `A_REMPLIR`, aucun email n'est envoyé et le site fonctionne normalement.
+
+## Comptes de test
+
+Après l'import de `src/bdd/lprs.sql`, ces comptes sont validés et utilisent tous le mot de passe `Test1234!` :
+
+| Rôle | Email |
+|---|---|
+| Gestionnaire | admin@ecole.fr |
+| Étudiant | leo.martin@mail.fr |
+| Professeur | paul.durand@ecole.fr |
+| Alumni | sarah.petit@mail.fr |
+| Partenaire | julie.bernard@acme.example |
+
+Les CV déposés sont enregistrés dans `uploads/cv/` (à la racine du projet), dossier ignoré par Git.

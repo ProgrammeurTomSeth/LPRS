@@ -72,6 +72,15 @@ if ($utilisateur->getIdEntreprise() != null) {
 if ($utilisateur->getPoste() != null) {
     $infos['Poste'] = $utilisateur->getPoste();
 }
+// CV : seulement pour les étudiants et les alumni
+$aUnCv = ($utilisateur->getRole() == 'etudiant' || $utilisateur->getRole() == 'alumni');
+if ($aUnCv) {
+    if ($utilisateur->getCv() != null) {
+        $infos['CV'] = 'Déposé';
+    } else {
+        $infos['CV'] = 'Aucun CV déposé';
+    }
+}
 $infos['Membre depuis'] = $utilisateur->getDateInscription();
 
 // Initiales affichées dans le rond (mb_ : versions de substr/strtoupper qui gèrent les accents)
@@ -146,6 +155,15 @@ $pageActive = 'profil';
                         </div>
                     <?php } ?>
                 </dl>
+
+                <?php if ($aUnCv) { ?>
+                    <!-- Dépôt ou remplacement du CV (traitement : src/traitement/ajout_cv_inscription.php) -->
+                    <form class="profil-cv" method="post" action="../../src/traitement/ajout_cv_inscription.php" enctype="multipart/form-data">
+                        <label for="cv">Mon CV (PDF, 2 Mo maximum)</label>
+                        <input type="file" id="cv" name="cv" accept="application/pdf,.pdf" required>
+                        <button type="submit" class="btn btn-outline btn-sm"><?php if ($utilisateur->getCv() != null) { echo 'Remplacer mon CV'; } else { echo 'Envoyer mon CV'; } ?></button>
+                    </form>
+                <?php } ?>
 
                 <div class="profil-actions">
                     <?php if ($utilisateur->getRole() != 'gestionnaire') { ?>

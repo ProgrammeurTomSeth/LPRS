@@ -10,6 +10,7 @@ $messages = array(
     'deja_inscrit' => 'Vous êtes déjà inscrit à cet événement.',
     'complet' => 'Cet événement est complet.',
     'indisponible' => 'Cet événement est indisponible.',
+    'gestionnaire' => 'Les gestionnaires ne peuvent pas s\'inscrire à un événement.',
     'erreur' => 'Une erreur est survenue. Veuillez réessayer.'
 );
 
@@ -70,11 +71,11 @@ $pageActive = 'evenements';
             <?php if ($message != "") { ?>
                 <?php if ($resultat == 'succes') { ?>
                     <div class="form-status" role="status">
-                        <?php echo $message; ?>
+                        <?php echo htmlspecialchars($message); ?>
                     </div>
                 <?php } else { ?>
                     <div class="form-status form-status--error" role="alert">
-                        <?php echo $message; ?>
+                        <?php echo htmlspecialchars($message); ?>
                     </div>
                 <?php } ?>
             <?php } ?>
@@ -101,6 +102,9 @@ $pageActive = 'evenements';
                                 $complet = true;
                             }
                         }
+
+                        // Un événement déjà passé reste affiché mais on ne peut plus s'y inscrire
+                        $termine = (strtotime($evenement['date_evenement']) < time());
 
                         $dejaInscrit = false;
                         if (estConnecte()) {
@@ -160,7 +164,11 @@ $pageActive = 'evenements';
                             </div>
 
                             <div class="evenement-actions">
-                                <?php if ($dejaInscrit) { ?>
+                                <?php if ($termine) { ?>
+                                    <span class="btn btn-outline" aria-disabled="true">
+                                        Événement terminé
+                                    </span>
+                                <?php } elseif ($dejaInscrit) { ?>
                                     <span class="btn btn-outline" aria-disabled="true">
                                         Déjà inscrit
                                     </span>
@@ -168,6 +176,8 @@ $pageActive = 'evenements';
                                     <span class="btn btn-outline" aria-disabled="true">
                                         Événement complet
                                     </span>
+                                <?php } elseif (estConnecte() && $_SESSION['role'] == 'gestionnaire') { ?>
+                                    <!-- Pas d'inscription pour les gestionnaires -->
                                 <?php } else { ?>
                                     <form method="POST" action="../../src/traitement/InscriptionEvenementTraitement_Tom.php">
                                         <input type="hidden" name="id_evenement" value="<?php echo $evenement['id_evenement']; ?>">

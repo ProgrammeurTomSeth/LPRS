@@ -25,10 +25,20 @@ $mail = lireChamp('mail');
 $telephone = lireChamp('telephone');
 $role = lireChamp('role');
 
+// Rôles et statuts acceptés par la base (enum de la table utilisateur)
+$rolesValides = array('etudiant', 'alumni', 'partenaire', 'professeur', 'gestionnaire');
+$roleValide = in_array($role, $rolesValides);
+
 if ($action == 'ajouter') {
     $mdp = lireChamp('mdp');
     // Ajout seulement si les champs sont remplis et le mail pas déjà utilisé
-    if (!empty($nom) && !empty($prenom) && !empty($mail) && !empty($mdp) && strlen($mdp) >= 8 && $repository->getUtilisateurParMail($mail) == null) {
+    if (empty($nom) || empty($prenom) || empty($mail) || filter_var($mail, FILTER_VALIDATE_EMAIL) == false || !$roleValide) {
+        $_SESSION['admin_erreur'] = "Ajout impossible : vérifiez le nom, le prénom, l'email et le rôle.";
+    } elseif (empty($mdp) || strlen($mdp) < 8) {
+        $_SESSION['admin_erreur'] = "Ajout impossible : le mot de passe doit contenir au moins 8 caractères.";
+    } elseif ($repository->getUtilisateurParMail($mail) != null) {
+        $_SESSION['admin_erreur'] = "Ajout impossible : cet email est déjà utilisé.";
+    } else {
         $utilisateur = new Utilisateur_Malik();
         $utilisateur->setNom($nom);
         $utilisateur->setPrenom($prenom);
@@ -49,7 +59,14 @@ if ($action == 'ajouter') {
     // Utilisateur avant la modification : sert à savoir si son statut change
     $ancien = $repository->getUtilisateurParId($id);
 
-    if (!empty($nom) && !empty($prenom) && !empty($mail) && $mailLibre && $statutValide) {
+    if ($id == $_SESSION['id_utilisateur'] && ($role != 'gestionnaire' || $statut != 'valide')) {
+        // Il se retirerait lui-même l'accès à l'administration
+        $_SESSION['admin_erreur'] = "Vous ne pouvez pas changer votre propre rôle ni désactiver votre compte.";
+    } elseif (empty($nom) || empty($prenom) || empty($mail) || filter_var($mail, FILTER_VALIDATE_EMAIL) == false || !$roleValide || !$statutValide) {
+        $_SESSION['admin_erreur'] = "Modification impossible : vérifiez les champs saisis.";
+    } elseif (!$mailLibre) {
+        $_SESSION['admin_erreur'] = "Modification impossible : cet email appartient à un autre utilisateur.";
+    } else {
         $utilisateur = new Utilisateur_Malik();
         $utilisateur->setIdUtilisateur($id);
         $utilisateur->setNom($nom);
@@ -97,23 +114,28 @@ if ($action == 'ajouter') {
         }
     }
 } elseif ($action == 'supprimer') {
-    // La suppression échoue si l'utilisateur est l'auteur d'une offre ou d'un message du forum
-    try {
-        $repository->supprimerUtilisateur($id);
-    } catch (PDOException $e) {
-        $_SESSION['admin_erreur'] = "Impossible de supprimer cet utilisateur : il est l'auteur d'offres ou de messages.";
+    if ($id == $_SESSION['id_utilisateur']) {
+        // Sinon le site pourrait se retrouver sans aucun gestionnaire
+        $_SESSION['admin_erreur'] = "Vous ne pouvez pas supprimer votre propre compte.";
+    } else {
+        // La suppression échoue si l'utilisateur est l'auteur d'une offre ou d'un message du forum
+        try {
+            $repository->supprimerUtilisateur($id);
+        } catch (PDOException $e) {
+            $_SESSION['admin_erreur'] = "Impossible de supprimer cet utilisateur : il est l'auteur d'offres ou de messages.";
+        }
     }
 } elseif ($action == 'valider_evenement') {
     // On publie l'événement choisi, puis on retourne sur la page de gestion des événements
     $evenementRepository = new EvenementRepository_ahmed();
-    $evenementRepository->publierEvenement(lireChamp('id_evenement'));
+    $evenementRepository->publierEvenement((int) lireChamp('id_evenement'));
 
     header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
     exit;
 } elseif ($action == 'refuser_evenement') {
     // On refuse l'événement choisi, puis on retourne sur la page de gestion des événements
     $evenementRepository = new EvenementRepository_ahmed();
-    $evenementRepository->refuserEvenement(lireChamp('id_evenement'));
+    $evenementRepository->refuserEvenement((int) lireChamp('id_evenement'));
 
     header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
     exit;

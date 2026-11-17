@@ -125,7 +125,7 @@ $pageActive = 'offres';
                 <div class="form-group">
                     <label for="titre">Titre de l'offre *</label>
 
-                    <input type="text" id="titre" name="titre" placeholder="Exemple : Développeur web en alternance" value="<?php echo ancienneValeur('titre', $anciennesValeurs); ?>" maxlength="150" required>
+                    <input type="text" id="titre" name="titre" placeholder="Exemple : Développeur web en alternance" value="<?php echo ancienneValeur('titre', $anciennesValeurs); ?>" maxlength="200" required>
                     <span class="form-error" id="erreur-titre"></span>
                 </div>
 

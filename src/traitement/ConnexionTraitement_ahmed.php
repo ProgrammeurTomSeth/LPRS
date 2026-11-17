@@ -41,11 +41,13 @@ if ($erreur != "") {
     exit;
 }
 
-// Connexion réussie : on mémorise l'utilisateur dans la session
+// Connexion réussie : nouvel identifiant de session (évite le vol de session),
+// puis on mémorise l'utilisateur dans la session
+session_regenerate_id(true);
 $_SESSION['id_utilisateur'] = $utilisateur->getIdUtilisateur();
 $_SESSION['role'] = $utilisateur->getRole();
 $_SESSION['nom_utilisateur'] = $utilisateur->getNom();
 $_SESSION['prenom_utilisateur'] = $utilisateur->getPrenom();
 
-header('Location: /SiteEcole/public/page_acceuille/page_accueil.php');
+header('Location: ../../public/page_acceuille/page_accueil.php');
 exit;

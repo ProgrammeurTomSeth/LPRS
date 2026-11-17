@@ -167,7 +167,7 @@ $pageActive = 'offres';
                                 </p>
                             </div>
                             <div class="mes-offres-actions">
-                                <a href="modifier_offre_Tom.php?id=<?php echo (int) $offre['id_offre']; ?>" class="btn btn-primary">
+                                <a href="Modifier_offre_Tom.php?id=<?php echo (int) $offre['id_offre']; ?>" class="btn btn-primary">
                                     Modifier
                                 </a>
                                 <form method="POST" action="../../src/traitement/GestionOffreTraitement_Tom.php">
@@ -191,6 +191,8 @@ $pageActive = 'offres';
 </main>
 
 <?php require_once '../commun/pied_de_page.php'; ?>
+
+<script src="liste_offres_Tom.js"></script>
 
 </body>
 </html>
