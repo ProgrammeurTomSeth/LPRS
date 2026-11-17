@@ -45,4 +45,46 @@ class EntrepriseRepository_Tom
         $req->execute(array('nom' => '%' . $nom . '%'));
         return $req->fetchAll();
     }
+    //ajouter entreprise
+    public function ajouterEntreprise($nom, $activite, $adresse, $siteWeb)
+    {
+        $req = $this->connexionBdd->prepare("
+        INSERT INTO entreprise (nom_entreprise, activite, adresse, site_web)
+        VALUES (:nom, :activite, :adresse, :siteWeb)
+    ");
+
+        return $req->execute([
+            'nom' => $nom,
+            'activite' => $activite,
+            'adresse' => $adresse,
+            'siteWeb' => $siteWeb
+        ]);
+    }
+
+    //rechercher une entreprise
+    public function getEntrepriseParSiteWeb($siteWeb)
+    {
+        $req = $this->connexionBdd->prepare("
+        SELECT * FROM entreprise WHERE site_web = :siteWeb
+    ");
+
+        $req->execute([
+            'siteWeb' => $siteWeb
+        ]);
+
+        $ligne = $req->fetch();
+
+        if ($ligne) {
+            $entreprise = new Entreprise_Tom();
+            $entreprise->setIdEntreprise($ligne['id_entreprise']);
+            $entreprise->setNomEntreprise($ligne['nom_entreprise']);
+            $entreprise->setActivite($ligne['activite']);
+            $entreprise->setAdresse($ligne['adresse']);
+            $entreprise->setSiteWeb($ligne['site_web']);
+
+            return $entreprise;
+        }
+
+        return null;
+    }
 }
