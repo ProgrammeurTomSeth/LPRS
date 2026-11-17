@@ -31,7 +31,7 @@ class EntrepriseRepository_Tom
     }
 
     // Renvoie le tableau de toutes les entreprises
-    public function getAllEntreprises()
+    public function getAllEntreprises():array
     {
         $req = $this->connexionBdd->prepare("SELECT * FROM entreprise ORDER BY nom_entreprise ASC");
         $req->execute();
@@ -39,17 +39,77 @@ class EntrepriseRepository_Tom
     }
 
     // Renvoie le tableau des entreprises dont le nom contient $nom
-    public function getEntreprisesParNom($nom)
+    public function getEntreprisesParNom($nom): array
     {
         $req = $this->connexionBdd->prepare("SELECT * FROM entreprise WHERE nom_entreprise LIKE :nom ORDER BY nom_entreprise ASC");
         $req->execute(array('nom' => '%' . $nom . '%'));
         return $req->fetchAll();
     }
-    //ajouter entreprise
+
+    // Nettoyer et normaliser une adresse de site web
+    public function nettoyerSiteWeb($siteWeb): string
+    {
+        // Supprimer les espaces au début et à la fin
+        $siteWeb = trim($siteWeb);
+
+        // Mettre en minuscules
+        $siteWeb = strtolower($siteWeb);
+
+        // Supprimer http:// ou https://
+        $siteWeb = preg_replace('#^https?://#', '', $siteWeb);
+
+        // Supprimer www.
+        $siteWeb = preg_replace('#^www\.#', '', $siteWeb);
+
+        // Supprimer les / à la fin
+        $siteWeb = rtrim($siteWeb, '/');
+
+        return $siteWeb;
+    }
+
+    // Rechercher une entreprise à partir de son site web
+    public function getEntrepriseParSiteWeb($siteWeb): ?Entreprise_Tom
+    {
+        $siteWeb = $this->nettoyerSiteWeb($siteWeb);
+
+        $req = $this->connexionBdd->prepare("
+        SELECT * FROM entreprise
+    ");
+
+        $req->execute();
+
+        while ($ligne = $req->fetch()) {
+
+            $siteExistant = $this->nettoyerSiteWeb($ligne['site_web']);
+
+            if ($siteExistant === $siteWeb) {
+
+                $entreprise = new Entreprise_Tom();
+                $entreprise->setIdEntreprise($ligne['id_entreprise']);
+                $entreprise->setNomEntreprise($ligne['nom_entreprise']);
+                $entreprise->setActivite($ligne['activite']);
+                $entreprise->setAdresse($ligne['adresse']);
+                $entreprise->setSiteWeb($ligne['site_web']);
+
+                return $entreprise;
+            }
+        }
+
+        return null;
+    }
+    // Ajouter une nouvelle entreprise
     public function ajouterEntreprise($nom, $activite, $adresse, $siteWeb)
     {
+        $siteWeb = $this->nettoyerSiteWeb($siteWeb);
+
+        // Vérifier si l'entreprise existe déjà avec ce site web
+        if ($this->getEntrepriseParSiteWeb($siteWeb) !== null) {
+            return false;
+        }
+
         $req = $this->connexionBdd->prepare("
-        INSERT INTO entreprise (nom_entreprise, activite, adresse, site_web)
+        INSERT INTO entreprise
+        (nom_entreprise, activite, adresse, site_web)
         VALUES (:nom, :activite, :adresse, :siteWeb)
     ");
 
@@ -59,32 +119,5 @@ class EntrepriseRepository_Tom
             'adresse' => $adresse,
             'siteWeb' => $siteWeb
         ]);
-    }
-
-    //rechercher une entreprise
-    public function getEntrepriseParSiteWeb($siteWeb)
-    {
-        $req = $this->connexionBdd->prepare("
-        SELECT * FROM entreprise WHERE site_web = :siteWeb
-    ");
-
-        $req->execute([
-            'siteWeb' => $siteWeb
-        ]);
-
-        $ligne = $req->fetch();
-
-        if ($ligne) {
-            $entreprise = new Entreprise_Tom();
-            $entreprise->setIdEntreprise($ligne['id_entreprise']);
-            $entreprise->setNomEntreprise($ligne['nom_entreprise']);
-            $entreprise->setActivite($ligne['activite']);
-            $entreprise->setAdresse($ligne['adresse']);
-            $entreprise->setSiteWeb($ligne['site_web']);
-
-            return $entreprise;
-        }
-
-        return null;
     }
 }
