@@ -17,6 +17,7 @@ $menu = array(
         'Carrière' => array(
                 'offres' => array('Offres', '../offre/liste_offres_Tom.php', 'Stages, alternances et emplois'),
                 'entreprises' => array('Entreprises', '../page_entreprise/page_entreprise.php', 'Nos entreprises partenaires')
+
         ),
         'Communauté' => array(
                 'annuaire' => array('Annuaire', '../annuaire/page_annuaire.php', 'Retrouver les anciens élèves'),
@@ -33,7 +34,8 @@ if (estConnecte() && $_SESSION['role'] == 'gestionnaire') {
             'admin' => array('Utilisateurs', '../Page_Admin/page_admin.php', 'Gérer les comptes'),
             'admin_evenements' => array('Événements', '../Page_Admin/page_admin_Evenement.php', 'Valider ou refuser'),
             'admin_forum' => array('Modération du forum', '../Page_Admin/moderation_forum.php', 'Messages signalés'),
-            'admin_formations' => array('Formations', '../Page_Admin/gestion_formations_Tom.php', 'Gérer les formations')
+            'admin_formations' => array('Formations', '../Page_Admin/gestion_formations_Tom.php', 'Gérer les formations'),
+
     );
 }
 ?>

@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-    <h1>Ajouter une entreprise</h1>
+<h1>Ajouter une entreprise</h1>
 
     <?php if ($message): ?>
         <p><?= htmlspecialchars($message) ?></p>
@@ -68,7 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Ajouter l'entreprise</button>
 
     </form>
-
+<button onclick="history.back()" class="btn-retour">
+    ← Retour
+</button>
     <script src="creation_entreprise.js"></script>
 
 </body>

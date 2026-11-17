@@ -65,7 +65,7 @@ $pageActive = 'entreprises';
 </head>
 <body>
 
-<?php require_once '../commun/entete.php'; ?>
+
 
 <main id="main">
 
