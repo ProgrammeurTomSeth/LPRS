@@ -238,6 +238,7 @@ $pageActive = 'profil';
                                         <th scope="col">Lieu</th>
                                         <th scope="col">Places</th>
                                         <th scope="col">Statut</th>
+                                        <th scope="col">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -259,6 +260,8 @@ $pageActive = 'profil';
                                                     echo 'Inconnu';
                                                 }
                                             ?></span></td>
+                                            <!-- Lien vers la page de gestion de cet événement -->
+                                            <td><a href="../evenement/gestion_evenement_malik.php?id=<?php echo $evenement['id_evenement']; ?>" class="btn btn-outline btn-sm">Gérer</a></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>

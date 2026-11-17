@@ -157,4 +157,46 @@ class EvenementRepository_ahmed
         $req = $this->connexionBdd->prepare("UPDATE evenement SET statut = 'refuse' WHERE id_evenement = :id");
         $req->execute(array('id' => $id_evenement));
     }
+
+    // ===== Gestion d'un événement par ses organisateurs (gestion_evenement_malik.php) =====
+
+    // Renvoie true si l'utilisateur est organisateur de l'événement
+    // (on ne compte que les organisateurs qui ont accepté)
+    public function estOrganisateur($id_evenement, $id_utilisateur)
+    {
+        $req = $this->connexionBdd->prepare("SELECT COUNT(*) AS nb FROM organise_evenement WHERE id_evenement = :id_evenement AND id_utilisateur = :id_utilisateur AND statut_participation = 'acceptee'");
+        $req->execute(array('id_evenement' => $id_evenement, 'id_utilisateur' => $id_utilisateur));
+        $ligne = $req->fetch();
+        return $ligne['nb'] > 0;
+    }
+
+    // Modifie la fiche de l'événement (le statut et la date ne changent pas)
+    public function modifierEvenement($evenement)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE evenement SET type_evenement = :type, titre = :titre, description = :description, lieu = :lieu, elements_requis = :elements_requis, nb_places = :nb_places WHERE id_evenement = :id");
+        $req->execute(array(
+            'type' => $evenement->getTypeEvenement(),
+            'titre' => $evenement->getTitre(),
+            'description' => $evenement->getDescription(),
+            'lieu' => $evenement->getLieu(),
+            'elements_requis' => $evenement->getElementsRequis(),
+            'nb_places' => $evenement->getNbPlaces(),
+            'id' => $evenement->getIdEvenement()
+        ));
+    }
+
+    // Liste des personnes inscrites à l'événement (avec leur nom, mail et rôle)
+    public function getInscrits($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("SELECT utilisateur.id_utilisateur, utilisateur.nom_utilisateur, utilisateur.prenom_utilisateur, utilisateur.mail, utilisateur.role, inscription_evenement.statut_inscription, DATE_FORMAT(inscription_evenement.date_inscription, '%d/%m/%Y') AS date_inscription_fr FROM inscription_evenement INNER JOIN utilisateur ON utilisateur.id_utilisateur = inscription_evenement.id_utilisateur WHERE inscription_evenement.id_evenement = :id ORDER BY inscription_evenement.date_inscription ASC");
+        $req->execute(array('id' => $id_evenement));
+        return $req->fetchAll();
+    }
+
+    // Refuse l'inscription d'une personne (elle reste dans la liste, avec le statut "refusee")
+    public function refuserInscription($id_evenement, $id_utilisateur)
+    {
+        $req = $this->connexionBdd->prepare("UPDATE inscription_evenement SET statut_inscription = 'refusee' WHERE id_evenement = :id_evenement AND id_utilisateur = :id_utilisateur");
+        $req->execute(array('id_evenement' => $id_evenement, 'id_utilisateur' => $id_utilisateur));
+    }
 }
