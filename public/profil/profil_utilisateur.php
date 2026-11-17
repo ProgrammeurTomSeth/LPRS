@@ -171,7 +171,12 @@ $pageActive = 'profil';
                     <?php } ?>
                     <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">Se déconnecter</a>
                 </div>
+                <div class="profil-actions">
+                    <?php if ($utilisateur->getRole() != 'alumni, gestionnaire') { ?>
+                        <a href="../page_entreprise/ajouter_entreprise.php" class="btn btn-primary">Ajouter une entreprise</a>
+                    <?php } ?>
 
+                </div>
             </div>
 
             <div class="profil-evenements">
