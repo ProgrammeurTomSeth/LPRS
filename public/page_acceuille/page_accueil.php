@@ -201,9 +201,9 @@ $pageActive = 'accueil';
                 <h2>Une question ?</h2>
                 <p>Écrivez aux gestionnaires de la plateforme. Votre message leur est transmis et vous recevez une réponse par email.</p>
                 <ul>
-                    <li><strong>Téléphone :</strong> à compléter</li>
-                    <li><strong>Email :</strong> à compléter</li>
-                    <li><strong>Adresse :</strong> à compléter, Dugny</li>
+                    <li><strong>Téléphone :</strong> 0123456789</li>
+                    <li><strong>Email :</strong> lyceerobertschuman@mail.fr</li>
+                    <li><strong>Adresse :</strong> 5 Avenue du Général De Gaulle, Dugny</li>
                 </ul>
             </div>
 
