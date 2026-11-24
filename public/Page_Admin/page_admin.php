@@ -76,85 +76,60 @@ $pageActive = 'admin';
                 <p class="form-status form-status--error" role="alert"><?php echo htmlspecialchars($erreur); ?></p>
             <?php } ?>
 
-            <!-- Formulaire : Ajouter, ou Modifier si on a cliqué sur Modifier -->
-            <div class="admin-card">
-                <?php if ($u != null) { ?>
-                    <h2>Modifier un utilisateur</h2>
-                    <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="admin-form">
-                        <input type="hidden" name="action" value="modifier">
-                        <input type="hidden" name="id_utilisateur" value="<?php echo $u->getIdUtilisateur(); ?>">
-
-                        <input type="text" name="nom" value="<?php echo htmlspecialchars($u->getNom()); ?>" required>
-                        <input type="text" name="prenom" value="<?php echo htmlspecialchars($u->getPrenom()); ?>" required>
-                        <input type="email" name="mail" value="<?php echo htmlspecialchars($u->getEmail()); ?>" required>
-                        <input type="text" name="telephone" value="<?php if ($u->getTelephone() != null) { echo htmlspecialchars($u->getTelephone()); } ?>">
-
-                        <select name="role">
-                            <?php foreach ($roles as $role) { ?>
-                                <option value="<?php echo $role; ?>" <?php if ($u->getRole() == $role) { echo 'selected'; } ?>><?php echo $role; ?></option>
-                            <?php } ?>
-                        </select>
-
-                        <select name="statut">
-                            <?php foreach ($statuts as $statut => $libelle) { ?>
-                                <option value="<?php echo $statut; ?>" <?php if ($u->getStatutValidation() == $statut) { echo 'selected'; } ?>><?php echo $libelle; ?></option>
-                            <?php } ?>
-                        </select>
-
-                        <button type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
-                        <a href="page_admin.php" class="btn btn-outline btn-sm">Annuler</a>
-                    </form>
-                <?php } else { ?>
-                    <h2>Ajouter un utilisateur</h2>
-                    <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="admin-form">
-                        <input type="hidden" name="action" value="ajouter">
-                        <input type="hidden" name="id_utilisateur" value="0">
-
-                        <input type="text" name="nom" placeholder="Nom" required>
-                        <input type="text" name="prenom" placeholder="Prénom" required>
-                        <input type="email" name="mail" placeholder="Email" required>
-                        <input type="text" name="telephone" placeholder="Téléphone">
-                        <input type="password" name="mdp" placeholder="Mot de passe (8 car. min.)" minlength="8" required>
-
-                        <select name="role">
-                            <?php foreach ($roles as $role) { ?>
-                                <option value="<?php echo $role; ?>"><?php echo $role; ?></option>
-                            <?php } ?>
-                        </select>
-
-                        <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
-                    </form>
-                <?php } ?>
-            </div>
-
             <!-- Liste des utilisateurs -->
-            <div class="admin-card">
-                <h2>Liste des utilisateurs</h2>
-                <div class="table-wrapper">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nom</th>
-                                <th>Prénom</th>
-                                <th>Email</th>
-                                <th>Téléphone</th>
-                                <th>Rôle</th>
-                                <th>Statut</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($utilisateurs as $ligne) { ?>
-                                <tr>
-                                    <td><?php echo $ligne['id_utilisateur']; ?></td>
-                                    <td><?php echo htmlspecialchars($ligne['nom_utilisateur']); ?></td>
-                                    <td><?php echo htmlspecialchars($ligne['prenom_utilisateur']); ?></td>
-                                    <td><?php echo htmlspecialchars($ligne['mail']); ?></td>
-                                    <td><?php if ($ligne['telephone'] != null) { echo htmlspecialchars($ligne['telephone']); } ?></td>
-                                    <td><?php echo $ligne['role']; ?></td>
-                                    <td><span class="statut <?php echo $ligne['statut_validation']; ?>"><?php echo $statuts[$ligne['statut_validation']]; ?></span></td>
-                                    <td class="actions">
+            <div class="admin-card admin-card--liste">
+                <div class="liste-entete">
+                    <div>
+                        <h2>Liste des utilisateurs</h2>
+                        <p class="liste-compteur" id="compteur"><?php echo count($utilisateurs); ?> utilisateurs</p>
+                    </div>
+                    <!-- Ouvre la fenêtre d'ajout (voir script_admin.js) -->
+                    <button type="button" id="ouvrir-ajout" class="btn btn-primary btn-sm">+ Ajouter un utilisateur</button>
+                </div>
+
+                <!-- Barre de recherche et filtre par rôle (voir script_admin.js) -->
+                <div class="liste-outils">
+                    <input type="search" id="recherche" class="outil-recherche" placeholder="Rechercher un utilisateur" aria-label="Rechercher un utilisateur">
+                    <select id="filtre-role" class="outil-filtre" aria-label="Filtrer par rôle">
+                        <option value="">Tous les rôles</option>
+                        <?php foreach ($roles as $role) { ?>
+                            <option value="<?php echo $role; ?>"><?php echo $role; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Téléphone</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($utilisateurs as $ligne) { ?>
+                            <?php
+                            // Initiales pour la pastille, et texte utilisé par la recherche
+                            $initiales = mb_strtoupper(mb_substr($ligne['prenom_utilisateur'], 0, 1) . mb_substr($ligne['nom_utilisateur'], 0, 1));
+                            $texteRecherche = mb_strtolower($ligne['prenom_utilisateur'] . ' ' . $ligne['nom_utilisateur'] . ' ' . $ligne['mail']);
+                            ?>
+                            <tr data-role="<?php echo htmlspecialchars($ligne['role']); ?>" data-recherche="<?php echo htmlspecialchars($texteRecherche); ?>">
+                                <td data-label="Utilisateur">
+                                    <div class="utilisateur">
+                                        <span class="avatar" aria-hidden="true"><?php echo htmlspecialchars($initiales); ?></span>
+                                        <span class="utilisateur-texte">
+                                            <span class="utilisateur-nom"><?php echo htmlspecialchars($ligne['prenom_utilisateur']); ?> <?php echo htmlspecialchars(mb_strtoupper($ligne['nom_utilisateur'])); ?></span>
+                                            <span class="utilisateur-mail"><?php echo htmlspecialchars($ligne['mail']); ?></span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td data-label="Téléphone"><?php if ($ligne['telephone'] != null) { echo htmlspecialchars($ligne['telephone']); } ?></td>
+                                <td data-label="Rôle"><?php echo htmlspecialchars($ligne['role']); ?></td>
+                                <td data-label="Statut"><span class="statut <?php echo $ligne['statut_validation']; ?>"><?php echo $statuts[$ligne['statut_validation']]; ?></span></td>
+                                <td data-label="Actions">
+                                    <div class="actions-boutons">
                                         <a href="page_admin.php?modifier=<?php echo $ligne['id_utilisateur']; ?>" class="btn btn-outline btn-sm">Modifier</a>
 
                                         <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline">
@@ -168,18 +143,113 @@ $pageActive = 'admin';
 
                                             <button type="submit" name="action" value="supprimer" class="btn btn-danger btn-sm">Supprimer</button>
                                         </form>
-                                    </td>
-                                </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+
+                <p class="liste-vide" id="liste-vide" hidden>Aucun utilisateur ne correspond à votre recherche.</p>
             </div>
 
         </div>
     </section>
 
 </main>
+
+    <!-- ===== FENÊTRE : AJOUTER UN UTILISATEUR ===== -->
+    <dialog id="dialogue-ajout" class="modale" aria-labelledby="titre-ajout">
+        <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="modale-form">
+            <input type="hidden" name="action" value="ajouter">
+            <input type="hidden" name="id_utilisateur" value="0">
+
+            <div class="modale-entete">
+                <h2 id="titre-ajout">Ajouter un utilisateur</h2>
+                <button type="button" class="modale-fermer" data-fermer aria-label="Fermer">&times;</button>
+            </div>
+
+            <div class="modale-grille">
+                <label class="champ">Prénom
+                    <input type="text" name="prenom" required autofocus>
+                </label>
+                <label class="champ">Nom
+                    <input type="text" name="nom" required>
+                </label>
+                <label class="champ champ--large">Email
+                    <input type="email" name="mail" required>
+                </label>
+                <label class="champ">Téléphone
+                    <input type="text" name="telephone">
+                </label>
+                <label class="champ">Rôle
+                    <select name="role">
+                        <?php foreach ($roles as $role) { ?>
+                            <option value="<?php echo $role; ?>"><?php echo $role; ?></option>
+                        <?php } ?>
+                    </select>
+                </label>
+                <label class="champ champ--large">Mot de passe provisoire
+                    <input type="password" name="mdp" minlength="8" required autocomplete="new-password">
+                    <span class="champ-aide">8 caractères minimum.</span>
+                </label>
+            </div>
+
+            <div class="modale-pied">
+                <button type="button" class="btn btn-outline" data-fermer>Annuler</button>
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </div>
+        </form>
+    </dialog>
+
+    <?php if ($u != null) { ?>
+        <!-- ===== FENÊTRE : MODIFIER UN UTILISATEUR (ouverte automatiquement par script_admin.js) ===== -->
+        <dialog id="dialogue-modifier" class="modale" aria-labelledby="titre-modifier">
+            <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="modale-form">
+                <input type="hidden" name="action" value="modifier">
+                <input type="hidden" name="id_utilisateur" value="<?php echo $u->getIdUtilisateur(); ?>">
+
+                <div class="modale-entete">
+                    <h2 id="titre-modifier">Modifier un utilisateur</h2>
+                    <button type="button" class="modale-fermer" data-fermer aria-label="Fermer">&times;</button>
+                </div>
+
+                <div class="modale-grille">
+                    <label class="champ">Prénom
+                        <input type="text" name="prenom" value="<?php echo htmlspecialchars($u->getPrenom()); ?>" required autofocus>
+                    </label>
+                    <label class="champ">Nom
+                        <input type="text" name="nom" value="<?php echo htmlspecialchars($u->getNom()); ?>" required>
+                    </label>
+                    <label class="champ champ--large">Email
+                        <input type="email" name="mail" value="<?php echo htmlspecialchars($u->getEmail()); ?>" required>
+                    </label>
+                    <label class="champ champ--large">Téléphone
+                        <input type="text" name="telephone" value="<?php if ($u->getTelephone() != null) { echo htmlspecialchars($u->getTelephone()); } ?>">
+                    </label>
+                    <label class="champ">Rôle
+                        <select name="role">
+                            <?php foreach ($roles as $role) { ?>
+                                <option value="<?php echo $role; ?>" <?php if ($u->getRole() == $role) { echo 'selected'; } ?>><?php echo $role; ?></option>
+                            <?php } ?>
+                        </select>
+                    </label>
+                    <label class="champ">Statut
+                        <select name="statut">
+                            <?php foreach ($statuts as $statut => $libelle) { ?>
+                                <option value="<?php echo $statut; ?>" <?php if ($u->getStatutValidation() == $statut) { echo 'selected'; } ?>><?php echo $libelle; ?></option>
+                            <?php } ?>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="modale-pied">
+                    <button type="button" class="btn btn-outline" data-fermer>Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </dialog>
+    <?php } ?>
 
 <?php require_once '../commun/pied_de_page.php'; ?>
 
