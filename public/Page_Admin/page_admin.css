@@ -220,6 +220,7 @@ form.inline { display: contents; }
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   color: var(--color-text);
 }
+.modale--petite { width: min(480px, calc(100% - 32px)); }
 .modale::backdrop { background: rgba(0, 0, 0, 0.5); }
 
 .modale-form { padding: 28px; }
@@ -282,6 +283,18 @@ form.inline { display: contents; }
   gap: 12px;
   margin-top: 24px;
 }
+
+/* Avertissement avant suppression */
+.modale--suppression p { margin: 0 0 12px; }
+.alerte-suppression {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+.alerte-suppression strong { color: var(--color-danger); }
+.modale--suppression .btn-danger { background: var(--color-danger-light); }
+.modale--suppression .btn-danger:hover { background: #fadada; }
 
 .liste-vide {
   margin: 0;

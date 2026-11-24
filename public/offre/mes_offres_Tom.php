@@ -178,6 +178,9 @@ $pageActive = 'offres';
                                         <?php echo $statutOuvert ? 'Clôturer l’offre' : 'Rouvrir l’offre'; ?>
                                     </button>
                                 </form>
+                                <a href="candidats_offre_Tom.php?id=<?php echo (int) $offre['id_offre']; ?>" class="btn btn-outline">
+                                    Candidatures (<?php echo (int) $offre['nb_candidatures']; ?>)
+                                </a>
                                 <a href="liste_offres_Tom.php" class="btn btn-outline">
                                     Voir les offres
                                 </a>
@@ -195,4 +198,4 @@ $pageActive = 'offres';
 <script src="liste_offres_Tom.js"></script>
 
 </body>
-</html>
+</html>

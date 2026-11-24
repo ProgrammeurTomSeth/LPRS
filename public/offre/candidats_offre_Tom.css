@@ -1,0 +1,29 @@
+/* Page « Candidatures d'une offre » : les cartes, boutons et messages viennent de mes_offres_Tom.css */
+
+.candidats-liste {
+    display: grid;
+    gap: 20px;
+}
+
+.candidat-date {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+}
+
+.candidat-titre-motivation {
+    margin: 16px 0 6px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+}
+
+.candidat-sans-cv {
+    align-self: center;
+    font-size: 0.9rem;
+    color: var(--color-muted);
+}
+
+.offre-entreprise a {
+    color: inherit;
+}

@@ -59,27 +59,30 @@ document.querySelectorAll('form[data-confirmer]').forEach((formulaire) => {
     });
 });
 
+// Fenêtres (balises dialog) : le bouton « × », « Annuler » (data-fermer) ou un clic sur le fond sombre les ferment
+function brancherFermeture(fenetre) {
+    fenetre.querySelectorAll('[data-fermer]').forEach((bouton) => {
+        bouton.addEventListener('click', () => {
+            fenetre.close();
+        });
+    });
+
+    fenetre.addEventListener('click', (event) => {
+        if (event.target === fenetre) {
+            fenetre.close();
+        }
+    });
+}
+
 // Fenêtre « Ajouter un utilisateur » : s'ouvre au milieu de la page avec showModal()
 const fenetreAjout = document.getElementById('dialogue-ajout');
 const boutonAjout = document.getElementById('ouvrir-ajout');
 
 if (fenetreAjout && boutonAjout) {
+    brancherFermeture(fenetreAjout);
+
     boutonAjout.addEventListener('click', () => {
         fenetreAjout.showModal();
-    });
-
-    // Boutons « × » et « Annuler »
-    fenetreAjout.querySelectorAll('[data-fermer]').forEach((bouton) => {
-        bouton.addEventListener('click', () => {
-            fenetreAjout.close();
-        });
-    });
-
-    // Un clic sur le fond sombre (en dehors de la fenêtre) la ferme aussi
-    fenetreAjout.addEventListener('click', (event) => {
-        if (event.target === fenetreAjout) {
-            fenetreAjout.close();
-        }
     });
 
     // On vide le formulaire à la fermeture
@@ -93,21 +96,28 @@ if (fenetreAjout && boutonAjout) {
 const fenetreModif = document.getElementById('dialogue-modifier');
 
 if (fenetreModif) {
+    brancherFermeture(fenetreModif);
     fenetreModif.showModal();
-
-    fenetreModif.querySelectorAll('[data-fermer]').forEach((bouton) => {
-        bouton.addEventListener('click', () => {
-            fenetreModif.close();
-        });
-    });
-
-    fenetreModif.addEventListener('click', (event) => {
-        if (event.target === fenetreModif) {
-            fenetreModif.close();
-        }
-    });
 
     fenetreModif.addEventListener('close', () => {
         window.location.href = 'page_admin.php';
+    });
+}
+
+// Fenêtre d'avertissement avant la suppression d'un utilisateur.
+// Le bouton « Supprimer » d'une ligne (data-suppression) n'envoie plus le formulaire :
+// il ouvre la fenêtre, qui rappelle le nom et les conséquences. Seul « Supprimer définitivement » envoie.
+const fenetreSuppression = document.getElementById('dialogue-suppression');
+
+if (fenetreSuppression) {
+    brancherFermeture(fenetreSuppression);
+
+    document.querySelectorAll('button[data-suppression]').forEach((bouton) => {
+        bouton.addEventListener('click', (event) => {
+            event.preventDefault();
+            document.getElementById('suppression-id').value = bouton.dataset.id;
+            document.getElementById('suppression-nom').textContent = bouton.dataset.nom;
+            fenetreSuppression.showModal();
+        });
     });
 }

@@ -94,7 +94,8 @@ class OffreRepository_Tom{
 
     public function getMesOffresEntreprise($idEntreprise){
         $requete = $this->connexionBdd->prepare(
-            "SELECT offre.*, entreprise.nom_entreprise, utilisateur.nom_utilisateur, utilisateur.prenom_utilisateur, DATE_FORMAT(offre.date_publication, '%d/%m/%Y') AS date_fr, FORMAT(offre.salaire, 2, 'fr_FR') AS salaire_fr
+            "SELECT offre.*, entreprise.nom_entreprise, utilisateur.nom_utilisateur, utilisateur.prenom_utilisateur, DATE_FORMAT(offre.date_publication, '%d/%m/%Y') AS date_fr, FORMAT(offre.salaire, 2, 'fr_FR') AS salaire_fr,
+                (SELECT COUNT(*) FROM candidature WHERE candidature.id_offre = offre.id_offre AND candidature.statut_candidature = 'active') AS nb_candidatures
             FROM offre
             LEFT JOIN entreprise
                 ON entreprise.id_entreprise = offre.ref_entreprise
@@ -153,6 +154,43 @@ class OffreRepository_Tom{
             'profil_cible' => $profilCible,
             'id_offre' => $idOffre,
             'id_entreprise' => $idEntreprise
+        ));
+        return $requete->rowCount() > 0;
+    }
+
+    // Candidatures visibles d'une offre (celles qui n'ont pas été refusées), avec les informations du candidat.
+    // Renvoie un tableau de tableaux associatifs, la plus récente en premier.
+    public function getCandidatures($idOffre){
+        $requete = $this->connexionBdd->prepare(
+            "SELECT candidature.id_utilisateur, candidature.motivation,
+                DATE_FORMAT(candidature.date_candidature, '%d/%m/%Y à %H:%i') AS date_fr,
+                utilisateur.nom_utilisateur, utilisateur.prenom_utilisateur, utilisateur.mail, utilisateur.role, utilisateur.cv
+            FROM candidature
+            INNER JOIN utilisateur ON utilisateur.id_utilisateur = candidature.id_utilisateur
+            WHERE candidature.id_offre = :id_offre AND candidature.statut_candidature = 'active'
+            ORDER BY candidature.date_candidature DESC"
+        );
+        $requete->execute(array('id_offre' => $idOffre));
+        return $requete->fetchAll();
+    }
+
+    // Une candidature visible précise. Renvoie un tableau, ou false si elle n'existe pas ou a déjà été refusée.
+    public function getCandidature($idOffre, $idUtilisateur){
+        $requete = $this->connexionBdd->prepare("SELECT * FROM candidature WHERE id_offre = :id_offre AND id_utilisateur = :id_utilisateur AND statut_candidature = 'active'");
+        $requete->execute(array(
+            'id_offre' => $idOffre,
+            'id_utilisateur' => $idUtilisateur
+        ));
+        return $requete->fetch();
+    }
+
+    // Cache une candidature (refus). La ligne reste en base : le candidat ne peut donc pas postuler une 2e fois.
+    // Renvoie true si une candidature a bien été masquée.
+    public function masquerCandidature($idOffre, $idUtilisateur){
+        $requete = $this->connexionBdd->prepare("UPDATE candidature SET statut_candidature = 'masquee' WHERE id_offre = :id_offre AND id_utilisateur = :id_utilisateur AND statut_candidature = 'active'");
+        $requete->execute(array(
+            'id_offre' => $idOffre,
+            'id_utilisateur' => $idUtilisateur
         ));
         return $requete->rowCount() > 0;
     }
