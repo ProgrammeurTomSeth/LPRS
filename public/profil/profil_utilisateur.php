@@ -85,6 +85,8 @@ $infos['Membre depuis'] = $utilisateur->getDateInscription();
 
 // Les partenaires ont une page profil simplifiée : leur profil, puis de gros boutons d'action
 $estPartenaire = ($utilisateur->getRole() == 'partenaire');
+// Les gestionnaires ont aussi une page simplifiée : leur profil et, à droite, tous les liens de gestion
+$estGestionnaire = ($utilisateur->getRole() == 'gestionnaire');
 // La gestion des offres demande un compte validé rattaché à une entreprise (même règle que mes_offres_Tom.php)
 $peutGererOffres = ($utilisateur->getStatutValidation() == 'valide' && $utilisateur->getIdEntreprise() != null);
 
@@ -119,7 +121,8 @@ $pageActive = 'profil';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="profil_utilisateur.css">
+    <!-- ?v=date du fichier : le navigateur recharge le CSS dès qu'il change (évite l'ancien style en cache) -->
+    <link rel="stylesheet" href="profil_utilisateur.css?v=<?php echo filemtime(__DIR__ . '/profil_utilisateur.css'); ?>">
 </head>
 <body>
 
@@ -139,7 +142,7 @@ $pageActive = 'profil';
 
     <!-- ===== PROFIL ===== -->
     <section class="section profil-section">
-        <div class="container profil-layout<?php if ($estPartenaire) { echo ' profil-layout--partenaire'; } ?>">
+        <div class="container profil-layout<?php if ($estPartenaire) { echo ' profil-layout--partenaire'; } elseif ($estGestionnaire) { echo ' profil-layout--partenaire profil-layout--admin'; } ?>">
             <div class="profil-card">
 
                 <div class="profil-identite">
@@ -170,8 +173,8 @@ $pageActive = 'profil';
                     </form>
                 <?php } ?>
 
-                <?php if ($estPartenaire) { ?>
-                    <!-- Partenaire : seul le bouton de déconnexion reste ici, les actions sont dans les cartes plus bas -->
+                <?php if ($estPartenaire || $estGestionnaire) { ?>
+                    <!-- Partenaire et gestionnaire : seul le bouton de déconnexion reste ici, les actions sont dans les cartes à droite -->
                     <div class="profil-actions">
                         <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">Se déconnecter</a>
                     </div>
@@ -197,15 +200,57 @@ $pageActive = 'profil';
 
             <div class="profil-evenements">
 
+                <?php if ($estGestionnaire) { ?>
+                    <!-- ===== LIENS DE GESTION DU GESTIONNAIRE : cartes cliquables, regroupées ===== -->
+                    <div class="profil-card actions-card">
+                        <h2 class="actions-groupe-titre">Administration</h2>
+                        <div class="actions-choix">
+                            <a class="action-carte" href="../Page_Admin/page_admin.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6"></path><path d="M17 4a4 4 0 0 1 0 8"></path><path d="M22 21c0-3-1-5-4-6"></path></svg>
+                                <span class="action-titre">Utilisateurs</span>
+                                <span class="action-description">Gérer les comptes, valider les inscriptions et modifier les profils.</span>
+                            </a>
+                            <a class="action-carte" href="../Page_Admin/page_admin_Evenement.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"></path></svg>
+                                <span class="action-titre">Événements à valider</span>
+                                <span class="action-description">Valider ou refuser les événements proposés, modifier ou supprimer.</span>
+                            </a>
+                            <a class="action-carte" href="../Page_Admin/moderation_forum.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M12 8v4M12 15h.01"></path></svg>
+                                <span class="action-titre">Modération du forum</span>
+                                <span class="action-description">Traiter les messages signalés par les membres.</span>
+                            </a>
+                            <a class="action-carte" href="../Page_Admin/gestion_formations_Tom.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>
+                                <span class="action-titre">Formations</span>
+                                <span class="action-description">Gérer les formations du lycée.</span>
+                            </a>
+                        </div>
+                        <h2 class="actions-groupe-titre">Mon espace</h2>
+                        <div class="actions-choix">
+                            <a class="action-carte" href="mes_evenements_ahmed.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+                                <span class="action-titre">Mes événements</span>
+                                <span class="action-description">Consultez les événements que vous avez créés.</span>
+                            </a>
+                            <a class="action-carte" href="../page_entreprise/ajouter_entreprise.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h1M14 8h1M9 12h1M14 12h1M10 21v-4h4v4"></path></svg>
+                                <span class="action-titre">Ajouter une entreprise</span>
+                                <span class="action-description">Créez la fiche d'une entreprise partenaire.</span>
+                            </a>
+                        </div>
+                    </div>
+                <?php } ?>
+
                 <?php if ($estPartenaire) { ?>
                     <!-- ===== ACTIONS DU PARTENAIRE : trois grandes cartes cliquables ===== -->
                     <div class="profil-card actions-card">
                         <h2>Que souhaitez-vous faire ?</h2>
                         <div class="actions-choix">
-                            <a class="action-carte" href="../evenement/creation_evenement_Tom.php">
+                            <a class="action-carte" href="mes_evenements_ahmed.php">
                                 <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"></path></svg>
-                                <span class="action-titre">Créer un événement</span>
-                                <span class="action-description">Proposez un événement aux étudiants et aux anciens élèves.</span>
+                                <span class="action-titre">Événements</span>
+                                <span class="action-description">Créez un événement, suivez ceux que vous avez créés et vos inscriptions.</span>
                             </a>
                             <a class="action-carte" href="../page_entreprise/ajouter_entreprise.php">
                                 <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h1M14 8h1M9 12h1M14 12h1M10 21v-4h4v4"></path></svg>
@@ -219,12 +264,12 @@ $pageActive = 'profil';
                                     <span class="action-description">Publiez vos offres, consultez les candidatures et répondez aux candidats.</span>
                                 </a>
                             <?php } else { ?>
-                                <!-- Pas encore d'entreprise : la carte est grisée et explique quoi faire -->
-                                <div class="action-carte action-carte--inactive" aria-disabled="true">
+                                <!-- Pas encore rattaché à une entreprise : la carte mène à la liste des entreprises (bouton « Me rattacher ») -->
+                                <a class="action-carte" href="../page_entreprise/page_entreprise.php">
                                     <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"></path></svg>
                                     <span class="action-titre">Gestion des offres</span>
-                                    <span class="action-description">Disponible une fois votre entreprise ajoutée et votre compte validé.</span>
-                                </div>
+                                    <span class="action-description">Rattachez-vous d'abord à votre entreprise (bouton « Me rattacher ») pour publier des offres.</span>
+                                </a>
                             <?php } ?>
                         </div>
                     </div>
@@ -276,6 +321,8 @@ $pageActive = 'profil';
                     </div>
                 <?php } ?>
 
+                <?php if (!$estPartenaire && !$estGestionnaire) { ?>
+                    <!-- Les partenaires et gestionnaires retrouvent ces deux tableaux dans mes_evenements_ahmed.php -->
                 <!-- ===== ÉVÉNEMENTS CRÉÉS ===== -->
                 <div class="profil-card evenements-card">
                     <h2>Mes événements créés</h2>
@@ -358,6 +405,7 @@ $pageActive = 'profil';
                         </div>
                     <?php } ?>
                 </div>
+                <?php } ?>
 
             </div>
         </div>
