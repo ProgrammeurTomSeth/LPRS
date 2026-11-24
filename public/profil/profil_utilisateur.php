@@ -83,6 +83,11 @@ if ($aUnCv) {
 }
 $infos['Membre depuis'] = $utilisateur->getDateInscription();
 
+// Les partenaires ont une page profil simplifiée : leur profil, puis de gros boutons d'action
+$estPartenaire = ($utilisateur->getRole() == 'partenaire');
+// La gestion des offres demande un compte validé rattaché à une entreprise (même règle que mes_offres_Tom.php)
+$peutGererOffres = ($utilisateur->getStatutValidation() == 'valide' && $utilisateur->getIdEntreprise() != null);
+
 // Initiales affichées dans le rond (mb_ : versions de substr/strtoupper qui gèrent les accents)
 $initiales = mb_strtoupper(mb_substr($utilisateur->getPrenom(), 0, 1) . mb_substr($utilisateur->getNom(), 0, 1));
 
@@ -134,7 +139,7 @@ $pageActive = 'profil';
 
     <!-- ===== PROFIL ===== -->
     <section class="section profil-section">
-        <div class="container profil-layout">
+        <div class="container profil-layout<?php if ($estPartenaire) { echo ' profil-layout--partenaire'; } ?>">
             <div class="profil-card">
 
                 <div class="profil-identite">
@@ -165,6 +170,12 @@ $pageActive = 'profil';
                     </form>
                 <?php } ?>
 
+                <?php if ($estPartenaire) { ?>
+                    <!-- Partenaire : seul le bouton de déconnexion reste ici, les actions sont dans les cartes plus bas -->
+                    <div class="profil-actions">
+                        <a href="../../src/traitement/DeconnexionTraitement_ahmed.php" class="btn btn-outline">Se déconnecter</a>
+                    </div>
+                <?php } else { ?>
                 <div class="profil-actions">
                     <?php if ($utilisateur->getRole() != 'gestionnaire') { ?>
                         <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">Créer un événement</a>
@@ -181,9 +192,43 @@ $pageActive = 'profil';
                     <?php } ?>
 
                 </div>
+                <?php } ?>
             </div>
 
             <div class="profil-evenements">
+
+                <?php if ($estPartenaire) { ?>
+                    <!-- ===== ACTIONS DU PARTENAIRE : trois grandes cartes cliquables ===== -->
+                    <div class="profil-card actions-card">
+                        <h2>Que souhaitez-vous faire ?</h2>
+                        <div class="actions-choix">
+                            <a class="action-carte" href="../evenement/creation_evenement_Tom.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"></path></svg>
+                                <span class="action-titre">Créer un événement</span>
+                                <span class="action-description">Proposez un événement aux étudiants et aux anciens élèves.</span>
+                            </a>
+                            <a class="action-carte" href="../page_entreprise/ajouter_entreprise.php">
+                                <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1"></rect><path d="M9 8h1M14 8h1M9 12h1M14 12h1M10 21v-4h4v4"></path></svg>
+                                <span class="action-titre">Ajouter une entreprise</span>
+                                <span class="action-description">Déclarez votre entreprise ou rattachez-vous à une fiche existante.</span>
+                            </a>
+                            <?php if ($peutGererOffres) { ?>
+                                <a class="action-carte" href="../offre/mes_offres_Tom.php">
+                                    <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"></path></svg>
+                                    <span class="action-titre">Gestion des offres</span>
+                                    <span class="action-description">Publiez vos offres, consultez les candidatures et répondez aux candidats.</span>
+                                </a>
+                            <?php } else { ?>
+                                <!-- Pas encore d'entreprise : la carte est grisée et explique quoi faire -->
+                                <div class="action-carte action-carte--inactive" aria-disabled="true">
+                                    <svg class="action-icone" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"></path></svg>
+                                    <span class="action-titre">Gestion des offres</span>
+                                    <span class="action-description">Disponible une fois votre entreprise ajoutée et votre compte validé.</span>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                <?php } ?>
 
                 <?php if ($messageSucces != "") { ?>
                     <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($messageSucces); ?></p>
