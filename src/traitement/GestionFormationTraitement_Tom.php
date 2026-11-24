@@ -1,26 +1,25 @@
 <?php
+
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
 require_once '../modele/formation_anais.php';
 require_once '../repository/Formation_ahmed.php';
-// Réservé aux gestionnaires
+
 if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
     header('Location: ../../public/connexion/connexion.php');
     exit;
 }
-// Les actions doivent être envoyées en POST
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     header('Location: ../../public/Page_Admin/gestion_formations_Tom.php');
     exit;
 }
+
 $action = lireChamp('action');
 $formationRepository = new Formation_ahmed();
 $pageGestion = '../../public/Page_Admin/gestion_formations_Tom.php';
-// Types de formations autorisés
 $typesAutorises = array('bac_pro', 'bac_techno', 'bts');
-// --------------------------------------------------
-// AJOUT D'UNE FORMATION
-// --------------------------------------------------
+
 if ($action == 'ajouter') {
     $nom = trim((string) lireChamp('nom_formation'));
     $type = lireChamp('type_formation');
@@ -42,7 +41,6 @@ if ($action == 'ajouter') {
             $formationRepository->ajouterFormation($formation);
             $_SESSION['formation_message'] = "La formation a été ajoutée avec succès.";
         } catch (PDOException $e) {
-            // Le contrôle SQL protège aussi contre deux ajouts simultanés.
             if ($e->getCode() == '23000') {
                 $_SESSION['formation_erreur'] = "Une formation portant déjà ce nom existe.";
             } else {

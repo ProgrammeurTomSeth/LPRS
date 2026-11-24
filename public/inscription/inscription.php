@@ -44,10 +44,9 @@ $formations = $formationRepository->getAllFormations();
 $entrepriseRepository = new EntrepriseRepository_Tom();
 $entreprises = $entrepriseRepository->getAllEntreprises();
 
-// Renvoie la valeur saisie avant l'erreur pour un champ, ou "" s'il n'y en a pas
-function ancienneValeur($valeurs, $champ)
-{
-    if (!empty($valeurs[$champ])) {
+// Renvoie la valeur saisie avant l'erreur pour un champ
+function ancienneValeur($valeurs, $champ){
+    if (isset($valeurs[$champ])) {
         return $valeurs[$champ];
     }
     return "";
@@ -284,8 +283,46 @@ $pageActive = 'inscription';
                     <legend>Votre enseignement</legend>
 
                     <div class="form-group">
-                        <label for="specialite_professeur">Matière enseignée / spécialité <span class="required">*</span></label>
+                        <label for="specialite_professeur">
+                            Matière enseignée / spécialité
+                            <span class="required">*</span>
+                        </label>
                         <input type="text" id="specialite_professeur" name="specialite" maxlength="150" placeholder="Exemple : Mathématiques" value="<?php echo htmlspecialchars(ancienneValeur($valeurs, 'specialite')); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            Formations dans lesquelles vous intervenez
+                            <span class="required">*</span>
+                        </label>
+                        <p class="form-hint">
+                            Sélectionnez toutes les formations dans lesquelles vous enseignez.
+                        </p>
+                        <div class="formations-professeur">
+                            <?php
+                            $formationsSelectionnees = ancienneValeur($valeurs, 'formations_professeur');
+                            if (!is_array($formationsSelectionnees)) {
+                                $formationsSelectionnees = array();
+                            }
+                            $formationsSelectionnees = array_map('strval', $formationsSelectionnees);
+                            ?>
+                            <?php foreach ($formations as $formation) { ?>
+                                <div class="form-check">
+                                    <input type="checkbox" id="formation_professeur_<?php echo (int) $formation['id_formation']; ?>" name="formations_professeur[]" value="<?php echo (int) $formation['id_formation']; ?>"
+                                            <?php
+                                            if (in_array((string) $formation['id_formation'], $formationsSelectionnees, true)) {
+                                                echo 'checked';
+                                            }
+                                            ?>
+                                    >
+                                    <label for="formation_professeur_<?php echo (int) $formation['id_formation']; ?>">
+                                        <?php echo htmlspecialchars($formation['nom_formation']); ?> <?php if (isset($typesFormation[$formation['type_formation']])) {
+                                            echo ' (' . htmlspecialchars($typesFormation[$formation['type_formation']]) . ')';
+                                        }
+                                        ?>
+                                    </label>
+                                </div>
+                            <?php } ?>
+                        </div>
                     </div>
                 </fieldset>
 

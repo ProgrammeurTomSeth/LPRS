@@ -5,7 +5,6 @@ require_once '../../src/bdd/bdd.php';
 require_once '../../src/modele/formation_anais.php';
 require_once '../../src/repository/Formation_ahmed.php';
 
-// Page réservée aux gestionnaires
 if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
     header('Location: ../connexion/connexion.php');
     exit;
@@ -14,7 +13,6 @@ if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
 $formationRepository = new Formation_ahmed();
 $formations = $formationRepository->getAllFormations();
 
-// Récupération de la formation à modifier
 $formationAModifier = null;
 
 if (isset($_GET['modifier'])) {
@@ -27,7 +25,6 @@ if (isset($_GET['modifier'])) {
     }
 }
 
-// Récupération des messages après redirection
 $message = '';
 $erreur = '';
 
@@ -46,8 +43,7 @@ $pageActive = 'admin_formations';
 $typesFormation = array(
         'bac_pro' => 'Bac professionnel',
         'bac_techno' => 'Bac technologique',
-        'bts' => 'BTS'
-);
+        'bts' => 'BTS');
 
 ?>
 
@@ -85,21 +81,16 @@ $typesFormation = array(
                 /
                 Formations
             </p>
-
             <h1>Gestion des formations</h1>
-
             <p>Ajoutez, modifiez ou supprimez les formations proposées par le lycée.</p>
         </div>
     </section>
 
     <section class="section formations-admin-section">
-
         <div class="container">
-
             <a href="page_admin.php" class="formations-retour">
                 ← Retour à l'administration
             </a>
-
             <?php if ($message != '') { ?>
                 <p class="form-status form-status--success" role="status">
                     <?php echo htmlspecialchars($message); ?>
@@ -112,43 +103,27 @@ $typesFormation = array(
                 </p>
             <?php } ?>
 
-            <!-- Formulaire d'ajout ou de modification -->
             <div class="formations-admin-card">
-
                 <?php if ($formationAModifier != null) { ?>
 
                     <h2>Modifier une formation</h2>
-
-                    <p>Modifiez le nom, le type ou la description de cette formation.</p>
-
+                    <p>Modifiez le nom et le type de cette formation.</p>
                     <form method="post" action="../../src/traitement/GestionFormationTraitement_Tom.php" class="formations-form">
-
                         <input type="hidden" name="action" value="modifier">
-
                         <input type="hidden" name="id_formation" value="<?php echo (int) $formationAModifier->getIdFormation(); ?>">
-
                         <div class="form-group">
                             <label for="nom_formation">Nom de la formation</label>
-
                             <input type="text" id="nom_formation" name="nom_formation" maxlength="150" value="<?php echo htmlspecialchars($formationAModifier->getNomFormation()); ?>" required>
                         </div>
-
                         <div class="form-group">
                             <label for="type_formation">Type de formation</label>
-
                             <select id="type_formation" name="type_formation" required>
-
                                 <?php foreach ($typesFormation as $type => $libelle) { ?>
-
                                     <option value="<?php echo htmlspecialchars($type); ?>"<?php if ($formationAModifier->getTypeFormation() == $type) { echo ' selected'; } ?>>
                                         <?php echo htmlspecialchars($libelle); ?>
                                     </option>
                                 <?php } ?>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Description de la formation</label>
-                            <textarea id="description" name="description" rows="5" placeholder="Présentez cette formation, les matières étudiées et les compétences développées..."><?php echo htmlspecialchars($formationAModifier->getDescription() ?? ''); ?></textarea>
                         </div>
 
                         <div class="formations-form-actions">
@@ -191,13 +166,6 @@ $typesFormation = array(
                         </div>
                         <div class="form-group">
                             <label for="description">Description de la formation</label>
-
-                            <textarea
-                                    id="description"
-                                    name="description"
-                                    rows="5"
-                                    placeholder="Présentez cette formation, les matières étudiées et les compétences développées..."
-                            ></textarea>
                         </div>
 
                         <div class="formations-form-actions">
@@ -235,7 +203,6 @@ $typesFormation = array(
                             <tr>
                                 <th>Nom</th>
                                 <th>Type</th>
-                                <th>Description</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
@@ -254,16 +221,6 @@ $typesFormation = array(
                                             echo htmlspecialchars($typesFormation[$formation['type_formation']]);
                                         } else {
                                             echo htmlspecialchars($formation['type_formation']);
-                                        }
-                                        ?>
-                                    </td>
-
-                                    <td>
-                                        <?php
-                                        if (!empty($formation['description'])) {
-                                            echo nl2br(htmlspecialchars($formation['description']));
-                                        } else {
-                                            echo '<span class="formations-vide">Aucune description</span>';
                                         }
                                         ?>
                                     </td>

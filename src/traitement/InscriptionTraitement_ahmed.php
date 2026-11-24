@@ -1,7 +1,5 @@
 <?php
 
-// Traitement du formulaire d'inscription (public/inscription/inscription.php)
-
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
 require_once '../modele/Utilisateur_Malik.php';
@@ -17,7 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     exit;
 }
 
-// Récupération des champs (null si le champ est vide)
 $role = lireChamp('role');
 $nom = lireChamp('nom_utilisateur');
 $prenom = lireChamp('prenom_utilisateur');
@@ -34,9 +31,17 @@ $poste = lireChamp('poste');
 $motifInscription = lireChamp('motif_inscription');
 $consentement = lireChamp('consentement');
 
+$formationsProfesseur = array();
+if (isset($_POST['formations_professeur']) && is_array($_POST['formations_professeur'])) {
+    foreach ($_POST['formations_professeur'] as $id) {
+        $id = (int) $id;
+        if ($id > 0 && !in_array($id, $formationsProfesseur, true)) {
+            $formationsProfesseur[] = $id;
+        }
+    }
+}
 $erreurs = array();
 
-// --- Champs communs ---
 if (empty($nom) || empty($prenom)) {
     $erreurs[] = "Le nom et le prénom sont obligatoires.";
 }
@@ -55,9 +60,8 @@ if (empty($consentement)) {
     $erreurs[] = "Vous devez accepter l'utilisation de vos informations.";
 }
 
-// --- Champs selon le profil ---
+$formationRepository = new Formation_ahmed();
 if ($role == 'etudiant' || $role == 'alumni') {
-    $formationRepository = new Formation_ahmed();
     if (empty($idFormation) || $formationRepository->getFormation($idFormation) == null) {
         $erreurs[] = "Veuillez choisir une formation.";
     }
@@ -92,6 +96,15 @@ if ($role == 'etudiant' || $role == 'alumni') {
     if (empty($specialite)) {
         $erreurs[] = "La spécialité est obligatoire pour un professeur.";
     }
+    if (empty($formationsProfesseur)) {
+        $erreurs[] = "Veuillez sélectionner au moins une formation dans laquelle vous intervenez.";
+    }
+    foreach ($formationsProfesseur as $idFormationProfesseur) {
+        if ($formationRepository->getFormation($idFormationProfesseur) == null) {
+            $erreurs[] = "Une des formations sélectionnées n'est pas valide.";
+            break;
+        }
+    }
     $idFormation = null;
     $anneePromo = null;
     $idEntreprise = null;
@@ -99,12 +112,10 @@ if ($role == 'etudiant' || $role == 'alumni') {
     $motifInscription = null;
 }
 
-// Le motif n'est demandé qu'à un partenaire
 if ($role != 'partenaire') {
     $motifInscription = null;
 }
 
-// --- CV (PDF) : obligatoire pour un étudiant, facultatif pour un alumni ---
 $cvEnvoye = isset($_FILES['cv']) && $_FILES['cv']['error'] != UPLOAD_ERR_NO_FILE;
 if ($role == 'etudiant' || $role == 'alumni') {
     if (!$cvEnvoye) {
@@ -114,18 +125,15 @@ if ($role == 'etudiant' || $role == 'alumni') {
     } elseif ($_FILES['cv']['error'] != UPLOAD_ERR_OK || $_FILES['cv']['size'] > 2 * 1024 * 1024) {
         $erreurs[] = "Le CV n'a pas pu être envoyé (2 Mo maximum).";
     } elseif (strtolower(pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION)) != 'pdf' || file_get_contents($_FILES['cv']['tmp_name'], false, null, 0, 4) != '%PDF') {
-        // Un vrai PDF commence toujours par "%PDF" : on ne se fie pas seulement à l'extension
         $erreurs[] = "Le CV doit être au format PDF.";
     }
 }
-
 
 $repository = new UtilisateurRepository_malik();
 if (count($erreurs) == 0 && $repository->getUtilisateurParMail($mail) != null) {
     $erreurs[] = "Cette adresse email est déjà utilisée.";
 }
 
-// En cas d'erreur : on garde les messages et les valeurs saisies (sauf les mots de passe)
 if (count($erreurs) > 0) {
     $_SESSION['inscription_erreurs'] = $erreurs;
     $_SESSION['inscription_valeurs'] = array(
@@ -141,13 +149,13 @@ if (count($erreurs) > 0) {
         'id_entreprise' => $idEntreprise,
         'poste' => $poste,
         'motif_inscription' => $motifInscription,
-        'consentement' => $consentement
+        'consentement' => $consentement,
+        'formations_professeur' => $formationsProfesseur
     );
     header('Location: ../../public/inscription/inscription.php');
     exit;
 }
 
-// Enregistrement du CV dans LPRS/uploads/cv/ avec un nom unique (jamais le nom envoyé)
 $cv = null;
 if (($role == 'etudiant' || $role == 'alumni') && $cvEnvoye) {
     $dossier = '../../uploads/cv/';
@@ -160,12 +168,11 @@ if (($role == 'etudiant' || $role == 'alumni') && $cvEnvoye) {
     }
 }
 
-// Création de l'objet utilisateur puis enregistrement en base
 $utilisateur = new Utilisateur_Malik();
 $utilisateur->setNom($nom);
 $utilisateur->setPrenom($prenom);
 $utilisateur->setEmail($mail);
-$utilisateur->setMdp(password_hash($mdp, PASSWORD_DEFAULT)); // le mot de passe est haché, jamais stocké en clair
+$utilisateur->setMdp(password_hash($mdp, PASSWORD_DEFAULT));
 $utilisateur->setTelephone($telephone);
 $utilisateur->setDateNaissance($dateNaissance);
 $utilisateur->setRole($role);
@@ -180,7 +187,16 @@ $utilisateur->setPoste($poste);
 
 $repository->ajouterUtilisateur($utilisateur);
 
-// Email de confirmation : si l'envoi échoue, l'inscription reste enregistrée
+if ($role == 'professeur') {
+    $utilisateurCree = $repository->getUtilisateurParMail($mail);
+    if ($utilisateurCree != null) {
+        $idUtilisateur = $utilisateurCree->getIdUtilisateur();
+        foreach ($formationsProfesseur as $idFormationProfesseur) {
+            $formationRepository->ajouterIntervention($idUtilisateur, $idFormationProfesseur);
+        }
+    }
+}
+
 $mailer = new Mailer_ahmed();
 $mailer->envoyerCompteCree($utilisateur);
 
