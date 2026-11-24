@@ -3,15 +3,18 @@
 require_once __DIR__ . '/../bdd/bdd.php';
 require_once __DIR__ . '/../modele/Offre_Tom.php';
 
-class OffreRepository_Tom{
+class OffreRepository_Tom
+{
     private $connexionBdd;
 
-    public function __construct(){
+    public function __construct()
+    {
         $bdd = new Bdd();
         $this->connexionBdd = $bdd->getConnexionBdd();
     }
 
-    public function getOffre($id_offre){
+    public function getOffre($id_offre)
+    {
         $req = $this->connexionBdd->prepare("SELECT * FROM offre WHERE id_offre = :id");
         $req->execute(array('id' => $id_offre));
         $ligne = $req->fetch();
@@ -34,21 +37,29 @@ class OffreRepository_Tom{
         return null;
     }
 
-    public function getOffresOuvertes(){
+    public function getOffresOuvertes()
+    {
         $req = $this->connexionBdd->prepare(
-            "SELECT offre.*, entreprise.nom_entreprise,
-                DATE_FORMAT(date_publication, '%d/%m/%Y') AS date_fr,
-                FORMAT(salaire, 2, 'fr_FR') AS salaire_fr
-            FROM offre
-            LEFT JOIN entreprise ON entreprise.id_entreprise = offre.ref_entreprise
-            WHERE statut = 'ouverte'
-            ORDER BY date_publication DESC"
+            "SELECT offre.*,
+            entreprise.nom_entreprise,
+            utilisateur.poste AS poste,
+            DATE_FORMAT(offre.date_publication, '%d/%m/%Y') AS date_fr,
+            FORMAT(offre.salaire, 2, 'fr_FR') AS salaire_fr
+        FROM offre
+        LEFT JOIN entreprise
+            ON entreprise.id_entreprise = offre.ref_entreprise
+        LEFT JOIN utilisateur
+            ON utilisateur.id_utilisateur = offre.id_utilisateur_auteur
+        WHERE offre.statut = 'ouverte'
+        ORDER BY offre.date_publication DESC"
         );
+
         $req->execute();
         return $req->fetchAll();
     }
 
-    public function aDejaPostule($id_offre, $id_utilisateur){
+    public function aDejaPostule($id_offre, $id_utilisateur)
+    {
         $req = $this->connexionBdd->prepare("SELECT COUNT(*) AS nb FROM candidature WHERE id_offre = :id_offre AND id_utilisateur = :id_utilisateur");
         $req->execute(array(
             'id_offre' => $id_offre,
@@ -58,7 +69,8 @@ class OffreRepository_Tom{
         return $ligne['nb'] > 0;
     }
 
-    public function ajouterCandidature($id_offre, $id_utilisateur, $motivation){
+    public function ajouterCandidature($id_offre, $id_utilisateur, $motivation)
+    {
         $req = $this->connexionBdd->prepare("INSERT INTO candidature (id_utilisateur, id_offre, motivation) VALUES (:id_utilisateur, :id_offre, :motivation)");
 
         $req->execute(array(
@@ -68,7 +80,8 @@ class OffreRepository_Tom{
         ));
     }
 
-    public function ajouterOffre($offre){
+    public function ajouterOffre($offre)
+    {
         if (!$offre instanceof Offre_Tom) {
             throw new InvalidArgumentException("L'objet transmis doit être une instance de Offre_Tom.");
         }
@@ -92,24 +105,34 @@ class OffreRepository_Tom{
         return $this->connexionBdd->lastInsertId();
     }
 
-    public function getMesOffresEntreprise($idEntreprise){
+    public function getMesOffresEntreprise($idEntreprise)
+    {
         $requete = $this->connexionBdd->prepare(
-            "SELECT offre.*, entreprise.nom_entreprise, utilisateur.nom_utilisateur, utilisateur.prenom_utilisateur, DATE_FORMAT(offre.date_publication, '%d/%m/%Y') AS date_fr, FORMAT(offre.salaire, 2, 'fr_FR') AS salaire_fr
-            FROM offre
-            LEFT JOIN entreprise
-                ON entreprise.id_entreprise = offre.ref_entreprise
-            LEFT JOIN utilisateur
-                ON utilisateur.id_utilisateur = offre.id_utilisateur_auteur
-            WHERE offre.ref_entreprise = :id_entreprise
-            ORDER BY offre.date_publication DESC"
+            "SELECT offre.*,
+            entreprise.nom_entreprise,
+            utilisateur.nom_utilisateur,
+            utilisateur.prenom_utilisateur,
+            utilisateur.poste AS poste,
+            DATE_FORMAT(offre.date_publication, '%d/%m/%Y') AS date_fr,
+            FORMAT(offre.salaire, 2, 'fr_FR') AS salaire_fr
+        FROM offre
+        LEFT JOIN entreprise
+            ON entreprise.id_entreprise = offre.ref_entreprise
+        LEFT JOIN utilisateur
+            ON utilisateur.id_utilisateur = offre.id_utilisateur_auteur
+        WHERE offre.ref_entreprise = :id_entreprise
+        ORDER BY offre.date_publication DESC"
         );
+
         $requete->execute(array(
             'id_entreprise' => $idEntreprise
         ));
+
         return $requete->fetchAll();
     }
 
-    public function modifierStatutOffreEntreprise($idOffre, $idEntreprise, $statut){
+    public function modifierStatutOffreEntreprise($idOffre, $idEntreprise, $statut)
+    {
         if (!in_array($statut, array('ouverte', 'cloturee'), true)) {
             return false;
         }
@@ -123,7 +146,8 @@ class OffreRepository_Tom{
         return $requete->rowCount() > 0;
     }
 
-    public function getOffreEntreprise($idOffre, $idEntreprise){
+    public function getOffreEntreprise($idOffre, $idEntreprise)
+    {
         $requete = $this->connexionBdd->prepare("SELECT * FROM offre WHERE id_offre = :id_offre AND ref_entreprise = :id_entreprise");
         $requete->execute(array(
             'id_offre' => $idOffre,
@@ -132,7 +156,8 @@ class OffreRepository_Tom{
         return $requete->fetch();
     }
 
-    public function modifierOffre($idOffre, $idEntreprise, $titre, $description, $missions, $salaire, $type, $profilCible) {
+    public function modifierOffre($idOffre, $idEntreprise, $titre, $description, $missions, $salaire, $type, $profilCible)
+    {
         $requete = $this->connexionBdd->prepare(
             "UPDATE offre SET
                 titre = :titre,
@@ -155,5 +180,18 @@ class OffreRepository_Tom{
             'id_entreprise' => $idEntreprise
         ));
         return $requete->rowCount() > 0;
+
+        //rattacher le créateur
+        $entreprise = $entrepriseRepository->getEntrepriseParSiteWeb($siteWeb);
+
+        if ($entreprise != null) {
+            $idEntreprise = $entreprise->getIdEntreprise();
+
+            $utilisateurRepository->modifierEntrepriseUtilisateur(
+                $_SESSION['id_utilisateur'],
+                $idEntreprise,
+                $poste
+            );
+        }
     }
 }

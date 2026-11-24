@@ -159,6 +159,14 @@ $pageActive = 'offres';
                                     Entreprise non renseignée
                                 <?php } ?>
                             </p>
+
+                            <p class="offre-poste">
+                                <strong>Poste :</strong>
+                                <?php echo !empty($offre['poste'])
+                                        ? htmlspecialchars($offre['poste'])
+                                        : 'Non renseigné'; ?>
+                            </p>
+
                             <div class="offre-description">
                                 <?php echo htmlspecialchars($offre['description']); ?>
                             </div>
