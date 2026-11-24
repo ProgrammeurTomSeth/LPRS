@@ -64,97 +64,123 @@ $pageActive = 'admin_evenements';
                 <p class="form-status form-status--success" role="status"><?php echo htmlspecialchars($message); ?></p>
             <?php } ?>
 
-            <!-- Créer un nouvel événement -->
-            <div class="admin-card">
-                <h2>Créer un événement</h2>
-                <p>Un événement créé par l'administration est publié directement.</p>
-                <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary">Créer un événement</a>
-            </div>
-
             <!-- Événements qui attendent la validation -->
-            <div class="admin-card">
-                <h2>Événements à valider</h2>
+            <div class="admin-card admin-card--liste">
+                <div class="liste-entete">
+                    <div>
+                        <h2>Événements à valider</h2>
+                        <p class="liste-compteur" data-unite="événement"><?php echo count($evenementsEnAttente); ?> <?php echo count($evenementsEnAttente) > 1 ? 'événements' : 'événement'; ?></p>
+                        <p class="liste-note">Un événement créé par l'administration est publié directement.</p>
+                    </div>
+                    <!-- Le formulaire de création a sa propre page -->
+                    <a href="../evenement/creation_evenement_Tom.php" class="btn btn-primary btn-sm">+ Créer un événement</a>
+                </div>
 
                 <?php if (count($evenementsEnAttente) == 0) { ?>
-                    <p class="admin-vide">Aucun événement en attente de validation.</p>
+                    <p class="liste-vide">Aucun événement en attente de validation.</p>
                 <?php } else { ?>
-                    <div class="table-wrapper">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Titre</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Lieu</th>
-                                    <th>Places</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($evenementsEnAttente as $evenement) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
-                                        <td><?php echo $evenement['date_fr']; ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
-                                        <td><?php if ($evenement['nb_places'] != null) { echo $evenement['nb_places']; } else { echo '—'; } ?></td>
-                                        <td class="actions">
+                    <!-- Barre de recherche (voir script_admin.js) -->
+                    <div class="liste-outils">
+                        <input type="search" class="outil-recherche" placeholder="Rechercher un événement" aria-label="Rechercher un événement à valider">
+                    </div>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Événement</th>
+                                <th>Date</th>
+                                <th>Lieu</th>
+                                <th>Places</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($evenementsEnAttente as $evenement) { ?>
+                                <tr data-recherche="<?php echo htmlspecialchars(mb_strtolower($evenement['titre'] . ' ' . $evenement['type_evenement'] . ' ' . $evenement['lieu'])); ?>">
+                                    <td data-label="Événement">
+                                        <span class="utilisateur-texte">
+                                            <span class="utilisateur-nom"><?php echo htmlspecialchars($evenement['titre']); ?></span>
+                                            <span class="utilisateur-mail"><?php echo htmlspecialchars($evenement['type_evenement']); ?></span>
+                                        </span>
+                                    </td>
+                                    <td data-label="Date" class="cellule-date"><?php echo $evenement['date_fr']; ?></td>
+                                    <td data-label="Lieu"><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                    <td data-label="Places"><?php if ($evenement['nb_places'] != null) { echo $evenement['nb_places']; } else { echo '—'; } ?></td>
+                                    <td data-label="Actions">
+                                        <div class="actions-boutons actions-boutons--2">
                                             <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline">
                                                 <input type="hidden" name="id_evenement" value="<?php echo $evenement['id_evenement']; ?>">
                                                 <button type="submit" name="action" value="valider_evenement" class="btn btn-primary btn-sm">Valider</button>
                                                 <button type="submit" name="action" value="refuser_evenement" class="btn btn-danger btn-sm">Refuser</button>
                                             </form>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+
+                    <p class="liste-vide" hidden>Aucun événement ne correspond à votre recherche.</p>
                 <?php } ?>
             </div>
 
             <!-- Événements publiés : l'admin peut les modifier, ils restent publiés -->
-            <div class="admin-card">
-                <h2>Événements publiés</h2>
-                <p>Une modification faite par l'administration est publiée directement, sans nouvelle validation. Une suppression est définitive.</p>
+            <div class="admin-card admin-card--liste">
+                <div class="liste-entete">
+                    <div>
+                        <h2>Événements publiés</h2>
+                        <p class="liste-compteur" data-unite="événement"><?php echo count($evenementsPublies); ?> <?php echo count($evenementsPublies) > 1 ? 'événements' : 'événement'; ?></p>
+                        <p class="liste-note">Une modification faite par l'administration est publiée directement, sans nouvelle validation. Une suppression est définitive.</p>
+                    </div>
+                </div>
 
                 <?php if (count($evenementsPublies) == 0) { ?>
-                    <p class="admin-vide">Aucun événement publié.</p>
+                    <p class="liste-vide">Aucun événement publié.</p>
                 <?php } else { ?>
-                    <div class="table-wrapper">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Titre</th>
-                                    <th>Type</th>
-                                    <th>Date</th>
-                                    <th>Lieu</th>
-                                    <th>Inscrits</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($evenementsPublies as $evenement) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
-                                        <td><?php echo $evenement['date_fr']; ?></td>
-                                        <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
-                                        <td><?php echo $evenement['nombre_inscrits']; ?><?php if ($evenement['nb_places'] != null) { echo ' / ' . $evenement['nb_places']; } ?></td>
-                                        <td class="actions">
+                    <!-- Barre de recherche (voir script_admin.js) -->
+                    <div class="liste-outils">
+                        <input type="search" class="outil-recherche" placeholder="Rechercher un événement" aria-label="Rechercher un événement publié">
+                    </div>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Événement</th>
+                                <th>Date</th>
+                                <th>Lieu</th>
+                                <th>Inscrits</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($evenementsPublies as $evenement) { ?>
+                                <tr data-recherche="<?php echo htmlspecialchars(mb_strtolower($evenement['titre'] . ' ' . $evenement['type_evenement'] . ' ' . $evenement['lieu'])); ?>">
+                                    <td data-label="Événement">
+                                        <span class="utilisateur-texte">
+                                            <span class="utilisateur-nom"><?php echo htmlspecialchars($evenement['titre']); ?></span>
+                                            <span class="utilisateur-mail"><?php echo htmlspecialchars($evenement['type_evenement']); ?></span>
+                                        </span>
+                                    </td>
+                                    <td data-label="Date" class="cellule-date"><?php echo $evenement['date_fr']; ?></td>
+                                    <td data-label="Lieu"><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                    <td data-label="Inscrits"><?php echo $evenement['nombre_inscrits']; ?><?php if ($evenement['nb_places'] != null) { echo ' / ' . $evenement['nb_places']; } ?></td>
+                                    <td data-label="Actions">
+                                        <div class="actions-boutons actions-boutons--2">
                                             <a href="../evenement/gestion_evenement_malik.php?id=<?php echo $evenement['id_evenement']; ?>" class="btn btn-outline btn-sm">Modifier</a>
 
-                                            <!-- onsubmit : le navigateur demande confirmation avant de supprimer -->
-                                            <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline" onsubmit="return confirm('Supprimer définitivement cet événement ? Les inscriptions seront aussi supprimées.');">
+                                            <!-- data-confirmer : script_admin.js demande confirmation avant d'envoyer le formulaire -->
+                                            <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline" data-confirmer="Supprimer définitivement cet événement ? Les inscriptions seront aussi supprimées.">
                                                 <input type="hidden" name="id_evenement" value="<?php echo $evenement['id_evenement']; ?>">
                                                 <button type="submit" name="action" value="supprimer_evenement" class="btn btn-danger btn-sm">Supprimer</button>
                                             </form>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+
+                    <p class="liste-vide" hidden>Aucun événement ne correspond à votre recherche.</p>
                 <?php } ?>
             </div>
 

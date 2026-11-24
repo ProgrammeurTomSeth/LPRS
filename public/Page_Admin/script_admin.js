@@ -9,36 +9,55 @@ if (navToggle && mainNav) {
     });
 }
 
-// Recherche et filtre par rôle dans la liste des utilisateurs.
-// Chaque ligne du tableau porte data-role et data-recherche (nom, prénom et email en minuscules).
-const champRecherche = document.getElementById('recherche');
-const filtreRole = document.getElementById('filtre-role');
-const compteur = document.getElementById('compteur');
-const messageVide = document.getElementById('liste-vide');
-const lignes = document.querySelectorAll('.admin-table tbody tr');
+// Recherche (et filtre éventuel) dans chaque liste de la page.
+// Chaque ligne du tableau porte data-recherche (texte en minuscules) et, si la liste a un filtre, data-role.
+document.querySelectorAll('.admin-card--liste').forEach((carte) => {
+    const champRecherche = carte.querySelector('.outil-recherche');
+    if (!champRecherche) {
+        return; // liste vide : pas de barre de recherche
+    }
 
-function filtrerUtilisateurs() {
-    const texte = champRecherche.value.trim().toLowerCase();
-    const role = filtreRole.value;
-    let visibles = 0;
+    const filtre = carte.querySelector('.outil-filtre');
+    const compteur = carte.querySelector('.liste-compteur');
+    const messageVide = carte.querySelector('.liste-vide');
+    const lignes = carte.querySelectorAll('.admin-table tbody tr');
+    const unite = (compteur && compteur.dataset.unite) ? compteur.dataset.unite : 'utilisateur';
 
-    lignes.forEach((ligne) => {
-        const memeRole = (role === '' || ligne.dataset.role === role);
-        const memeTexte = ligne.dataset.recherche.includes(texte);
-        ligne.hidden = !(memeRole && memeTexte);
-        if (!ligne.hidden) {
-            visibles++;
+    function filtrer() {
+        const texte = champRecherche.value.trim().toLowerCase();
+        let visibles = 0;
+
+        lignes.forEach((ligne) => {
+            const memeRole = (!filtre || filtre.value === '' || ligne.dataset.role === filtre.value);
+            const memeTexte = ligne.dataset.recherche.includes(texte);
+            ligne.hidden = !(memeRole && memeTexte);
+            if (!ligne.hidden) {
+                visibles++;
+            }
+        });
+
+        if (compteur) {
+            compteur.textContent = visibles + ' ' + unite + (visibles > 1 ? 's' : '');
+        }
+        if (messageVide) {
+            messageVide.hidden = (visibles > 0);
+        }
+    }
+
+    champRecherche.addEventListener('input', filtrer);
+    if (filtre) {
+        filtre.addEventListener('change', filtrer);
+    }
+});
+
+// Un formulaire avec data-confirmer demande confirmation avant d'être envoyé (ex. suppression)
+document.querySelectorAll('form[data-confirmer]').forEach((formulaire) => {
+    formulaire.addEventListener('submit', (event) => {
+        if (!confirm(formulaire.dataset.confirmer)) {
+            event.preventDefault();
         }
     });
-
-    compteur.textContent = visibles + (visibles > 1 ? ' utilisateurs' : ' utilisateur');
-    messageVide.hidden = (visibles > 0);
-}
-
-if (champRecherche && filtreRole) {
-    champRecherche.addEventListener('input', filtrerUtilisateurs);
-    filtreRole.addEventListener('change', filtrerUtilisateurs);
-}
+});
 
 // Fenêtre « Ajouter un utilisateur » : s'ouvre au milieu de la page avec showModal()
 const fenetreAjout = document.getElementById('dialogue-ajout');
