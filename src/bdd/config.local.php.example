@@ -5,6 +5,6 @@
 return [
     'host'        => 'localhost',
     'nomBdd'      => 'lprs',
-    'identifiant' => 'lprs_user',
-    'motDePasse'  => 'A_REMPLIR',
+    'identifiant' => 'root',
+    'motDePasse'  => '',
 ];
