@@ -15,33 +15,56 @@
 }
 .admin-card h2 { font-size: 1.4rem; margin-bottom: 20px; }
 
-/* ---------- Formulaire Ajouter / Modifier ---------- */
-.admin-form {
+/* ---------- Carte "Liste des utilisateurs" ---------- */
+/* Le tableau touche les bords de la carte : on enlève son espacement */
+.admin-card--liste { padding: 0; overflow: hidden; }
+
+.liste-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 0;
+}
+.liste-entete h2 { margin-bottom: 4px; }
+.liste-compteur {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+/* Barre de recherche + filtre par rôle */
+.liste-outils {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 12px;
+  padding: 16px 24px 20px;
 }
-.admin-form input,
-.admin-form select {
-  flex: 1 1 180px;
+.outil-recherche,
+.outil-filtre {
   font-family: inherit;
   font-size: 0.95rem;
   padding: 10px 16px;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: 10px;
   background: #fff;
   color: var(--color-text);
 }
-.admin-form input:focus,
-.admin-form select:focus {
+.outil-recherche {
+  flex: 1 1 260px;
+  max-width: 420px;
+  padding-left: 42px;
+  /* Petite loupe dessinée en SVG, placée à gauche du champ */
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 14px center;
+}
+.outil-recherche:focus,
+.outil-filtre:focus {
   outline: none;
   border-color: var(--color-primary);
 }
 
 /* ---------- Tableau des utilisateurs ---------- */
-.table-wrapper { overflow-x: auto; }
-
+/* Pas de défilement horizontal : le tableau prend la largeur de la carte */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -49,9 +72,9 @@
 }
 .admin-table th,
 .admin-table td {
-  padding: 12px 14px;
+  padding: 14px 24px;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
   vertical-align: middle;
 }
 .admin-table th {
@@ -63,25 +86,186 @@
   background: var(--color-light);
 }
 .admin-table td { color: var(--color-dark); }
-.admin-table tbody tr:last-child td { border-bottom: none; }
 .admin-table tbody tr:hover { background: var(--color-light); }
+.admin-table tbody tr[hidden] { display: none; }
 
-.actions { white-space: nowrap; }
-.actions .btn { margin: 2px 0; }
-form.inline { display: inline; }
+/* Colonne Utilisateur : pastille d'initiales + nom + email */
+.utilisateur {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.avatar {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-light);
+  border: 1px solid var(--color-border);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+.utilisateur-texte { display: flex; flex-direction: column; min-width: 0; }
+.utilisateur-nom { font-weight: 700; color: var(--color-dark); }
+.utilisateur-mail { font-size: 0.85rem; color: var(--color-muted); overflow-wrap: anywhere; }
+
+/* Boutons d'action : tous de la même taille (largeur et hauteur) et alignés sur 3 colonnes :
+   Modifier | Activer ou Désactiver | Supprimer */
+.actions-boutons {
+  display: grid;
+  grid-template-columns: repeat(3, 124px);
+  gap: 8px;
+  align-items: center;
+}
+.actions-boutons .btn {
+  box-sizing: border-box;
+  width: 100%;
+  height: 40px;
+  padding-left: 8px;
+  padding-right: 8px;
+  line-height: 1;
+  white-space: nowrap;
+}
+/* Le formulaire ne crée pas de bloc : ses 2 boutons deviennent des colonnes de la grille */
+form.inline { display: contents; }
 
 /* ---------- Couleurs des statuts ---------- */
 .statut {
   display: inline-block;
+  min-width: 96px;
   padding: 3px 12px;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
+  text-align: center;
 }
 .statut.valide { background: var(--color-primary-light); color: var(--color-primary-dark); }
 .statut.en_attente { background: #fff4e0; color: #b36b00; }
 .statut.refuse { background: var(--color-danger-light); color: var(--color-danger); }
 
+/* ---------- Fenêtre « Ajouter un utilisateur » ---------- */
+/* showModal() centre la fenêtre et assombrit le reste de la page */
+.modale {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  color: var(--color-text);
+}
+.modale::backdrop { background: rgba(0, 0, 0, 0.5); }
+
+.modale-form { padding: 28px; }
+.modale-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.modale-entete h2 { margin: 0; font-size: 1.4rem; }
+.modale-fermer {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-light);
+  color: var(--color-dark);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.modale-fermer:hover { background: var(--color-border); }
+
+.modale-grille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+.champ--large { grid-column: 1 / -1; }
+.champ input,
+.champ select {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  padding: 11px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--color-text);
+}
+.champ input:focus,
+.champ select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+.champ-aide { font-size: 0.8rem; font-weight: 400; color: var(--color-muted); }
+
+.modale-pied {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.liste-vide {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  color: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---------- Tablette et smartphone : chaque ligne devient une fiche ---------- */
+@media (max-width: 1100px) {
+  .admin-table thead { display: none; }
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td { display: block; }
+  .admin-table tbody tr { padding: 16px 20px; border-top: 1px solid var(--color-border); }
+  .admin-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    border-top: none;
+  }
+  .admin-table td::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+  }
+  /* La cellule Utilisateur n'a pas besoin de libellé : l'avatar et le nom suffisent */
+  .admin-table td[data-label="Utilisateur"] { justify-content: flex-start; }
+  .admin-table td[data-label="Utilisateur"]::before { display: none; }
+  .actions-boutons { display: flex; flex-wrap: wrap; justify-content: flex-end; }
+  .actions-boutons .btn { width: 124px; }
+}
+
 @media (max-width: 720px) {
   .admin-card { padding: 20px; }
+  .admin-card--liste { padding: 0; }
+  .liste-entete { flex-direction: column; align-items: flex-start; padding: 20px 20px 0; }
+  .modale-form { padding: 20px; }
+  .modale-grille { grid-template-columns: 1fr; }
+  .liste-outils { padding: 12px 20px 16px; }
+  .outil-recherche { max-width: none; }
 }

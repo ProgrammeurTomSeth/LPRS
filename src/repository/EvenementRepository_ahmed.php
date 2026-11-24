@@ -158,6 +158,15 @@ class EvenementRepository_ahmed
         $req->execute(array('id' => $id_evenement));
     }
 
+    // Supprime définitivement un événement (réservé au gestionnaire).
+    // Les inscriptions et les organisateurs liés sont supprimés automatiquement
+    // par la base de données (clés étrangères en ON DELETE CASCADE).
+    public function supprimerEvenement($id_evenement)
+    {
+        $req = $this->connexionBdd->prepare("DELETE FROM evenement WHERE id_evenement = :id");
+        $req->execute(array('id' => $id_evenement));
+    }
+
     // ===== Gestion d'un événement par ses organisateurs (gestion_evenement_malik.php) =====
 
     // Renvoie true si l'utilisateur est organisateur de l'événement

@@ -1,6 +1,6 @@
 <?php
 
-// Page de gestion d'un événement, réservée à ses organisateurs :
+// Page de gestion d'un événement, réservée à ses organisateurs (et au gestionnaire) :
 //   - modifier la fiche de l'événement
 //   - voir la liste des inscrits et refuser une inscription
 // Les formulaires sont envoyés à src/traitement/GestionEvenementTraitement_malik.php
@@ -26,7 +26,9 @@ $evenementRepository = new EvenementRepository_ahmed();
 $evenement = $evenementRepository->getEvenement($idEvenement);
 
 // 3) L'événement doit exister ET l'utilisateur doit en être organisateur
-if ($evenement == null || !$evenementRepository->estOrganisateur($idEvenement, $_SESSION['id_utilisateur'])) {
+//    (le gestionnaire, lui, peut gérer n'importe quel événement)
+$estGestionnaire = ($_SESSION['role'] == 'gestionnaire');
+if ($evenement == null || (!$estGestionnaire && !$evenementRepository->estOrganisateur($idEvenement, $_SESSION['id_utilisateur']))) {
     $_SESSION['message_profil'] = "Vous ne pouvez pas gérer cet événement.";
     header('Location: ../profil/profil_utilisateur.php');
     exit;
@@ -91,7 +93,7 @@ $pageActive = 'evenements';
             <div class="gestion-card">
                 <h2>Modifier la fiche</h2>
 
-                <?php if ($_SESSION['role'] != 'gestionnaire') { ?>
+                <?php if (!$estGestionnaire) { ?>
                     <!-- Prévient l'organisateur : une modification retire l'événement de la liste publiée -->
                     <p class="gestion-info">
                         Attention : après une modification, l'événement n'est plus publié.
@@ -195,7 +197,11 @@ $pageActive = 'evenements';
                 <?php } ?>
             </div>
 
-            <a href="../profil/profil_utilisateur.php" class="btn btn-outline">Retour à mon profil</a>
+            <?php if ($estGestionnaire) { ?>
+                <a href="../Page_Admin/page_admin_Evenement.php" class="btn btn-outline">Retour à la gestion des événements</a>
+            <?php } else { ?>
+                <a href="../profil/profil_utilisateur.php" class="btn btn-outline">Retour à mon profil</a>
+            <?php } ?>
 
         </div>
     </section>

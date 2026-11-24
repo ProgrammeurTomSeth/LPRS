@@ -1,6 +1,6 @@
 <?php
 
-// Traitement des boutons Ajouter / Enregistrer / Activer / Désactiver / Supprimer / Valider un événement de public/Page_Admin/page_admin.php et page_admin_Evenement.php
+// Traitement des boutons Ajouter / Enregistrer / Activer / Désactiver / Supprimer / Valider ou supprimer un événement de public/Page_Admin/page_admin.php et page_admin_Evenement.php
 
 require_once 'SessionUtilisateur_ahmed.php';
 require_once '../bdd/bdd.php';
@@ -136,6 +136,14 @@ if ($action == 'ajouter') {
     // On refuse l'événement choisi, puis on retourne sur la page de gestion des événements
     $evenementRepository = new EvenementRepository_ahmed();
     $evenementRepository->refuserEvenement((int) lireChamp('id_evenement'));
+
+    header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
+    exit;
+} elseif ($action == 'supprimer_evenement') {
+    // On supprime définitivement l'événement choisi, puis on retourne sur la page de gestion des événements
+    $evenementRepository = new EvenementRepository_ahmed();
+    $evenementRepository->supprimerEvenement((int) lireChamp('id_evenement'));
+    $_SESSION['admin_message'] = "L'événement a été supprimé.";
 
     header('Location: ../../public/Page_Admin/page_admin_Evenement.php');
     exit;

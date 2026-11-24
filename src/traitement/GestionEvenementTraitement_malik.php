@@ -27,7 +27,9 @@ $evenementRepository = new EvenementRepository_ahmed();
 
 // 2) On revérifie que l'utilisateur est bien organisateur de CET événement.
 //    (Le formulaire peut être modifié par quelqu'un de malin : on ne lui fait pas confiance.)
-if (!$evenementRepository->estOrganisateur($idEvenement, $idConnecte)) {
+//    Le gestionnaire, lui, a le droit de gérer n'importe quel événement.
+$estGestionnaire = ($_SESSION['role'] == 'gestionnaire');
+if (!$estGestionnaire && !$evenementRepository->estOrganisateur($idEvenement, $idConnecte)) {
     $_SESSION['message_profil'] = "Vous n'êtes pas organisateur de cet événement.";
     header('Location: ../../public/profil/profil_utilisateur.php');
     exit;
