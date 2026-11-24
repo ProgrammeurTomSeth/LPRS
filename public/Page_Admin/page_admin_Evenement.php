@@ -15,6 +15,9 @@ if (!estConnecte() || $_SESSION['role'] != 'gestionnaire') {
 $evenementRepository = new EvenementRepository_ahmed();
 $evenementsEnAttente = $evenementRepository->getEvenementsEnAttente();
 
+// Liste des événements déjà publiés (l'admin peut les modifier sans nouvelle validation)
+$evenementsPublies = $evenementRepository->getEvenementsPublies();
+
 // Message laissé après la création d'un événement (src/traitement/EvenementTraitement_Tom.php)
 $message = "";
 if (!empty($_SESSION['admin_message'])) {
@@ -100,6 +103,51 @@ $pageActive = 'admin_evenements';
                                                 <input type="hidden" name="id_evenement" value="<?php echo $evenement['id_evenement']; ?>">
                                                 <button type="submit" name="action" value="valider_evenement" class="btn btn-primary btn-sm">Valider</button>
                                                 <button type="submit" name="action" value="refuser_evenement" class="btn btn-danger btn-sm">Refuser</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php } ?>
+            </div>
+
+            <!-- Événements publiés : l'admin peut les modifier, ils restent publiés -->
+            <div class="admin-card">
+                <h2>Événements publiés</h2>
+                <p>Une modification faite par l'administration est publiée directement, sans nouvelle validation. Une suppression est définitive.</p>
+
+                <?php if (count($evenementsPublies) == 0) { ?>
+                    <p class="admin-vide">Aucun événement publié.</p>
+                <?php } else { ?>
+                    <div class="table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Lieu</th>
+                                    <th>Inscrits</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($evenementsPublies as $evenement) { ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($evenement['titre']); ?></td>
+                                        <td><?php echo htmlspecialchars($evenement['type_evenement']); ?></td>
+                                        <td><?php echo $evenement['date_fr']; ?></td>
+                                        <td><?php echo htmlspecialchars($evenement['lieu']); ?></td>
+                                        <td><?php echo $evenement['nombre_inscrits']; ?><?php if ($evenement['nb_places'] != null) { echo ' / ' . $evenement['nb_places']; } ?></td>
+                                        <td class="actions">
+                                            <a href="../evenement/gestion_evenement_malik.php?id=<?php echo $evenement['id_evenement']; ?>" class="btn btn-outline btn-sm">Modifier</a>
+
+                                            <!-- onsubmit : le navigateur demande confirmation avant de supprimer -->
+                                            <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="inline" onsubmit="return confirm('Supprimer définitivement cet événement ? Les inscriptions seront aussi supprimées.');">
+                                                <input type="hidden" name="id_evenement" value="<?php echo $evenement['id_evenement']; ?>">
+                                                <button type="submit" name="action" value="supprimer_evenement" class="btn btn-danger btn-sm">Supprimer</button>
                                             </form>
                                         </td>
                                     </tr>
