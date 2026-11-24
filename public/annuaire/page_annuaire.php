@@ -12,24 +12,13 @@ if (!estConnecte()) {
     exit;
 }
 
-$utilisateurRepository = new UtilisateurRepository_malik();
-
-// Récupération de tous les alumni validés
-$alumni = $utilisateurRepository->getAnnuaireAlumni();
-
-// Recherche par nom ou prénom
+// Texte tapé dans la barre de recherche (vide si on n'a rien cherché)
 // ($recherche et non $nom : l'en-tête commun utilise déjà $nom dans sa boucle du menu)
 $recherche = trim($_GET['nom'] ?? '');
 
-if ($recherche !== '') {
-    $alumni = array_filter($alumni, function ($a) use ($recherche) {
-        return stripos($a['nom_utilisateur'] ?? '', $recherche) !== false
-                || stripos($a['prenom_utilisateur'] ?? '', $recherche) !== false;
-    });
-
-    // Réindexation du tableau
-    $alumni = array_values($alumni);
-}
+// Liste des alumni : la requête SQL (et le filtre de recherche) est dans le repository
+$utilisateurRepository = new UtilisateurRepository_malik();
+$alumni = $utilisateurRepository->getAnnuaireAlumni($recherche);
 
 $pageActive = 'annuaire';
 
