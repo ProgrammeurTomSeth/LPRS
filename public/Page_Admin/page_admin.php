@@ -141,7 +141,8 @@ $pageActive = 'admin';
                                                 <button type="submit" name="action" value="activer" class="btn btn-primary btn-sm">Activer</button>
                                             <?php } ?>
 
-                                            <button type="submit" name="action" value="supprimer" class="btn btn-danger btn-sm">Supprimer</button>
+                                            <!-- data-suppression : script_admin.js ouvre la fenêtre d'avertissement avant de supprimer -->
+                                            <button type="submit" name="action" value="supprimer" class="btn btn-danger btn-sm" data-suppression data-id="<?php echo $ligne['id_utilisateur']; ?>" data-nom="<?php echo htmlspecialchars($ligne['prenom_utilisateur'] . ' ' . mb_strtoupper($ligne['nom_utilisateur'])); ?>">Supprimer</button>
                                         </form>
                                     </div>
                                 </td>
@@ -250,6 +251,28 @@ $pageActive = 'admin';
             </form>
         </dialog>
     <?php } ?>
+
+    <!-- ===== FENÊTRE : AVERTISSEMENT AVANT SUPPRESSION D'UN UTILISATEUR ===== -->
+    <dialog id="dialogue-suppression" class="modale modale--petite modale--suppression" aria-labelledby="titre-suppression">
+        <form method="post" action="../../src/traitement/ActionAdmin_malik.php" class="modale-form">
+            <input type="hidden" name="action" value="supprimer">
+            <input type="hidden" name="id_utilisateur" id="suppression-id" value="0">
+
+            <div class="modale-entete">
+                <h2 id="titre-suppression">Supprimer cet utilisateur ?</h2>
+                <button type="button" class="modale-fermer" data-fermer aria-label="Fermer">&times;</button>
+            </div>
+
+            <p class="alerte-suppression">Vous allez supprimer définitivement le compte de <strong id="suppression-nom"></strong>. Cette action est <strong>irréversible</strong>.</p>
+            <p>Seront aussi supprimés : ses candidatures, ses inscriptions aux événements, sa participation comme organisateur et ses signalements.</p>
+            <p class="champ-aide">Si cet utilisateur est l'auteur d'offres ou de messages du forum, la suppression sera refusée. Vous pouvez alors simplement désactiver son compte.</p>
+
+            <div class="modale-pied">
+                <button type="button" class="btn btn-outline" data-fermer autofocus>Annuler</button>
+                <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+            </div>
+        </form>
+    </dialog>
 
 <?php require_once '../commun/pied_de_page.php'; ?>
 

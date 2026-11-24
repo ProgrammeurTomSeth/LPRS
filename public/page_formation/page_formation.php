@@ -1,10 +1,16 @@
 <?php
 
 require_once '../../src/traitement/SessionUtilisateur_ahmed.php';
-
-// Lien du menu à mettre en vert (voir ../commun/entete.php)
+require_once '../../src/bdd/bdd.php';
+require_once '../../src/modele/formation_anais.php';
+require_once '../../src/repository/Formation_ahmed.php';
 $pageActive = 'formations';
-
+$formationRepository = new Formation_ahmed();
+$formations = $formationRepository->getAllFormations();
+$typesFormation = array(
+        'bac_pro' => 'Bac professionnel',
+        'bac_techno' => 'Bac technologique',
+        'bts' => 'BTS');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -23,40 +29,49 @@ $pageActive = 'formations';
 <?php require_once '../commun/entete.php'; ?>
 
 <main id="main">
-
-    <!-- ===== PAGE HERO ===== -->
     <section class="page-hero">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
-            <p class="breadcrumb"><a href="../page_acceuille/page_accueil.php">Accueil</a> / Formations</p>
+            <p class="breadcrumb">
+                <a href="../page_acceuille/page_accueil.php">Accueil</a>
+                / Formations
+            </p>
             <h1>Nos formations</h1>
             <p>Découvrez les formations proposées par le lycée, du bac professionnel au BTS.</p>
         </div>
     </section>
-
-    <!-- ===== FORMATIONS ===== -->
     <section class="section formations-section">
         <div class="container">
             <div class="formations-grid">
-
-                <article class="formation-card">
-                    <h3>BTS SIO</h3>
-                    <span class="badge">BTS</span>
-                    <p>Le BTS SIO signifie Brevet de Technicien Supérieur Services Informatiques aux Organisations. C’est une formation de deux ans après le bac, reconnue par l’État et équivalente à 120 crédits ECTS. Elle prépare à une insertion rapide dans le monde du travail ou à la poursuite d’études dans le domaine informatique.</p>
-                </article>
-
-                <article class="formation-card">
-                    <h3>Bac technologique STI2D</h3>
-                    <span class="badge">Bac technologique</span>
-                    <p>Le bac STI2D s’adresse aux lycéens intéressés par l’innovation technologique, l’écologie, la conception de produits et systèmes industriels, ainsi que par la transition énergétique et le respect de l’environnement. Il vise à développer des compétences techniques solides tout en conservant un socle d’enseignements généraux. Les élèves apprennent à comprendre le fonctionnement des systèmes techniques de l’industrie ou du quotidien et à travailler sur des projets concrets, favorisant l’esprit d’initiative, la collaboration et la résolution de problèmes.</p>
-                </article>
-
+                <?php if (count($formations) == 0) { ?>
+                    <p class="formations-vide">Aucune formation n'est disponible pour le moment.</p>
+                <?php } else { ?>
+                    <?php foreach ($formations as $formation) { ?>
+                        <article class="formation-card">
+                            <h3>
+                                <?php echo htmlspecialchars($formation['nom_formation']); ?>
+                            </h3>
+                            <span class="badge">
+                                <?php
+                                if (isset($typesFormation[$formation['type_formation']])) {
+                                    echo htmlspecialchars($typesFormation[$formation['type_formation']]);
+                                } else {
+                                    echo htmlspecialchars($formation['type_formation']);
+                                }
+                                ?>
+                            </span>
+                            <?php if (!empty($formation['description'])) { ?>
+                                <p><?php echo nl2br(htmlspecialchars($formation['description'])); ?></p>
+                            <?php } else { ?>
+                                <p>La description de cette formation sera bientôt disponible.</p>
+                            <?php } ?>
+                        </article>
+                    <?php } ?>
+                <?php } ?>
             </div>
         </div>
     </section>
-
 </main>
-
 <?php require_once '../commun/pied_de_page.php'; ?>
 
 <script src="script_formation.js"></script>

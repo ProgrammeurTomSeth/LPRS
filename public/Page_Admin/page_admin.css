@@ -32,6 +32,14 @@
   font-size: 0.9rem;
   color: var(--color-muted);
 }
+/* Petite phrase d'explication sous le compteur */
+.liste-note {
+  margin: 8px 0 0;
+  max-width: 640px;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+.cellule-date { white-space: nowrap; }
 
 /* Barre de recherche + filtre par rôle */
 .liste-outils {
@@ -117,14 +125,16 @@
    Modifier | Activer ou Désactiver | Supprimer */
 .actions-boutons {
   display: grid;
-  grid-template-columns: repeat(3, 124px);
+  grid-template-columns: repeat(3, 104px);
   gap: 8px;
   align-items: center;
 }
+/* Liste avec seulement 2 boutons (page des événements) */
+.actions-boutons--2 { grid-template-columns: repeat(2, 104px); }
 .actions-boutons .btn {
   box-sizing: border-box;
   width: 100%;
-  height: 40px;
+  height: 32px;
   padding-left: 8px;
   padding-right: 8px;
   line-height: 1;
@@ -132,6 +142,58 @@
 }
 /* Le formulaire ne crée pas de bloc : ses 2 boutons deviennent des colonnes de la grille */
 form.inline { display: contents; }
+
+/* Boutons de l'administration : petits, angles peu arrondis, couleurs douces (fond clair + fin contour),
+   comme le badge « Actif ». Réservé à ces pages : le style commun (../style.css) n'est pas modifié. */
+.admin-card .btn,
+.modale .btn {
+  border-width: 1px;
+  border-radius: 6px;
+  font-family: inherit; /* les boutons n'héritent pas de la police par défaut */
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.liste-entete .btn { padding: 7px 16px; }
+.modale .btn { padding: 8px 18px; }
+
+/* Vert (Activer, Valider, Ajouter, Enregistrer) */
+.admin-card .btn-primary,
+.modale .btn-primary {
+  background: var(--color-primary-light);
+  border-color: #b9e6b1;
+  color: var(--color-primary-dark);
+}
+.admin-card .btn-primary:hover,
+.modale .btn-primary:hover {
+  background: #d6f1d1;
+  color: var(--color-primary-dark);
+}
+
+/* Neutre (Modifier, Désactiver, Annuler) */
+.admin-card .btn-outline,
+.modale .btn-outline {
+  background: #fff;
+  border-color: #d3d7d3;
+  color: var(--color-text);
+}
+.admin-card .btn-outline:hover,
+.modale .btn-outline:hover {
+  background: var(--color-light);
+  color: var(--color-dark);
+}
+
+/* Rouge (Supprimer, Refuser) */
+.admin-card .btn-danger,
+.modale .btn-danger {
+  background: #fff;
+  border-color: #efc2c2;
+  color: var(--color-danger);
+}
+.admin-card .btn-danger:hover,
+.modale .btn-danger:hover {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
 
 /* ---------- Couleurs des statuts ---------- */
 .statut {
@@ -158,6 +220,7 @@ form.inline { display: contents; }
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   color: var(--color-text);
 }
+.modale--petite { width: min(480px, calc(100% - 32px)); }
 .modale::backdrop { background: rgba(0, 0, 0, 0.5); }
 
 .modale-form { padding: 28px; }
@@ -221,6 +284,18 @@ form.inline { display: contents; }
   margin-top: 24px;
 }
 
+/* Avertissement avant suppression */
+.modale--suppression p { margin: 0 0 12px; }
+.alerte-suppression {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+.alerte-suppression strong { color: var(--color-danger); }
+.modale--suppression .btn-danger { background: var(--color-danger-light); }
+.modale--suppression .btn-danger:hover { background: #fadada; }
+
 .liste-vide {
   margin: 0;
   padding: 24px;
@@ -254,10 +329,12 @@ form.inline { display: contents; }
     color: var(--color-muted);
   }
   /* La cellule Utilisateur n'a pas besoin de libellé : l'avatar et le nom suffisent */
-  .admin-table td[data-label="Utilisateur"] { justify-content: flex-start; }
-  .admin-table td[data-label="Utilisateur"]::before { display: none; }
+  .admin-table td[data-label="Utilisateur"],
+  .admin-table td[data-label="Événement"] { justify-content: flex-start; }
+  .admin-table td[data-label="Utilisateur"]::before,
+  .admin-table td[data-label="Événement"]::before { display: none; }
   .actions-boutons { display: flex; flex-wrap: wrap; justify-content: flex-end; }
-  .actions-boutons .btn { width: 124px; }
+  .actions-boutons .btn { width: 104px; }
 }
 
 @media (max-width: 720px) {

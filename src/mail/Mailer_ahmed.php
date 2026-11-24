@@ -120,4 +120,38 @@ class Mailer_ahmed
 
         return $this->envoyer($utilisateur->getEmail(), "Votre compte n'est pas actif", $message);
     }
+
+    // Email envoyé à l'auteur d'une offre quand quelqu'un postule
+    public function envoyerNouvelleCandidature($auteur, $offre, $candidat)
+    {
+        // Sans configuration, on ne peut pas écrire le lien vers le site
+        if (!$this->estConfigure()) {
+            return false;
+        }
+
+        $message = "Bonjour " . $auteur->getPrenom() . ",\n\n"
+            . $candidat->getPrenom() . " " . $candidat->getNom() . " vient de postuler à votre offre « " . $offre->getTitre() . " ».\n"
+            . "Vous pouvez consulter sa motivation et son CV sur le site :\n"
+            . $this->config['urlSite'] . "/offre/candidats_offre_Tom.php?id=" . $offre->getIdOffre() . "\n\n"
+            . "L'équipe du Lycée Robert Schuman";
+
+        return $this->envoyer($auteur->getEmail(), "Nouvelle candidature : " . $offre->getTitre(), $message);
+    }
+
+    // Email envoyé à un candidat dont la candidature n'a pas été retenue
+    public function envoyerCandidatureNonRetenue($candidat, $offre)
+    {
+        // Sans configuration, on ne peut pas écrire le lien vers le site
+        if (!$this->estConfigure()) {
+            return false;
+        }
+
+        $message = "Bonjour " . $candidat->getPrenom() . ",\n\n"
+            . "Votre candidature à l'offre « " . $offre->getTitre() . " » n'a malheureusement pas été retenue.\n"
+            . "Vous pouvez consulter les autres offres de la plateforme :\n"
+            . $this->config['urlSite'] . "/offre/liste_offres_Tom.php\n\n"
+            . "L'équipe du Lycée Robert Schuman";
+
+        return $this->envoyer($candidat->getEmail(), "Votre candidature : " . $offre->getTitre(), $message);
+    }
 }

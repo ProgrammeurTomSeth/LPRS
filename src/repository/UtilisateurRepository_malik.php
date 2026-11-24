@@ -45,11 +45,25 @@ class UtilisateurRepository_malik
         return $req->fetchAll();
     }
 
-    // Annuaire : alumni dont le compte est validé, triés par nom
-    public function getAnnuaireAlumni()
+    // Annuaire : alumni dont le compte est validé, triés par nom.
+    // Si $recherche n'est pas vide, on ne garde que ceux dont le nom ou le prénom la contient.
+    public function getAnnuaireAlumni($recherche = '')
     {
-        $req = $this->connexionBdd->prepare("SELECT nom_utilisateur, prenom_utilisateur, mail, telephone FROM utilisateur WHERE role = 'alumni' AND statut_validation = 'valide' ORDER BY nom_utilisateur, prenom_utilisateur");
-        $req->execute();
+        $recherche = trim($recherche);
+
+        if ($recherche == '') {
+            // Pas de recherche : tous les alumni
+            $req = $this->connexionBdd->prepare("SELECT nom_utilisateur, prenom_utilisateur, mail, telephone FROM utilisateur WHERE role = 'alumni' AND statut_validation = 'valide' ORDER BY nom_utilisateur, prenom_utilisateur");
+            $req->execute();
+        } else {
+            // Recherche : le % veut dire "n'importe quels caractères avant ou après"
+            $req = $this->connexionBdd->prepare("SELECT nom_utilisateur, prenom_utilisateur, mail, telephone FROM utilisateur WHERE role = 'alumni' AND statut_validation = 'valide' AND (nom_utilisateur LIKE :r1 OR prenom_utilisateur LIKE :r2) ORDER BY nom_utilisateur, prenom_utilisateur");
+            $req->execute(array(
+                'r1' => '%' . $recherche . '%',
+                'r2' => '%' . $recherche . '%'
+            ));
+        }
+
         return $req->fetchAll();
     }
 
